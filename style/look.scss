@@ -1,0 +1,70 @@
+---
+colors: 
+  yellow: 50
+  orange: 29
+  light_blue: 204
+  red: 4
+  cyan: 169
+  green: 117
+  purple: 327
+  navy: 243
+---
+
+body {
+  font-family: sans-serif;
+}
+
+#menu {
+  a {
+    text-decoration: none;
+  }
+}
+
+@mixin colored_html($hue) {
+  body {
+    color: hsl($hue, 100, 16);
+    background-color: hsl($hue, 76, 46);
+  }
+
+  #page {
+    background-color: hsl($hue, 60, 69);
+  }
+
+  #header #site_name {
+    color: hsl($hue, 23, 36);
+  }
+
+  #menu {
+    background-color: hsl($hue, 60, 80);
+  }
+
+  #footer {
+    background-color: hsl($hue, 60, 75);
+  }
+
+  a {
+    color: hsl($hue, 100, 24);
+
+    &:hover, &:focus {
+      color: hsl($hue, 100, 35);
+    }
+  }
+}
+
+@mixin colored_menu_item($hue) {
+  color: hsl($hue, 88, 30);
+  background-color: hsl($hue, 60, 69);
+
+  &:active, &:focus {
+    background-color: hsl($hue, 60, 80);
+  }
+}
+
+
+{% for color in page.colors %}
+  {% assign color_name = color[0] %}
+  {% assign color_value = color[1] %}
+
+  html.{{color_name}} { @include colored_html({{color_value}}); }
+  #menu a.{{color_name}} { @include colored_menu_item({{color_value}}); }
+{% endfor %}

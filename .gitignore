@@ -1,0 +1,4 @@
+.*.sw*
+_site/
+.sass-cache/
+gc/coords.morse

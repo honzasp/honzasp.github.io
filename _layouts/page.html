@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html class="{{ page.color }}">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>{{ page.title }} - wqa!</title>
+    <link rel="stylesheet" href="/style/reset.css">
+    <link rel="stylesheet" href="/style/layout.css">
+    <link rel="stylesheet" href="/style/look.css">
+  </head>
+
+  <body>
+    <div id="page">
+      <div id="menu">
+        <ul>
+          <li><a class="yellow" href="/">Home</a></li>
+          <li><a class="orange" href="/piskvorky">Piškvorky</a></li>
+          <li><a class="light_blue" href="/hodiny">Hodiny</a></li>
+          <li><a class="red" href="/had">Had</a></li>
+          <li><a class="cyan" href="/castice">Částice</a></li>
+          <li><a class="green" href="/battle.js">battle.js</a></li>
+          <li><a class="purple" href="/hadr">Hadr</a></li>
+          <li><a class="navy" href="/fishy">Fishy</a></li>
+        </ul>
+        <span class="clear">.</span>
+      </div>
+
+      <div id="header">
+        <h1>{{ page.title }}</h1> 
+        <span id="site_name">:wqa!</span>
+      </div>
+
+      <div id="content">
+{{ content }}
+      </div>
+
+      <div id="footer">
+        <span id="copy">&copy; Jan Špaček</span>
+        <span id="tools">Tuto stránku generuje 
+          <a href="http://jekyllrb.com/">Jekyll</a>, styly
+          <a href="http://sass-lang.com/">SCSS</a>. Jen proboha žádné PHP!
+        </span>
+      </div>
+    </div>
+  </body>
+</html>
