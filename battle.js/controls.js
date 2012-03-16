@@ -27,7 +27,7 @@ var Controls = {
 			"</div>");
 		this.angleElement.appendTo(drivingElement);
 
-		$("input", this.angleElement).mousedown(function() {
+		$("input", this.angleElement).bind("mousedown touchstart", function() {
 				if(ths.active) {
 					if($(this).attr("value") == ">") {
 						ths.player.cannonRotation = 1;
@@ -37,7 +37,7 @@ var Controls = {
 				}
 			});
 
-		this.angleElement.mouseup(function() {
+		this.angleElement.bind("mouseup touchend", function() {
 				if(ths.active) {
 					ths.player.cannonRotation = 0;
 				}
@@ -53,7 +53,7 @@ var Controls = {
 			"</div>");
 		this.moveElement.appendTo(drivingElement);
 
-		$("input", this.moveElement).mousedown(function() {
+		$("input", this.moveElement).bind("mousedown touchstart", function() {
 				if(ths.active) {
 					if($(this).attr("value") == ">") {
 						ths.player.direction = 1;
@@ -63,7 +63,7 @@ var Controls = {
 				}
 			});
 
-		this.moveElement.mouseup(function() {
+		this.moveElement.bind("mouseup touchend", function() {
 				if(ths.active) {
 					ths.player.direction = 0;
 				}
@@ -79,7 +79,7 @@ var Controls = {
 			"</div>");
 		this.firePowerElement.appendTo(drivingElement);
 
-		$("input", this.firePowerElement).mousedown(function() {
+		$("input", this.firePowerElement).bind("mousedown touchstart", function() {
 				if(ths.active) {
 					if($(this).attr("value") == "+") {
 						ths.player.firePowerChange = 1;
@@ -89,7 +89,7 @@ var Controls = {
 				}
 			});
 
-		$("input", this.firePowerElement).mouseup(function() {
+		$("input", this.firePowerElement).bind("mouseup touchend", function() {
 				if(ths.active) {
 					ths.player.firePowerChange = 0;
 				}
