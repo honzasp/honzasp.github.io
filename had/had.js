@@ -71,8 +71,8 @@ var Snake = {
 			}
 		}
 
-		/* timer */
 		$(document).bind("keydown keypress", function(e){Snake.keypress(e);});
+		this.element.bind("mousedown touchstart", function(e){Snake.mousedown(e);});
 		
 		/* a html */
 		this.scoreElement = $("<div></div>");
@@ -127,26 +127,22 @@ var Snake = {
 
 		switch(evt.keyCode) {
 		case 40: /* dolu */
-			if(this.direction[1] == 0) 
-				this.dirChangeQueue.push([0, 1]);
+      this.goDown();
 			evt.preventDefault();
 			break;
 
 		case 38: /* nahoru */
-			if(this.direction[1] == 0) 
-				this.dirChangeQueue.push([0, -1]);
+      this.goUp();
 			evt.preventDefault();
 			break;
 
 		case 37: /* doleva */
-			if(this.direction[0] == 0) 
-				this.dirChangeQueue.push([-1, 0]);
+      this.goLeft();
 			evt.preventDefault();
 			break;
 
 		case 39: /* doprava */
-			if(this.direction[0] == 0) 
-				this.dirChangeQueue.push([1, 0]);
+      this.goRight();
 			evt.preventDefault();
 			break;
 
@@ -161,6 +157,53 @@ var Snake = {
 
 		}
 	},
+
+  mousedown: function(evt) {
+    var snakeHead = {
+      top: this.snake[0][1],
+      left: this.snake[0][0]
+    };
+    var headX = (snakeHead.left + 0.5) * this.squareSize;
+    var headY = (snakeHead.top + 0.5) * this.squareSize;
+
+    var offset = this.element.offset();
+    var clickX = evt.pageX - offset.left;
+    var clickY = evt.pageY - offset.top;
+
+    if(this.direction[0] == 0) {
+      /* doleva/doprava */
+      if(clickX > headX) {
+        this.goRight();
+      } else {
+        this.goLeft();
+      }
+    } else {
+      /* nahoru/dolu */
+      if(clickY > headY) {
+        this.goDown();
+      } else {
+        this.goUp();
+      }
+    }
+
+    evt.preventDefault();
+  },
+
+  goDown: function() {
+    this.dirChangeQueue.push([0, 1]);
+  },
+
+  goUp: function() {
+    this.dirChangeQueue.push([0, -1]);
+  },
+
+  goLeft: function() {
+    this.dirChangeQueue.push([-1, 0]);
+  },
+
+  goRight: function() {
+    this.dirChangeQueue.push([1, 0]);
+  },
 
 	pause: function() {
 		if(this.timer) {
@@ -257,8 +300,16 @@ var Snake = {
 		var c = this.context;
 		c.save();
 
-		if(this.dirChangeQueue.length != 0) {
-			this.direction = this.dirChangeQueue.shift();
+		while(this.dirChangeQueue.length != 0) {
+			var newDir = this.dirChangeQueue.shift();
+      var oldDir = this.direction;
+
+      /* pouzijou se jen ty zmeny, ktere toci hadem doprava nebo doleva (z
+       * pohledu jeho hlavy), ostatni se zahodi */
+      if(newDir[0] != -oldDir[0] || newDir[1] != -oldDir[1]) {
+        this.direction = newDir;
+        break;
+      }
 		}
 
 		var x = this.snake[0][0] + this.direction[0];
