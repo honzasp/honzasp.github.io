@@ -159,6 +159,10 @@ var Snake = {
 	},
 
   mousedown: function(evt) {
+    if(!this.alive) {
+      return;
+    }
+
     var snakeHead = {
       top: this.snake[0][1],
       left: this.snake[0][0]
