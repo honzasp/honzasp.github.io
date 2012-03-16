@@ -235,6 +235,7 @@ Tank.prototype = {
 		if(this.player.money >= Tank.repairCost) {
 			this.player.money -= Tank.repairCost;
 			this.lives += Tank.repairAmount;
+      Controls.change = true;
 		}
 	},
 
@@ -243,6 +244,7 @@ Tank.prototype = {
 		if(this.player.money >= Tank.fuelCost) {
 			this.player.money -= Tank.fuelCost;
 			this.fuel += Tank.fuelAmount;
+      Controls.change = true;
 		}
 	}
 
