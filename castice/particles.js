@@ -480,7 +480,7 @@ $(document).ready(function() {
 
 		world.checkBounds = true;
 
-		canvas.mousedown(function(e) {
+		canvas.bind("mousedown touchstart", function(e) {
 			var offset = $(element).offset();
 			var x = e.pageX - offset.left;
 			var y = e.pageY - offset.top;
@@ -490,7 +490,7 @@ $(document).ready(function() {
 			}
 		});
 
-		$(document).mouseup(function(e) {
+		$(document).bind("mouseup touchend", function(e) {
 			var offset = $(element).offset();
 			var x = e.pageX - offset.left;
 			var y = e.pageY - offset.top;
@@ -502,7 +502,7 @@ $(document).ready(function() {
 			}
 		});
 
-		$(document).mousemove(function(e) {
+		$(document).bind("mousemove touchmove", function(e) {
 			var offset = $(element).offset();
 			var x = e.pageX - offset.left;
 			var y = e.pageY - offset.top;
