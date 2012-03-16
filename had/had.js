@@ -210,8 +210,8 @@ var Snake = {
 		c.fillStyle = this.squareColors[this.map[x][y]];
 		c.strokeStyle = this.gridColor;
 
-		c.fillRect(x * size + 0.5, y * size, size, size);
-		c.strokeRect(x * size + 0.5, y * size, size, size);
+		c.fillRect(x * size, y * size, size, size);
+		//c.strokeRect(x * size + 0.5, y * size, size, size);
 	},
 
 	/** had narazil **/
