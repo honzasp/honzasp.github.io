@@ -18,15 +18,15 @@
 
 #board table td {
 	border: 1px solid #888; 
-	width: 32px;
-	height: 32px;
+	width: 35px;
+	height: 35px;
 	text-align: center;
-	line-height: 30px;
+	line-height: 35px;
 	padding: 0;
 	margin: 0;
 	font-size: 23px;
 	font-weight: bold;
-	font-family: monospace;
+	/*font-family: monospace;*/
 	overflow: hidden;
 	color: #555;
 	background-color: white;
