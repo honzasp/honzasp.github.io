@@ -118,7 +118,7 @@ Fishy.prototype = {
 		this.createPlayer();
 		this.createFish();
 		this.showScore();
-		this.bindKeys();
+		this.bindControls();
 		this.canvas.show();
 
 		var ths = this;
@@ -127,7 +127,7 @@ Fishy.prototype = {
 	},
 
 	stop: function() {
-		this.unbindKeys();
+		this.unbindControls();
 
 		if(this.scoreElement) {
 			this.scoreElement.remove();
@@ -215,45 +215,7 @@ Fishy.prototype = {
 		}
 	},
 
-	keydown: function(key) {
-		if(!this.player) {
-			return;
-		}
-
-		switch(key) {
-		case 37:
-			this.player.accX = -1;
-			return true;
-		case 39:
-			this.player.accX = 1;
-			return true;
-		case 38:
-			this.player.accY = -1;
-			return true;
-		case 40:
-			this.player.accY = 1;
-			return true;
-		}
-	},
-
-	keyup: function(key) {
-		if(!this.player) {
-			return;
-		}
-
-		switch(key) {
-		case 37:
-		case 39:
-			this.player.accX = 0;
-			return true;
-		case 38:
-		case 40:
-			this.player.accY = 0;
-			return true;
-		}
-	},
-
-	bindKeys: function() {
+	bindControls: function() {
 		var ths = this;
 
 		$("body").keypress(function(evt) {
@@ -261,29 +223,106 @@ Fishy.prototype = {
 			});
 
 		$(document).bind("keydown keypress", function(evt) {
-				if(ths.keydown(evt.which)) {
+        var eat = false;
+        switch(evt.which) {
+        case 37:
+          ths.player.accX = -1;
+          eat = true;
+          break;
+        case 39:
+          ths.player.accX = 1;
+          eat = true;
+          break;
+        case 38:
+          ths.player.accY = -1;
+          eat = true;
+          break;
+        case 40:
+          ths.player.accY = 1;
+          eat = true;
+          break;
+        }
+
+				if(eat) {
 					evt.preventDefault();
 					evt.stopPropagation();
 				}
 			});
 
 		$(document).keyup(function(evt) {
-				if(ths.keyup(evt.which)) {
+        var eat = false;
+        switch(evt.which) {
+        case 37:
+        case 39:
+          ths.player.accX = 0;
+          eat = true;
+          break;
+        case 38:
+        case 40:
+          ths.player.accY = 0;
+          eat = true;
+          break;
+        }
+
+				if(eat) {
 					evt.preventDefault();
 					evt.stopPropagation();
 				}
 			});
+
+    this.canvas.bind("mousedown mousemove", function(evt) {
+      if(evt.which == 1) {
+        controlMove(evt.pageX, evt.pageY);
+      }
+    });
+
+    this.canvas.bind("touchstart touchmove", function(evt) {
+      controlMove(evt.pageX, evt.pageY);
+      evt.preventDefault();
+    });
+
+    var controlMove = function(controlX, controlY) {
+      if(ths.player) {
+        var offset = ths.canvas.offset();
+        var relX = (controlX - offset.left) - ths.player.x;
+        var relY = (controlY - offset.top) - ths.player.y;
+
+        var relSize = Math.sqrt(relX * relX + relY * relY);
+        if(relSize != 0) {
+          var acc = Math.min(relSize / 100.0, 1.0);
+          ths.player.accX = acc * relX / relSize;
+          ths.player.accY = acc * relY / relSize;
+        }
+      }
+    };
+
+    this.canvas.bind("mouseup", function(evt) {
+      if(ths.player && evt.which == 1) {
+        ths.player.accX = 0;
+        ths.player.accY = 0;
+      }
+    });
+
+    this.canvas.bind("touchend", function(evt) {
+      if(ths.player) {
+        ths.player.accX = 0;
+        ths.player.accY = 0;
+      }
+    });
+
 	},
 
-	unbindKeys: function() {
+	unbindControls: function() {
 		$("body").unbind("keypress");
 		$(document).unbind("keydown keypress");
 		$(document).unbind("keyup");
+    $(document).unbind("mousedown mousemove");
+    $(document).unbind("mouseup");
 	},
 
 	showMenu: function() {
 		this.stop();
-		this.unbindKeys();
+		this.unbindControls();
 
 		this.canvas.hide();
 		this.menuElement.empty();
