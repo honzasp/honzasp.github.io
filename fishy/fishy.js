@@ -270,11 +270,26 @@ Fishy.prototype = {
 				}
 			});
 
-    this.canvas.bind("mousedown mousemove", function(evt) {
+    var mouseMoving = false;
+    
+    this.canvas.bind("mousedown", function(evt) {
       if(evt.which == 1) {
+        mouseMoving = true;
         controlMove(evt.pageX, evt.pageY);
       }
     });
+    
+    this.canvas.bind("mouseup", function(evt) {
+      if(mouseMoving && evt.which == 1) {
+        mouseMoving = false;
+      }
+    });
+    
+    this.canvas.bind("mousemove", function(evt) {
+      if(mouseMoving) {
+        controlMove(evt.pageX, evt.pageY);
+      }
+    })
 
     this.canvas.bind("touchstart touchmove", function(evt) {
       controlMove(evt.pageX, evt.pageY);
