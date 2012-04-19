@@ -126,21 +126,25 @@ var Snake = {
 	keypress: function(evt) {
 
 		switch(evt.keyCode) {
-		case 40: /* dolu */
+    case 83: /* s */
+    case 40: /* dolu */
       this.goDown();
 			evt.preventDefault();
 			break;
 
+    case 87: /* w */
 		case 38: /* nahoru */
       this.goUp();
 			evt.preventDefault();
 			break;
 
+    case 65: /* a */
 		case 37: /* doleva */
       this.goLeft();
 			evt.preventDefault();
 			break;
 
+    case 68: /* d */
 		case 39: /* doprava */
       this.goRight();
 			evt.preventDefault();
