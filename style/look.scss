@@ -1,13 +1,14 @@
 ---
 colors: 
-  yellow: 50
-  orange: 29
-  light_blue: 204
-  red: 4
-  cyan: 169
-  green: 117
-  purple: 327
-  navy: 243
+  yellow: "#CEB11C"
+  orange: "#CE721C"
+  light_blue: "#1C87CE"
+  red: "#CE281C"
+  cyan: "#1CCEAE"
+  green: "#4eaa2f"
+  purple: "#6827c4"
+  navy:  "#251CCE"
+  sea_green: "#2E8B57"
 ---
 
 body {
@@ -25,43 +26,43 @@ button {
   margin: 0.4em;
 }
 
-@mixin colored_html($hue) {
+@mixin colored_html($basic) {
   body {
-    color: hsl($hue, 100, 16);
-    background-color: hsl($hue, 76, 46);
+    color: darken($basic, 20%);
+    background-color: lighten($basic, 20%);
   }
 
   #page {
-    background-color: hsl($hue, 60, 69);
+    background-color: lighten($basic, 40%);
   }
 
   #header #site_name {
-    color: hsl($hue, 23, 36);
+    color: darken($basic, 5%);
   }
 
   #menu {
-    background-color: hsl($hue, 60, 80);
+    background-color: lighten($basic, 25%);
   }
 
   #footer {
-    background-color: hsl($hue, 60, 75);
+    background-color: lighten($basic, 25%);
   }
 
   a {
-    color: hsl($hue, 100, 24);
+    color: darken($basic, 10%);
 
     &:hover, &:focus {
-      color: hsl($hue, 100, 35);
+      color: darken($basic, 5%);
     }
   }
 }
 
-@mixin colored_menu_item($hue) {
-  color: hsl($hue, 88, 30);
-  background-color: hsl($hue, 60, 69);
+@mixin colored_menu_item($basic) {
+  color: darken($basic, 15%);
+  background-color: lighten($basic, 40%);
 
   &:active, &:focus {
-    background-color: hsl($hue, 60, 80);
+    background-color: lighten($basic, 20%);
   }
 }
 
@@ -69,6 +70,8 @@ button {
 {% for color in page.colors %}
   {% assign color_name = color[0] %}
   {% assign color_value = color[1] %}
+
+  /* {{ color_name }} {{ color_value }} */
 
   html.{{color_name}} { @include colored_html({{color_value}}); }
   #menu a.{{color_name}} { @include colored_menu_item({{color_value}}); }
