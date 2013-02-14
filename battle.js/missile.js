@@ -9,7 +9,6 @@ var Missile = function(klass, x, y, velx, vely, tank) {
 }
 
 Missile.prototype = {
-
 	/* draws missile to canvas and returns rectangle [x, y, w, h] where missile
 	 * was drawed */
 	draw: function(ctx) {
@@ -77,5 +76,4 @@ var MissileClass = function(name, obj) {
 			{ force: 150, size: 80, crater: 40, price: 150, def: 1, color: "#8f8" } )
 
 	];
-
 })(MissileClass);

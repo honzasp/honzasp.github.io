@@ -1,4 +1,3 @@
-
 /* Makes explosion of object obj */
 var Explosion = function(obj) {
 	this.timeToLive = Explosion.timeToLive;

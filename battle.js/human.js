@@ -29,4 +29,3 @@ Human.prototype.killed = function() {
 		Controls.setPlayer(null);
 	}
 };
-

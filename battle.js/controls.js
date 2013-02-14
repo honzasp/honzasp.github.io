@@ -1,6 +1,5 @@
 /* html interface between human and instance of Player */
 var Controls = {
-
 	actualizesPerSecond: 10,
 
 	/* initializes controls in BattleJS.element */
