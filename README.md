@@ -1,4 +1,4 @@
-wqa.wz.cz
+wqa.ic.cz
 =========
 
 This is a git repository of my personal sandbox web page
