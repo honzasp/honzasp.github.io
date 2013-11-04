@@ -1,0 +1,108 @@
+---
+layout: page
+title: Střelnice
+color: sea_green
+---
+<style type="text/css">
+  #strelnice p label {
+    display: inline-block;
+    width: 200px;
+  }
+
+  #strelnice #in-start {
+    padding: 10px 30px;
+    margin: 10px 20px;
+  }
+
+  #screen {
+    top: 0px;
+    left: 0px;
+    position: fixed;
+    z-index: 1;
+  }
+
+  #info-box {
+    position: absolute;
+    right: 20px;
+    text-align: right;
+  }
+
+  #result-box {
+    width: 300px;
+    height: 200px;
+    margin: 100px auto;
+    padding: 20px;
+    background-color: #eee;
+  }
+
+  #screen {
+    transition: background 0.1s;
+    -moz-transition: background 0.1s;
+    -webkit-transition: background 0.1s;
+    -o-transition: background 0.1s;
+  }
+</style>
+<script src="/js/jquery.js" type="text/javascript"></script>
+<script src="/strelnice/strelnice.js" type="text/javascript"></script>
+
+<div id="strelnice" class="app">
+	<noscript>
+		Váš prohlížeč nepodporuje JavaScript nebo ho máte vypnutý. To trochu vadí,
+		protože je potřeba :-(.
+	</noscript>
+
+  <form>
+    <p>
+      <label for="in-time">Čas (sekundy)</label>
+      <input type="number" id="in-time" value="60" min="1">
+    </p>
+
+    <p>
+      <label for="in-size">Velikost terče (px)</label>
+      <input type="number" id="in-size" value="20" min="1">
+    </p>
+
+    <p>
+      <input type="radio" value="left" id="in-button-left" name="in-button">
+      <label for="in-button-left">Levé tlačítko</label>
+    </p>
+
+    <p>
+      <input type="radio" value="middle" id="in-button-middle" name="in-button">
+      <label for="in-button-left">Prostřední tlačítko</label>
+    </p>
+
+    <p>
+      <input type="radio" value="right" id="in-button-right" name="in-button"
+      checked>
+      <label for="in-button-right">Pravé tlačítko</label>
+    </p>
+
+    <p>
+      <input type="button" value="Start" id="in-start">
+      (pro předčasné ukončení stiskněte Esc)
+    </p>
+  </form>
+
+  <div id="screen" style="display: none">
+    <div id="info-box">
+      <p><span class="hits"></span> sestřeleno</p>
+      <p><span class="miss"></span> minutí</p>
+    </div>
+
+    <canvas id="ball">
+      Váš prohlížeč nepodporuje značku <code>&lt;canvas&gt;</code>. Zkuste
+      použít novější prohlížeč.
+    </canvas>
+
+    <div id="result-box" style="display: none">
+      <p>Za <span class="time"></span>&nbsp;s jste sestřelili <span
+          class="hits"></span> terčů a minuli <span class="miss"></span> terčů
+        (<span class="hits_per_min"></span> zásahů za minutu) 
+      </p>
+
+      <button class="ok">Ok</button>
+    </div>
+  </div>
+</div>
+
