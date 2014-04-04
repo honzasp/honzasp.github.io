@@ -1,98 +1,129 @@
-define ["jquery", "map", "window", "tank", "collisions"], \
-($, Map, Window, Tank, Collisions) ->
-  class Game
-    @MAX_GARBAGE_RATIO = 0.5
+define ["jquery", "map", "window", "tank", "bullet", "collisions"], \
+($, Map, Window, Tank, Bullet, Collisions) ->
+  Game = {}
+  Game.MAX_GARBAGE_RATIO = 0.5
 
-    constructor: ($root, @settings) ->
-      @dom = {}
-      @dom.$root = $root
-      @dom.$main = $("<div />").appendTo(@dom.$root)
-      @dom.$canvas = $("<canvas />").appendTo(@dom.$main)
+  Game.init = ($root, settings) ->
+    game = 
+      dom: Game.init.prepareDom($root)
+      map: Game.init.createMap(settings)
+      tanks: Game.init.createTanks(settings)
+      bullets: []
+      size: {x: 800, y: 600}
+      events: undefined
+      tickLen: 1.0 / settings["fps"]
+      timer: undefined
 
-      @map = new Map(@settings["map width"], @settings["map height"])
-      for y in [2..20]
-        for x in [3..13]
-          @map.set(x, y, Map.ROCK)
-      @map.set(4, 3, Map.ROCK)
+    Game.resizeCanvas(game)
+    Game.rebindListeners(game)
+    game
 
-      @ctx = @dom.$canvas[0].getContext("2d")
-      @resize(800, 600)
+  Game.init.prepareDom = ($root) ->
+    $main = $("<div />").appendTo($root)
+    $canvas = $("<canvas />").appendTo($main)
+    ctx = $canvas[0].getContext("2d")
+    { $root, $main, $canvas, ctx}
 
-      @tanks = [new Tank(@, {x:1.8, y:2.0}), new Tank(@, {x:3.0, y:1.2})]
-      @bullets = []
+  Game.init.createMap = (settings) ->
+    map = Map.init(settings["map width"], settings["map height"])
+    for y in [2..20]
+      for x in [3..13]
+        Map.set(map, x, y, Map.ROCK)
+    Map.set(map, 4, 3, Map.STEEL)
+    map
 
-      $(document).keydown (evt) =>
-        switch evt.which
-          when 87 # w
-            @tanks[0].acc = 1
-          when 83 # s
-            @tanks[0].acc = -1
-          when 65 # a
-            @tanks[0].rot = 1
-          when 68 # d
-            @tanks[0].rot = -1
-          when 81 # q
-            @tanks[0].fire(@)
+  Game.init.createTanks = (settings) ->
+    [Tank.init(1.8, 2.0), Tank.init(3.0, 1.2)]
 
-      $(document).keyup (evt) =>
-        switch evt.which
-          when 87 # w
-            @tanks[0].acc = 0 if @tanks[0].acc > 0
-          when 83 # s
-            @tanks[0].acc = 0 if @tanks[0].acc < 0
-          when 65 # a
-            @tanks[0].rot = 0 if @tanks[0].rot > 0
-          when 68 # d
-            @tanks[0].rot = 0 if @tanks[0].rot < 0
+  Game.rebindListeners = (game) ->
+    Game.unbindListeners(game) if game.events?
+    game.events = Game.events(game)
+    $(document).on("keydown", game.events.keydown)
+    $(document).on("keyup", game.events.keyup)
 
-      @tickLen = 1.0 / @settings["fps"]
+  Game.unbindListeners = (game) ->
+    return unless game.events?
+    $(document).off("keydown", game.events.keydown)
+    $(document).off("keyup", game.events.keyup)
+    game.events = undefined
 
-    resize: (width, height) ->
-      @dom.$canvas.attr("width", width)
-      @dom.$canvas.attr("height", height)
-      @dim = { width, height }
+  Game.events = (game) ->
+    keydown: (evt) ->
+      switch evt.which
+        when 87 # w
+          game.tanks[0].acc = 1
+        when 83 # s
+          game.tanks[0].acc = -1
+        when 65 # a
+          game.tanks[0].rot = 1
+        when 68 # d
+          game.tanks[0].rot = -1
+        when 81 # q
+          Tank.fire(game.tanks[0], game)
 
-    tick: ->
-      @update(@tickLen)
-      @draw()
+    keyup: (evt) ->
+      switch evt.which
+        when 87 # w
+          game.tanks[0].acc = 0 if game.tanks[0].acc > 0
+        when 83 # s
+          game.tanks[0].acc = 0 if game.tanks[0].acc < 0
+        when 65 # a
+          game.tanks[0].rot = 0 if game.tanks[0].rot > 0
+        when 68 # d
+          game.tanks[0].rot = 0 if game.tanks[0].rot < 0
 
-    draw: ->
-      new Window(@, @tanks[0].pos, x: 0, y: 0, w: @dim.width, h: @dim.height, scale: 16)
+  Game.resizeCanvas = (game) ->
+    game.dom.$canvas.attr("width", game.size.x)
+    game.dom.$canvas.attr("height", game.size.y)
 
-    update: (t) ->
-      @updateTanks(t)
-      @updateBullets(t)
+  Game.start = (game) ->
+    Game.stop(game) if game.timer?
+    game.timer = setInterval((-> Game.tick(game)), game.tickLen * 1000)
 
-    updateBullets: (t) ->
-      deadCount = 0
-      for i in [0...@bullets.length]
-        unless @bullets[i].isDead
-          Collisions.bullet(@bullets[i], t, @map, @tanks)
-          @bullets[i].update(t)
-        else
-          deadCount += 1
+  Game.stop = (game) ->
+    clearInterval(game.timer) if game.timer?
+    game.timer = undefined
 
-      if deadCount > @bullets * Game.MAX_GARBAGE_RATIO
-        p = 0
-        for i in [0...@bullets.length]
-          unless @bullets[i].isDead
-            @bullets[p] = @bullets[i]
-            p = p + 1
-        @bullets.length = p
+  Game.tick = (game) ->
+    Game.update(game, game.tickLen)
+    Game.draw(game)
 
-    updateTanks: (t) ->
-      for i in [0...@tanks.length]
-        @tanks[i].update(t)
+  Game.draw = (game) ->
+    Window.draw(game, game.tanks[0].pos, x: 0, y: 0, w: game.size.x, h: game.size.y, scale: 16)
 
-      for i in [0...@tanks.length]
-        for j in [i+1...@tanks.length]
-          Collisions.tankTank(@tanks[i], @tanks[j])
+  Game.update = (game, t) ->
+    Game.updateTanks(game, t)
+    Game.updateBullets(game, t)
 
-      for i in [0...@tanks.length]
-        Collisions.tankMap(@tanks[i], @map)
+  Game.updateTanks = (game, t) ->
+    for i in [0...game.tanks.length]
+      Tank.move(game.tanks[i], t)
 
-      undefined
+    for i in [0...game.tanks.length]
+      for j in [i+1...game.tanks.length]
+        Collisions.tankTank(game.tanks[i], game.tanks[j])
 
-    start: ->
-      setInterval((=> @tick()), 1000 * @tickLen)
+    for i in [0...game.tanks.length]
+      Collisions.tankMap(game.tanks[i], game.map)
 
+    undefined
+
+  Game.updateBullets = (game, t) ->
+    bullets = game.bullets
+    dead = 0
+    for i in [0...bullets.length]
+      unless bullets[i].isDead
+        Collisions.bullet(bullets[i], t, game.map, game.tanks)
+        Bullet.move(bullets[i], t)
+      else
+        dead = dead + 1
+
+    if dead > bullets.length * Game.MAX_GARBAGE_RATIO
+      p = 0
+      for i in [0...bullets.length]
+        unless bullets[i].isDead
+          bullets[p] = bullets[i]
+          p = p + 1
+      bullets.length = p
+
+  Game

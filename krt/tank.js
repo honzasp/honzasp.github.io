@@ -2,102 +2,90 @@
 (function() {
   define(["map", "bullet"], function(Map, Bullet) {
     var Tank;
-    return Tank = (function() {
-      Tank.RADIUS = 0.45;
-
-      Tank.WALL_DISTANCE = 0.01;
-
-      Tank.MASS = 100;
-
-      Tank.FORCE = 1000;
-
-      Tank.FRICTION = 100;
-
-      Tank.ANGULAR_SPEED = 1.5 * Math.PI;
-
-      Tank.BUMP_FACTOR = 0.3;
-
-      Tank.BULLET_SPEED = 100;
-
-      Tank.BULLET_TIME = 2;
-
-      Tank.BULLET_DIST = 1.1;
-
-      function Tank(game, pos, angle) {
-        this.game = game;
-        this.pos = pos;
-        this.angle = angle != null ? angle : 0;
-        this.vel = {
+    Tank = {};
+    Tank.RADIUS = 0.45;
+    Tank.WALL_DISTANCE = 0.01;
+    Tank.MASS = 100;
+    Tank.FORCE = 1000;
+    Tank.FRICTION = 100;
+    Tank.ANGULAR_SPEED = 1.5 * Math.PI;
+    Tank.BUMP_FACTOR = 0.3;
+    Tank.BULLET_SPEED = 100;
+    Tank.BULLET_TIME = 2;
+    Tank.BULLET_DIST = 1.1;
+    Tank.init = function(x, y, angle) {
+      if (angle == null) {
+        angle = 0;
+      }
+      return {
+        pos: {
+          x: x,
+          y: y
+        },
+        angle: angle,
+        vel: {
           x: 0,
           y: 0
-        };
-        this.acc = 0;
-        this.rot = 0;
-      }
-
-      Tank.prototype.fire = function() {
-        var pos, relVel, vel;
-        pos = {
-          x: this.pos.x + Math.sin(this.angle) * Tank.RADIUS * Tank.BULLET_DIST,
-          y: this.pos.y + Math.cos(this.angle) * Tank.RADIUS * Tank.BULLET_DIST
-        };
-        relVel = {
-          x: Math.sin(this.angle) * Tank.BULLET_SPEED,
-          y: Math.cos(this.angle) * Tank.BULLET_SPEED
-        };
-        vel = {
-          x: relVel.x + this.vel.x,
-          y: relVel.y + this.vel.y
-        };
-        return this.game.bullets.push(new Bullet(this.game, pos, vel, Tank.BULLET_TIME));
+        },
+        acc: 0,
+        rot: 0
       };
-
-      Tank.prototype.impulse = function(imp) {
-        return this.vel = {
-          x: this.vel.x + imp.x / Tank.MASS,
-          y: this.vel.y + imp.y / Tank.MASS
-        };
+    };
+    Tank.fire = function(tank, game) {
+      var pos, relVel, vel;
+      pos = {
+        x: tank.pos.x + Math.sin(tank.angle) * Tank.RADIUS * Tank.BULLET_DIST,
+        y: tank.pos.y + Math.cos(tank.angle) * Tank.RADIUS * Tank.BULLET_DIST
       };
-
-      Tank.prototype.update = function(t) {
-        var force;
-        force = {
-          x: -this.vel.x * Tank.FRICTION + this.acc * Math.sin(this.angle) * Tank.FORCE,
-          y: -this.vel.y * Tank.FRICTION + this.acc * Math.cos(this.angle) * Tank.FORCE
-        };
-        this.vel = {
-          x: this.vel.x + force.x * t / Tank.MASS,
-          y: this.vel.y + force.y * t / Tank.MASS
-        };
-        this.pos = {
-          x: this.pos.x + this.vel.x * t,
-          y: this.pos.y + this.vel.y * t
-        };
-        return this.angle = this.angle + this.rot * Tank.ANGULAR_SPEED * t;
+      relVel = {
+        x: Math.sin(tank.angle) * Tank.BULLET_SPEED,
+        y: Math.cos(tank.angle) * Tank.BULLET_SPEED
       };
-
-      Tank.prototype.draw = function(ctx) {
-        ctx.save();
-        ctx.translate(this.pos.x, this.pos.y);
-        ctx.rotate(-this.angle);
-        ctx.scale(Tank.RADIUS, Tank.RADIUS);
-        ctx.beginPath();
-        ctx.arc(0, 0, 1.0, 0, Math.PI * 2);
-        ctx.fillStyle = "#833";
-        ctx.fill();
-        ctx.beginPath();
-        ctx.moveTo(0.0, 0.6);
-        ctx.lineTo(-0.4, -0.4);
-        ctx.lineTo(0.4, -0.4);
-        ctx.lineTo(0.0, 0.6);
-        ctx.fillStyle = "#333";
-        ctx.fill();
-        return ctx.restore();
+      vel = {
+        x: relVel.x + tank.vel.x,
+        y: relVel.y + tank.vel.y
       };
-
-      return Tank;
-
-    })();
+      game.bullets.push(Bullet.init(pos, vel, Tank.BULLET_TIME));
+      return Tank.impulse(tank, {
+        x: -relVel.x * Bullet.MASS,
+        y: -relVel.y * Bullet.MASS
+      });
+    };
+    Tank.impulse = function(tank, imp) {
+      tank.vel.x += imp.x / Tank.MASS;
+      return tank.vel.y += imp.y / Tank.MASS;
+    };
+    Tank.move = function(tank, t) {
+      var force;
+      force = {
+        x: -tank.vel.x * Tank.FRICTION + tank.acc * Math.sin(tank.angle) * Tank.FORCE,
+        y: -tank.vel.y * Tank.FRICTION + tank.acc * Math.cos(tank.angle) * Tank.FORCE
+      };
+      tank.vel.x += force.x * t / Tank.MASS;
+      tank.vel.y += force.y * t / Tank.MASS;
+      tank.pos.x += tank.vel.x * t;
+      tank.pos.y += tank.vel.y * t;
+      return tank.angle += tank.rot * Tank.ANGULAR_SPEED * t;
+    };
+    Tank.draw = function(tank, ctx) {
+      ctx.save();
+      ctx.translate(tank.pos.x, tank.pos.y);
+      ctx.rotate(-tank.angle);
+      ctx.scale(Tank.RADIUS, Tank.RADIUS);
+      ctx.beginPath();
+      ctx.arc(0, 0, 1.0, 0, Math.PI * 2);
+      ctx.fillStyle = "#833";
+      ctx.fill();
+      ctx.beginPath();
+      ctx.moveTo(0.0, 0.6);
+      ctx.lineTo(-0.4, -0.4);
+      ctx.lineTo(0.4, -0.4);
+      ctx.lineTo(0.0, 0.6);
+      ctx.fillStyle = "#333";
+      ctx.fill();
+      return ctx.restore();
+    };
+    return Tank;
   });
 
 }).call(this);

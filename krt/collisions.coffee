@@ -44,7 +44,7 @@ define ["map", "tank", "bullet"], (Map, Tank, Bullet) ->
             pos.y += d.y + Math.sqrt(r*r - d.x*d.x)
 
     isFull = (x, y) ->
-      map.get(x, y) != Map.EMPTY
+      !Map.contains(map, x, y) or Map.get(map, x, y) != Map.EMPTY
 
     for x in [Math.floor(pos.x - r) .. Math.floor(pos.x + r)]
       for y in [Math.floor(pos.y - r) .. Math.floor(pos.y + r)]
@@ -95,7 +95,7 @@ define ["map", "tank", "bullet"], (Map, Tank, Bullet) ->
       unless mapX >= 0 and mapX < map.width and mapY >= 0 and mapY < map.height
         wallHit = {d:Infinity, pos: {x,y}}
       else
-        return if map.get(mapX, mapY) == Map.EMPTY
+        return if Map.get(map, mapX, mapY) == Map.EMPTY
         if !wallHit or d < wallHit.d
           wallHit = {d, pos: {x,y}, map: {x:mapX, y:mapY}}
 
@@ -183,9 +183,9 @@ define ["map", "tank", "bullet"], (Map, Tank, Bullet) ->
     if nearestHit
       bullet.isDead = true
       if (m = nearestHit.map)?
-        map.set(m.x, m.y, Map.EMPTY)
+        Map.set(map, m.x, m.y, Map.EMPTY)
       if (t = nearestHit.tank)?
-        t.impulse(x: bullet.vel.x * Bullet.MASS, y: bullet.vel.y * Bullet.MASS)
+        Tank.impulse(t, x: bullet.vel.x * Bullet.MASS, y: bullet.vel.y * Bullet.MASS)
 
     undefined
 

@@ -67,7 +67,7 @@
         }
       };
       isFull = function(x, y) {
-        return map.get(x, y) !== Map.EMPTY;
+        return !Map.contains(map, x, y) || Map.get(map, x, y) !== Map.EMPTY;
       };
       for (x = _i = _ref = Math.floor(pos.x - r), _ref1 = Math.floor(pos.x + r); _ref <= _ref1 ? _i <= _ref1 : _i >= _ref1; x = _ref <= _ref1 ? ++_i : --_i) {
         for (y = _j = _ref2 = Math.floor(pos.y - r), _ref3 = Math.floor(pos.y + r); _ref2 <= _ref3 ? _j <= _ref3 : _j >= _ref3; y = _ref2 <= _ref3 ? ++_j : --_j) {
@@ -134,7 +134,7 @@
             }
           };
         } else {
-          if (map.get(mapX, mapY) === Map.EMPTY) {
+          if (Map.get(map, mapX, mapY) === Map.EMPTY) {
             return;
           }
           if (!wallHit || d < wallHit.d) {
@@ -268,10 +268,10 @@
       if (nearestHit) {
         bullet.isDead = true;
         if ((m = nearestHit.map) != null) {
-          map.set(m.x, m.y, Map.EMPTY);
+          Map.set(map, m.x, m.y, Map.EMPTY);
         }
         if ((t = nearestHit.tank) != null) {
-          t.impulse({
+          Tank.impulse(t, {
             x: bullet.vel.x * Bullet.MASS,
             y: bullet.vel.y * Bullet.MASS
           });

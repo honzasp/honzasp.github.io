@@ -13,5 +13,5 @@ define ["jquery", "game"], ($, Game) ->
         "map height": 50
 
       if !@game?
-        @game = new Game(@$root, settings)
-        @game.start()
+        @game = Game.init(@$root, settings)
+        Game.start(@game)

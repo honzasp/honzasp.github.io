@@ -21,8 +21,8 @@
           "map height": 50
         };
         if (this.game == null) {
-          this.game = new Game(this.$root, settings);
-          return this.game.start();
+          this.game = Game.init(this.$root, settings);
+          return Game.start(this.game);
         }
       };
 

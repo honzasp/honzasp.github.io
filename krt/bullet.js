@@ -2,40 +2,31 @@
 (function() {
   define([], function() {
     var Bullet;
-    return Bullet = (function() {
-      Bullet.RADIUS = 0.1;
-
-      Bullet.DESTROY_PROB = 0.2;
-
-      Bullet.MASS = 2;
-
-      function Bullet(game, pos, vel, time) {
-        this.game = game;
-        this.pos = pos;
-        this.vel = vel;
-        this.time = time;
-      }
-
-      Bullet.prototype.update = function(t) {
-        this.time = this.time - t;
-        if (this.time < 0) {
-          this.isDead = true;
-          return;
-        }
-        this.pos.x = this.pos.x + this.vel.x * t;
-        return this.pos.y = this.pos.y + this.vel.y * t;
+    Bullet = {};
+    Bullet.RADIUS = 0.1;
+    Bullet.DESTROY_PROB = 0.2;
+    Bullet.MASS = 2;
+    Bullet.init = function(pos, vel, time) {
+      return {
+        pos: pos,
+        vel: vel,
+        time: time,
+        isDead: false
       };
-
-      Bullet.prototype.draw = function(ctx) {
-        ctx.beginPath();
-        ctx.arc(this.pos.x, this.pos.y, Bullet.RADIUS, 0, 2 * Math.PI);
-        ctx.fillStyle = "#f00";
-        return ctx.fill();
-      };
-
-      return Bullet;
-
-    })();
+    };
+    Bullet.move = function(bullet, t) {
+      bullet.time -= t;
+      bullet.isDead || (bullet.isDead = bullet.time < 0);
+      bullet.pos.x += bullet.vel.x * t;
+      return bullet.pos.y += bullet.vel.y * t;
+    };
+    Bullet.draw = function(bullet, ctx) {
+      ctx.beginPath();
+      ctx.arc(bullet.pos.x, bullet.pos.y, Bullet.RADIUS, 0, 2 * Math.PI);
+      ctx.fillStyle = "#f00";
+      return ctx.fill();
+    };
+    return Bullet;
   });
 
 }).call(this);
