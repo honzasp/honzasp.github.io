@@ -21,9 +21,6 @@
       drawObjects = function() {
         var i, _i, _j, _ref, _ref1;
         ctx.save();
-        ctx.translate(dim.w * 0.5, dim.h * 0.5);
-        ctx.scale(dim.scale, dim.scale);
-        ctx.translate(-center.x, -center.y);
         for (i = _i = 0, _ref = game.tanks.length; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
           Tank.draw(game.tanks[i], ctx);
         }
@@ -55,16 +52,19 @@
         return void 0;
       };
       drawTile = function(pos) {
-        var winPos;
-        winPos = mapToWin(pos);
-        ctx.fillStyle = Map.contains(game.map, pos.x, pos.y) ? tileColor(Map.get(game.map, pos.x, pos.y)) : tileColor(Map.VOID);
-        return ctx.fillRect(winPos.x, winPos.y, dim.scale + 0.5, dim.scale + 0.5);
+        ctx.fillStyle = Map.contains(game.map, pos.x, pos.y) ? tileColor(Map.get(game.map, pos.x, pos.y)) : "#000";
+        return ctx.fillRect(pos.x, pos.y, 1, 1);
       };
       ctx.save();
       ctx.translate(dim.x, dim.y);
+      ctx.strokeStyle = "#ddd";
+      ctx.strokeRect(0, 0, dim.w, dim.h);
       ctx.beginPath();
       ctx.rect(0, 0, dim.w, dim.h);
       ctx.clip();
+      ctx.translate(dim.w * 0.5, dim.h * 0.5);
+      ctx.scale(dim.scale, dim.scale);
+      ctx.translate(-center.x, -center.y);
       drawTiles();
       drawObjects();
       return ctx.restore();
@@ -73,12 +73,12 @@
       switch (tile) {
         case Map.EMPTY:
           return "#333";
+        case Map.STEEL:
+          return "#558";
         case Map.ROCK:
           return "#aaa";
         case Map.CONCRETE:
           return "#ccc";
-        case Map.VOID:
-          return "#000";
         default:
           return "#f00";
       }

@@ -1,17 +1,39 @@
 define ["jquery", "game"], ($, Game) ->
-  class Menu
-    constructor: (@$root) ->
-      @$menu = $("<div></div>").appendTo(@$root)
-      @$playBtn = $("<button>Play</button>").appendTo(@$menu)
+  Menu = {}
 
-      @$playBtn.click => @play()
+  Menu.init = ($root) ->
+    menu =
+      dom: Menu.init.prepareDom($root)
+      game: undefined
 
-    play: ->
-      settings = 
-        "fps": 30
-        "map width": 100
-        "map height": 50
+    Menu.init.bindListeners(menu)
+    menu
 
-      if !@game?
-        @game = Game.init(@$root, settings)
-        Game.start(@game)
+  Menu.init.prepareDom = ($root) ->
+    $main = $("<div />").appendTo($root)
+    $playBtn = $("<input type='button' value='Play' name='play'>").appendTo($main)
+    $playerCountInp = $("<input type='text' value='2' name='player-count'>").appendTo($main)
+
+    { $root, $main, $playBtn, $playerCountInp }
+
+  Menu.init.bindListeners = (menu) ->
+    menu.dom.$playBtn.click ->
+      Menu.play(menu)
+
+  Menu.play = (menu) ->
+    playerCount = Math.floor(menu.dom.$playerCountInp.val() * 1)
+    unless playerCount >= 1 and playerCount <= 4
+      Menu.error("Please select one to four players")
+      return
+
+    settings = 
+      fps: 30
+      mapWidth: 100
+      mapHeight: 50
+      playerCount: playerCount
+
+    if !menu.game?
+      menu.game = Game.init(menu.dom.$root, settings)
+      Game.start(menu.game)
+
+  Menu

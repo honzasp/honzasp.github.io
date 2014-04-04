@@ -13,9 +13,6 @@ define ["map", "tank", "bullet"], (Map, Tank, Bullet) ->
 
     drawObjects = ->
       ctx.save()
-      ctx.translate(dim.w * 0.5, dim.h * 0.5)
-      ctx.scale(dim.scale, dim.scale)
-      ctx.translate(-center.x, -center.y)
 
       for i in [0...game.tanks.length]
         Tank.draw(game.tanks[i], ctx)
@@ -36,18 +33,25 @@ define ["map", "tank", "bullet"], (Map, Tank, Bullet) ->
       undefined
 
     drawTile = (pos) ->
-      winPos = mapToWin(pos)
       ctx.fillStyle = if Map.contains(game.map, pos.x, pos.y)
           tileColor(Map.get(game.map, pos.x, pos.y))
         else
-          tileColor(Map.VOID)
-      ctx.fillRect(winPos.x, winPos.y, dim.scale+0.5, dim.scale+0.5)
+          "#000"
+      ctx.fillRect(pos.x, pos.y, 1, 1)
 
     ctx.save()
     ctx.translate(dim.x, dim.y)
+
+    ctx.strokeStyle = "#ddd"
+    ctx.strokeRect(0, 0, dim.w, dim.h)
+
     ctx.beginPath()
     ctx.rect(0, 0, dim.w, dim.h)
     ctx.clip()
+
+    ctx.translate(dim.w * 0.5, dim.h * 0.5)
+    ctx.scale(dim.scale, dim.scale)
+    ctx.translate(-center.x, -center.y)
 
     drawTiles()
     drawObjects()
@@ -58,12 +62,12 @@ define ["map", "tank", "bullet"], (Map, Tank, Bullet) ->
     switch tile
       when Map.EMPTY
         "#333"
+      when Map.STEEL
+        "#558"
       when Map.ROCK
         "#aaa"
       when Map.CONCRETE
         "#ccc"
-      when Map.VOID
-        "#000"
       else
         "#f00"
 

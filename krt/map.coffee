@@ -13,7 +13,6 @@ define [], ->
   Map.ROCK = 1
   Map.CONCRETE = 2
   Map.STEEL = 3
-  Map.VOID = 255
 
   Map.get = (map, x, y) ->
     throw new Error("position out of map") unless Map.contains(map, x, y)

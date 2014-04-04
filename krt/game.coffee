@@ -13,6 +13,7 @@ define ["jquery", "map", "window", "tank", "bullet", "collisions"], \
       events: undefined
       tickLen: 1.0 / settings["fps"]
       timer: undefined
+      playerCount: settings.playerCount
 
     Game.resizeCanvas(game)
     Game.rebindListeners(game)
@@ -25,7 +26,7 @@ define ["jquery", "map", "window", "tank", "bullet", "collisions"], \
     { $root, $main, $canvas, ctx}
 
   Game.init.createMap = (settings) ->
-    map = Map.init(settings["map width"], settings["map height"])
+    map = Map.init(settings.mapWidth, settings.mapHeight)
     for y in [2..20]
       for x in [3..13]
         Map.set(map, x, y, Map.ROCK)
@@ -33,7 +34,7 @@ define ["jquery", "map", "window", "tank", "bullet", "collisions"], \
     map
 
   Game.init.createTanks = (settings) ->
-    [Tank.init(1.8, 2.0), Tank.init(3.0, 1.2)]
+    Tank.init(2 + 3*i, 1.5) for i in [0...settings.playerCount]
 
   Game.rebindListeners = (game) ->
     Game.unbindListeners(game) if game.events?
@@ -89,7 +90,33 @@ define ["jquery", "map", "window", "tank", "bullet", "collisions"], \
     Game.draw(game)
 
   Game.draw = (game) ->
-    Window.draw(game, game.tanks[0].pos, x: 0, y: 0, w: game.size.x, h: game.size.y, scale: 16)
+    switch game.playerCount
+      when 1
+        Window.draw(game, game.tanks[0].pos,
+          x: 0, y: 0, w: game.size.x, h: game.size.y, scale: 16)
+      when 2
+        Window.draw(game, game.tanks[0].pos,
+          x: 0, y: 0, w: game.size.x / 2, h: game.size.y, scale: 14)
+        Window.draw(game, game.tanks[1].pos,
+          x: game.size.x / 2, y: 0, w: game.size.x / 2, h: game.size.y, scale: 14)
+      when 3
+        Window.draw(game, game.tanks[0].pos,
+          x: 0, y: 0, w: game.size.x / 3, h: game.size.y, scale: 13)
+        Window.draw(game, game.tanks[1].pos,
+          x: game.size.x / 3, y: 0, w: game.size.x / 3, h: game.size.y, scale: 13)
+        Window.draw(game, game.tanks[2].pos,
+          x: 2 *game.size.x / 3, y: 0, w: game.size.x / 3, h: game.size.y, scale: 13)
+      when 4
+        Window.draw(game, game.tanks[0].pos,
+          x: 0, y: 0, w: game.size.x / 2, h: game.size.y / 2, scale: 12)
+        Window.draw(game, game.tanks[1].pos,
+          x: game.size.x / 2, y: 0, w: game.size.x / 2, h: game.size.y / 2, scale: 12)
+        Window.draw(game, game.tanks[2].pos,
+          x: 0, y: game.size.y / 2, w: game.size.x / 2, h: game.size.y / 2, scale: 12)
+        Window.draw(game, game.tanks[3].pos,
+          x: game.size.x / 2, y: game.size.y / 2, w: game.size.x / 2, h: game.size.y / 2, scale: 12)
+      else
+        throw new Error("Unknown layout for given count of players")
 
   Game.update = (game, t) ->
     Game.updateTanks(game, t)

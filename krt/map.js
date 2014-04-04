@@ -23,7 +23,6 @@
     Map.ROCK = 1;
     Map.CONCRETE = 2;
     Map.STEEL = 3;
-    Map.VOID = 255;
     Map.get = function(map, x, y) {
       if (!Map.contains(map, x, y)) {
         throw new Error("position out of map");

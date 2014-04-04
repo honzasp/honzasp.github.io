@@ -2,33 +2,52 @@
 (function() {
   define(["jquery", "game"], function($, Game) {
     var Menu;
-    return Menu = (function() {
-      function Menu($root) {
-        var _this = this;
-        this.$root = $root;
-        this.$menu = $("<div></div>").appendTo(this.$root);
-        this.$playBtn = $("<button>Play</button>").appendTo(this.$menu);
-        this.$playBtn.click(function() {
-          return _this.play();
-        });
-      }
-
-      Menu.prototype.play = function() {
-        var settings;
-        settings = {
-          "fps": 30,
-          "map width": 100,
-          "map height": 50
-        };
-        if (this.game == null) {
-          this.game = Game.init(this.$root, settings);
-          return Game.start(this.game);
-        }
+    Menu = {};
+    Menu.init = function($root) {
+      var menu;
+      menu = {
+        dom: Menu.init.prepareDom($root),
+        game: void 0
       };
-
-      return Menu;
-
-    })();
+      Menu.init.bindListeners(menu);
+      return menu;
+    };
+    Menu.init.prepareDom = function($root) {
+      var $main, $playBtn, $playerCountInp;
+      $main = $("<div />").appendTo($root);
+      $playBtn = $("<input type='button' value='Play' name='play'>").appendTo($main);
+      $playerCountInp = $("<input type='text' value='2' name='player-count'>").appendTo($main);
+      return {
+        $root: $root,
+        $main: $main,
+        $playBtn: $playBtn,
+        $playerCountInp: $playerCountInp
+      };
+    };
+    Menu.init.bindListeners = function(menu) {
+      return menu.dom.$playBtn.click(function() {
+        return Menu.play(menu);
+      });
+    };
+    Menu.play = function(menu) {
+      var playerCount, settings;
+      playerCount = Math.floor(menu.dom.$playerCountInp.val() * 1);
+      if (!(playerCount >= 1 && playerCount <= 4)) {
+        Menu.error("Please select one to four players");
+        return;
+      }
+      settings = {
+        fps: 30,
+        mapWidth: 100,
+        mapHeight: 50,
+        playerCount: playerCount
+      };
+      if (menu.game == null) {
+        menu.game = Game.init(menu.dom.$root, settings);
+        return Game.start(menu.game);
+      }
+    };
+    return Menu;
   });
 
 }).call(this);

@@ -17,7 +17,8 @@
         },
         events: void 0,
         tickLen: 1.0 / settings["fps"],
-        timer: void 0
+        timer: void 0,
+        playerCount: settings.playerCount
       };
       Game.resizeCanvas(game);
       Game.rebindListeners(game);
@@ -37,7 +38,7 @@
     };
     Game.init.createMap = function(settings) {
       var map, x, y, _i, _j;
-      map = Map.init(settings["map width"], settings["map height"]);
+      map = Map.init(settings.mapWidth, settings.mapHeight);
       for (y = _i = 2; _i <= 20; y = ++_i) {
         for (x = _j = 3; _j <= 13; x = ++_j) {
           Map.set(map, x, y, Map.ROCK);
@@ -47,7 +48,12 @@
       return map;
     };
     Game.init.createTanks = function(settings) {
-      return [Tank.init(1.8, 2.0), Tank.init(3.0, 1.2)];
+      var i, _i, _ref, _results;
+      _results = [];
+      for (i = _i = 0, _ref = settings.playerCount; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
+        _results.push(Tank.init(2 + 3 * i, 1.5));
+      }
+      return _results;
     };
     Game.rebindListeners = function(game) {
       if (game.events != null) {
@@ -129,13 +135,84 @@
       return Game.draw(game);
     };
     Game.draw = function(game) {
-      return Window.draw(game, game.tanks[0].pos, {
-        x: 0,
-        y: 0,
-        w: game.size.x,
-        h: game.size.y,
-        scale: 16
-      });
+      switch (game.playerCount) {
+        case 1:
+          return Window.draw(game, game.tanks[0].pos, {
+            x: 0,
+            y: 0,
+            w: game.size.x,
+            h: game.size.y,
+            scale: 16
+          });
+        case 2:
+          Window.draw(game, game.tanks[0].pos, {
+            x: 0,
+            y: 0,
+            w: game.size.x / 2,
+            h: game.size.y,
+            scale: 14
+          });
+          return Window.draw(game, game.tanks[1].pos, {
+            x: game.size.x / 2,
+            y: 0,
+            w: game.size.x / 2,
+            h: game.size.y,
+            scale: 14
+          });
+        case 3:
+          Window.draw(game, game.tanks[0].pos, {
+            x: 0,
+            y: 0,
+            w: game.size.x / 3,
+            h: game.size.y,
+            scale: 13
+          });
+          Window.draw(game, game.tanks[1].pos, {
+            x: game.size.x / 3,
+            y: 0,
+            w: game.size.x / 3,
+            h: game.size.y,
+            scale: 13
+          });
+          return Window.draw(game, game.tanks[2].pos, {
+            x: 2 * game.size.x / 3,
+            y: 0,
+            w: game.size.x / 3,
+            h: game.size.y,
+            scale: 13
+          });
+        case 4:
+          Window.draw(game, game.tanks[0].pos, {
+            x: 0,
+            y: 0,
+            w: game.size.x / 2,
+            h: game.size.y / 2,
+            scale: 12
+          });
+          Window.draw(game, game.tanks[1].pos, {
+            x: game.size.x / 2,
+            y: 0,
+            w: game.size.x / 2,
+            h: game.size.y / 2,
+            scale: 12
+          });
+          Window.draw(game, game.tanks[2].pos, {
+            x: 0,
+            y: game.size.y / 2,
+            w: game.size.x / 2,
+            h: game.size.y / 2,
+            scale: 12
+          });
+          return Window.draw(game, game.tanks[3].pos, {
+            x: game.size.x / 2,
+            y: game.size.y / 2,
+            w: game.size.x / 2,
+            h: game.size.y / 2,
+            scale: 12
+          });
+        default:
+          throw new Error("Unknown layout for given count of players");
+      }
     };
     Game.update = function(game, t) {
       Game.updateTanks(game, t);
