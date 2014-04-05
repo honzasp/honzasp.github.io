@@ -23,6 +23,30 @@
     Map.ROCK = 1;
     Map.CONCRETE = 2;
     Map.STEEL = 3;
+    Map.TITANIUM = 4;
+    Map.squares = [];
+    Map.squares[Map.EMPTY] = {
+      color: "#333"
+    };
+    Map.squares[Map.ROCK] = {
+      color: "#aaa",
+      toughness: 0.4
+    };
+    Map.squares[Map.CONCRETE] = {
+      color: "#ccc",
+      toughness: 0.8
+    };
+    Map.squares[Map.STEEL] = {
+      color: "#669",
+      toughness: 0.9
+    };
+    Map.squares[Map.TITANIUM] = {
+      color: "#558",
+      toughness: 0.99
+    };
+    Map.voidSquare = {
+      color: "#000"
+    };
     Map.get = function(map, x, y) {
       if (!Map.contains(map, x, y)) {
         throw new Error("position out of map");

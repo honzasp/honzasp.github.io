@@ -1,5 +1,8 @@
 define ["map", "tank", "bullet"], (Map, Tank, Bullet) ->
   Window = {}
+
+  Window.borderColor = "#aaa"
+
   Window.draw = (game, center, dim) ->
     ctx = game.dom.ctx
 
@@ -34,15 +37,15 @@ define ["map", "tank", "bullet"], (Map, Tank, Bullet) ->
 
     drawTile = (pos) ->
       ctx.fillStyle = if Map.contains(game.map, pos.x, pos.y)
-          tileColor(Map.get(game.map, pos.x, pos.y))
+          Map.squares[Map.get(game.map, pos.x, pos.y)]?.color || "#f0f"
         else
-          "#000"
+          Map.voidSquare.color
       ctx.fillRect(pos.x, pos.y, 1, 1)
 
     ctx.save()
     ctx.translate(dim.x, dim.y)
 
-    ctx.strokeStyle = "#ddd"
+    ctx.strokeStyle = Window.borderColor
     ctx.strokeRect(0, 0, dim.w, dim.h)
 
     ctx.beginPath()
@@ -57,18 +60,5 @@ define ["map", "tank", "bullet"], (Map, Tank, Bullet) ->
     drawObjects()
 
     ctx.restore()
-
-  tileColor = (tile) ->
-    switch tile
-      when Map.EMPTY
-        "#333"
-      when Map.STEEL
-        "#558"
-      when Map.ROCK
-        "#aaa"
-      when Map.CONCRETE
-        "#ccc"
-      else
-        "#f00"
 
   Window

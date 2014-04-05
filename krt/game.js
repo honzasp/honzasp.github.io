@@ -4,12 +4,15 @@
     var Game;
     Game = {};
     Game.MAX_GARBAGE_RATIO = 0.5;
+    Game.BASE_SIZE = 8;
+    Game.BASE_DOOR_SIZE = 2;
     Game.init = function($root, settings) {
-      var game;
+      var game, playerInits;
+      playerInits = Game.init.createPlayers(settings);
       game = {
         dom: Game.init.prepareDom($root),
-        map: Game.init.createMap(settings),
-        tanks: Game.init.createTanks(settings),
+        map: Game.init.createMap(settings, playerInits),
+        tanks: Game.init.createTanks(settings, playerInits),
         bullets: [],
         size: {
           x: 800,
@@ -36,8 +39,21 @@
         ctx: ctx
       };
     };
-    Game.init.createMap = function(settings) {
-      var map, x, y, _i, _j;
+    Game.init.createPlayers = function(settings) {
+      var i, x, y, _i, _ref, _results;
+      _results = [];
+      for (i = _i = 0, _ref = settings.playerCount; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
+        x = Math.floor(Math.random() * (settings.mapWidth - Game.BASE_SIZE));
+        y = Math.floor(Math.random() * (settings.mapHeight - Game.BASE_SIZE));
+        _results.push({
+          x: x,
+          y: y
+        });
+      }
+      return _results;
+    };
+    Game.init.createMap = function(settings, playerInits) {
+      var dx, i, j, map, playerInit, s, x, y, _i, _j, _k, _l, _len, _m, _n, _o, _ref, _ref1, _ref2;
       map = Map.init(settings.mapWidth, settings.mapHeight);
       for (y = _i = 2; _i <= 20; y = ++_i) {
         for (x = _j = 3; _j <= 13; x = ++_j) {
@@ -45,13 +61,35 @@
         }
       }
       Map.set(map, 4, 3, Map.STEEL);
+      for (_k = 0, _len = playerInits.length; _k < _len; _k++) {
+        playerInit = playerInits[_k];
+        x = playerInit.x, y = playerInit.y;
+        s = Game.BASE_SIZE;
+        for (i = _l = 0; 0 <= s ? _l < s : _l > s; i = 0 <= s ? ++_l : --_l) {
+          Map.set(map, x + i, y, Map.TITANIUM);
+          Map.set(map, x + i, y + s - 1, Map.TITANIUM);
+          Map.set(map, x, y + i, Map.TITANIUM);
+          Map.set(map, x + s - 1, y + i, Map.TITANIUM);
+        }
+        for (i = _m = 1, _ref = s - 1; 1 <= _ref ? _m < _ref : _m > _ref; i = 1 <= _ref ? ++_m : --_m) {
+          for (j = _n = 1, _ref1 = s - 1; 1 <= _ref1 ? _n < _ref1 : _n > _ref1; j = 1 <= _ref1 ? ++_n : --_n) {
+            Map.set(map, x + i, y + j, Map.EMPTY);
+          }
+        }
+        for (i = _o = 0, _ref2 = Game.BASE_DOOR_SIZE; 0 <= _ref2 ? _o < _ref2 : _o > _ref2; i = 0 <= _ref2 ? ++_o : --_o) {
+          dx = x + Math.floor(s / 2 - Game.BASE_DOOR_SIZE / 2) + i;
+          Map.set(map, dx, y, Map.EMPTY);
+          Map.set(map, dx, y + s - 1, Map.EMPTY);
+        }
+      }
       return map;
     };
-    Game.init.createTanks = function(settings) {
-      var i, _i, _ref, _results;
+    Game.init.createTanks = function(settings, playerInits) {
+      var x, y, _i, _len, _ref, _results;
       _results = [];
-      for (i = _i = 0, _ref = settings.playerCount; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
-        _results.push(Tank.init(2 + 3 * i, 1.5));
+      for (_i = 0, _len = playerInits.length; _i < _len; _i++) {
+        _ref = playerInits[_i], x = _ref.x, y = _ref.y;
+        _results.push(Tank.init(x + Game.BASE_SIZE / 2, y + Game.BASE_SIZE / 2));
       }
       return _results;
     };

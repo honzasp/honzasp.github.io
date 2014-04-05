@@ -2,12 +2,15 @@ define ["jquery", "map", "window", "tank", "bullet", "collisions"], \
 ($, Map, Window, Tank, Bullet, Collisions) ->
   Game = {}
   Game.MAX_GARBAGE_RATIO = 0.5
+  Game.BASE_SIZE = 8
+  Game.BASE_DOOR_SIZE = 2
 
   Game.init = ($root, settings) ->
+    playerInits = Game.init.createPlayers(settings)
     game = 
       dom: Game.init.prepareDom($root)
-      map: Game.init.createMap(settings)
-      tanks: Game.init.createTanks(settings)
+      map: Game.init.createMap(settings, playerInits)
+      tanks: Game.init.createTanks(settings, playerInits)
       bullets: []
       size: {x: 800, y: 600}
       events: undefined
@@ -25,16 +28,43 @@ define ["jquery", "map", "window", "tank", "bullet", "collisions"], \
     ctx = $canvas[0].getContext("2d")
     { $root, $main, $canvas, ctx}
 
-  Game.init.createMap = (settings) ->
+  Game.init.createPlayers = (settings) ->
+    for i in [0...settings.playerCount]
+      x = Math.floor(Math.random() * (settings.mapWidth - Game.BASE_SIZE))
+      y = Math.floor(Math.random() * (settings.mapHeight - Game.BASE_SIZE))
+      {x, y}
+
+  Game.init.createMap = (settings, playerInits) ->
     map = Map.init(settings.mapWidth, settings.mapHeight)
     for y in [2..20]
       for x in [3..13]
         Map.set(map, x, y, Map.ROCK)
     Map.set(map, 4, 3, Map.STEEL)
+
+    for playerInit in playerInits
+      {x, y} = playerInit
+      s = Game.BASE_SIZE
+
+      for i in [0...s]
+        Map.set(map, x+i, y, Map.TITANIUM)
+        Map.set(map, x+i, y+s-1, Map.TITANIUM)
+        Map.set(map, x, y+i, Map.TITANIUM)
+        Map.set(map, x+s-1, y+i, Map.TITANIUM)
+
+      for i in [1...s-1]
+        for j in [1...s-1]
+          Map.set(map, x+i, y+j, Map.EMPTY)
+
+      for i in [0...Game.BASE_DOOR_SIZE]
+        dx = x + Math.floor(s / 2 - Game.BASE_DOOR_SIZE / 2) + i
+        Map.set(map, dx, y, Map.EMPTY)
+        Map.set(map, dx, y+s-1, Map.EMPTY)
+
     map
 
-  Game.init.createTanks = (settings) ->
-    Tank.init(2 + 3*i, 1.5) for i in [0...settings.playerCount]
+  Game.init.createTanks = (settings, playerInits) ->
+    for {x, y} in playerInits
+      Tank.init(x+Game.BASE_SIZE/2, y+Game.BASE_SIZE/2)
 
   Game.rebindListeners = (game) ->
     Game.unbindListeners(game) if game.events?
