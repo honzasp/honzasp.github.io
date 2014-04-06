@@ -22,28 +22,30 @@
         };
       };
       drawObjects = function() {
-        var bullet, particle, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2;
-        ctx.save();
-        _ref = game.tanks;
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          tank = _ref[_i];
-          tank.draw(ctx);
-        }
-        _ref1 = game.bullets;
-        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-          bullet = _ref1[_j];
-          if (!bullet.isDead) {
-            bullet.draw(ctx);
+        return (function() {
+          var bullet, particle, tank1, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2;
+          ctx.save();
+          _ref = game.tanks;
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            tank1 = _ref[_i];
+            tank1.draw(ctx);
           }
-        }
-        _ref2 = game.particles;
-        for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
-          particle = _ref2[_k];
-          if (!particle.isDead) {
-            particle.draw(ctx);
+          _ref1 = game.bullets;
+          for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+            bullet = _ref1[_j];
+            if (!bullet.isDead) {
+              bullet.draw(ctx);
+            }
           }
-        }
-        return ctx.restore();
+          _ref2 = game.particles;
+          for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
+            particle = _ref2[_k];
+            if (!particle.isDead) {
+              particle.draw(ctx);
+            }
+          }
+          return ctx.restore();
+        })();
       };
       drawTiles = function() {
         var east, north, south, west, x, xMax, xMin, y, yMax, yMin, _ref, _ref1;
@@ -82,9 +84,11 @@
       };
       if (tank != null) {
         drawStats = function() {
-          var info, stat;
+          var info, progress, stat, weapon;
           info = game.playerInfos[tank.index];
-          stat = "E " + (Math.floor(tank.energy)) + "\nM " + (Math.floor(tank.matter)) + "\nL " + info.lives + "\nH " + info.hits;
+          weapon = tank.weapons[tank.activeWeapon];
+          progress = Array(Math.floor(weapon.temperature * 10) + 1).join(".");
+          stat = ("E " + (Math.floor(tank.energy)) + " ") + ("L " + info.lives + " ") + ("H " + info.hits + " | ") + ("" + weapon.spec.name + " ") + ("" + progress);
           ctx.font = Window.STAT_FONT;
           ctx.textAlign = "left";
           ctx.fillStyle = Window.STAT_COLOR;

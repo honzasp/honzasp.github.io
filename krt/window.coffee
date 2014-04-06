@@ -16,11 +16,11 @@ define ["map"], (Map) ->
       x: center.x + (w.x - dim.w * 0.5) / dim.scale
       y: center.y + (w.y - dim.h * 0.5) / dim.scale
 
-    drawObjects = ->
+    drawObjects = -> do ->
       ctx.save()
 
-      for tank in game.tanks
-        tank.draw(ctx)
+      for tank1 in game.tanks
+        tank1.draw(ctx)
       for bullet in game.bullets
         bullet.draw(ctx) unless bullet.isDead
       for particle in game.particles
@@ -60,12 +60,15 @@ define ["map"], (Map) ->
     if tank?
       drawStats = ->
         info = game.playerInfos[tank.index]
-        stat = """
-          E #{Math.floor(tank.energy)}
-          M #{Math.floor(tank.matter)}
-          L #{info.lives}
-          H #{info.hits}
-          """
+        weapon = tank.weapons[tank.activeWeapon]
+        progress = Array(Math.floor(weapon.temperature * 10) + 1).join(".")
+        stat = 
+          "E #{Math.floor(tank.energy)} " +
+          "L #{info.lives} " +
+          "H #{info.hits} | " +
+          "#{weapon.spec.name} " +
+          "#{progress}"
+
         ctx.font = Window.STAT_FONT
         ctx.textAlign = "left"
         ctx.fillStyle = Window.STAT_COLOR

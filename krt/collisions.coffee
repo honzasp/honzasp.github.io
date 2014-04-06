@@ -1,4 +1,4 @@
-define ["map", "tank", "bullet", "particle"], (Map, Tank, Bullet, Particle) ->
+define ["map", "tank", "bullet", "particle", "weapon"], (Map, Tank, Bullet, Particle, Weapon) ->
   Collisions = {}
   Collisions.tankMap = (tank, map) ->
     pos = {x: tank.pos.x, y: tank.pos.y}
@@ -202,20 +202,31 @@ define ["map", "tank", "bullet", "particle"], (Map, Tank, Bullet, Particle) ->
 
     if nearestHit
       bullet.isDead = true
+      spec = bullet.spec
+
       if (m = nearestHit.map)?
         toughness = Map.squares[Map.get(map, m.x, m.y)].toughness
-        if Math.random() > toughness
+        if Math.pow(toughness, spec.damage) < Math.random()
           Map.set(map, m.x, m.y, Map.EMPTY)
       if (tank = nearestHit.tank)?
-        tank.impulse(x: bullet.vel.x * Bullet.MASS, y: bullet.vel.y * Bullet.MASS)
-        tank.damage(game, Bullet.DAMAGE, bullet.owner)
+        tank.impulse(x: bullet.vel.x * spec.mass, y: bullet.vel.y * spec.mass)
+        tank.damage(game, spec.damage, bullet.owner)
 
-      for i in [0...20]
-        angle = Math.random() * 2*Math.PI
-        pos = {x: nearestHit.pos.x, y: nearestHit.pos.y}
-        speed = Math.random() * 10 + 2
-        vel = {x: Math.sin(angle) * speed, y: Math.cos(angle) * speed}
-        game.particles.push(new Particle(pos, vel, 0.2, Math.random()*0.4+0.1, "rgba(255,100,100,0.3)"))
+      if (fragment = spec.fragment)?
+        fragmentCount = Math.floor(spec.mass / fragment.mass)
+        for i in [0...fragmentCount]
+          angle = 2*Math.PI * Math.random()
+          posX = Math.sin(angle) * Weapon.FRAGMENT_RADIUS + nearestHit.pos.x
+          posY = Math.cos(angle) * Weapon.FRAGMENT_RADIUS + nearestHit.pos.y
+          velX = Math.sin(angle) * fragment.speed + bullet.vel.x
+          velY = Math.cos(angle) * fragment.speed + bullet.vel.y
+          bullet = new Bullet(
+            {x: nearestHit.pos.x, y: nearestHit.pos.y},
+            {x: velX, y: velY},
+            fragment, bullet.owner)
+          game.bullets.push(bullet)
+
+      spec.boom(game, nearestHit.pos)
 
     undefined
 

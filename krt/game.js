@@ -149,7 +149,7 @@
       return game.events = void 0;
     };
     Game.events = function(game) {
-      var backwardOff, backwardOn, fireOff, fireOn, forwardOff, forwardOn, leftOff, leftOn, rightOff, rightOn;
+      var backwardOff, backwardOn, changeOn, fireOff, fireOn, forwardOff, forwardOn, leftOff, leftOn, rightOff, rightOn;
       forwardOn = function(idx) {
         return game.tanks[idx].acc = 1;
       };
@@ -163,7 +163,10 @@
         return game.tanks[idx].rot = -1;
       };
       fireOn = function(idx) {
-        return game.tanks[idx].fire(game);
+        return game.tanks[idx].firing = true;
+      };
+      changeOn = function(idx) {
+        return game.tanks[idx].change();
       };
       forwardOff = function(idx) {
         if (game.tanks[idx].acc > 0) {
@@ -185,7 +188,9 @@
           return game.tanks[idx].rot = 0;
         }
       };
-      fireOff = function(idx) {};
+      fireOff = function(idx) {
+        return game.tanks[idx].firing = false;
+      };
       return {
         keydown: function(evt) {
           var idx, keys, _i, _len, _ref;
@@ -206,6 +211,9 @@
             }
             if (evt.which === keys.fire) {
               fireOn(idx);
+            }
+            if (evt.which === keys.change) {
+              changeOn(idx);
             }
           }
           return void 0;
@@ -353,7 +361,7 @@
     Game.updateTanks = function(game, t) {
       var i, j, _i, _j, _k, _l, _ref, _ref1, _ref2, _ref3, _ref4;
       for (i = _i = 0, _ref = game.tanks.length; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
-        game.tanks[i].move(t);
+        game.tanks[i].update(game, t);
       }
       for (i = _j = 0, _ref1 = game.tanks.length; 0 <= _ref1 ? _j < _ref1 : _j > _ref1; i = 0 <= _ref1 ? ++_j : --_j) {
         for (j = _k = _ref2 = i + 1, _ref3 = game.tanks.length; _ref2 <= _ref3 ? _k < _ref3 : _k > _ref3; j = _ref2 <= _ref3 ? ++_k : --_k) {

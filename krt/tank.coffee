@@ -1,4 +1,4 @@
-define ["map", "bullet", "game"], (Map, Bullet, Game) ->
+define ["map", "weapon", "bullet", "game"], (Map, Weapon, Bullet, Game) ->
   Tank = (idx, x, y, angle = 0) ->
     @index = idx
     @pos = {x, y}
@@ -6,8 +6,15 @@ define ["map", "bullet", "game"], (Map, Bullet, Game) ->
     @vel = {x: 0, y: 0}
     @acc = 0
     @rot = 0
+    @firing = false
     @energy = Tank.MAX_ENERGY
-    @matter = Tank.MAX_MATTER
+    @weapons = [
+      new Weapon(Weapon.MachineGun)
+      new Weapon(Weapon.Autocannon)
+      new Weapon(Weapon.HugeCannon)
+    ]
+    @activeWeapon = 0
+
 
   Tank.RADIUS = 0.45
   Tank.WALL_DISTANCE = 0.01
@@ -15,25 +22,34 @@ define ["map", "bullet", "game"], (Map, Bullet, Game) ->
   Tank.FORCE = 1000
   Tank.FRICTION = 100
   Tank.ANGULAR_SPEED = 1.5*Math.PI
+  Tank.FIRING_ANGULAR_SPEED = 0.5*Math.PI
   Tank.BUMP_FACTOR = 0.3
-  Tank.BULLET_SPEED = 100
-  Tank.BULLET_TIME = 2
   Tank.BULLET_DIST = 1.2
   Tank.MAX_ENERGY = 100
-  Tank.MAX_MATTER = 100
+
+  Tank::change = ->
+    @activeWeapon = (@activeWeapon + 1) % @weapons.length
 
   Tank::fire = (game) ->
-    pos =
-      x: @pos.x + Math.sin(@angle) * Tank.RADIUS * Tank.BULLET_DIST
-      y: @pos.y + Math.cos(@angle) * Tank.RADIUS * Tank.BULLET_DIST
-    relVel =
-      x: Math.sin(@angle) * Tank.BULLET_SPEED
-      y: Math.cos(@angle) * Tank.BULLET_SPEED
-    vel = 
-      x: relVel.x + @vel.x
-      y: relVel.y + @vel.y
-    game.bullets.push(new Bullet(pos, vel, Tank.BULLET_TIME, @index))
-    @impulse(x: -relVel.x * Bullet.MASS, y: -relVel.y * Bullet.MASS)
+    spec = @weapons[@activeWeapon].spec
+    if @energy > spec.energy
+      @energy -= spec.energy
+      @weapons[@activeWeapon].temperature = spec.cooldown
+    else
+      return
+
+    angle = @angle + (2*spec.angleVariance * Math.random()) - spec.angleVariance
+    posX = @pos.x + Math.sin(angle) * Tank.RADIUS * Tank.BULLET_DIST
+    posY = @pos.y + Math.cos(angle) * Tank.RADIUS * Tank.BULLET_DIST
+    relVelX = Math.sin(angle) * spec.bullet.speed
+    relVelY = Math.cos(angle) * spec.bullet.speed
+
+    game.bullets.push(new Bullet(
+      {x: posX, y: posY},
+      {x: @vel.x + relVelX, y: @vel.y + relVelY},
+      spec.bullet, @index))
+
+    @.impulse(x: -relVelX * spec.bullet.mass, y: -relVelY * spec.bullet.mass)
 
   Tank::damage = (game, dmg, guilty = undefined) ->
     if @energy > dmg
@@ -46,14 +62,24 @@ define ["map", "bullet", "game"], (Map, Bullet, Game) ->
     @vel.x += imp.x / Tank.MASS
     @vel.y += imp.y / Tank.MASS
 
-  Tank::move = (t) ->
+  Tank::update = (game, t) ->
+    for weapon in @weapons
+      weapon.temperature -= t if weapon.temperature > 0
+
     forceX = -@vel.x * Tank.FRICTION + @acc * Math.sin(@angle) * Tank.FORCE
     forceY = -@vel.y * Tank.FRICTION + @acc * Math.cos(@angle) * Tank.FORCE
     @vel.x += forceX * t / Tank.MASS
     @vel.y += forceY * t / Tank.MASS
     @pos.x += @vel.x * t
     @pos.y += @vel.y * t
-    @angle += @rot * Tank.ANGULAR_SPEED * t
+
+    if @firing
+      @angle += @rot * Tank.FIRING_ANGULAR_SPEED * t
+      if @weapons[@activeWeapon].temperature <= 0
+        @.fire(game)
+    else
+      @angle += @rot * Tank.ANGULAR_SPEED * t
+
 
   Tank::draw = (ctx) ->
     ctx.save()

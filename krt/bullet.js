@@ -2,22 +2,19 @@
 (function() {
   define(["particle"], function(Particle) {
     var Bullet;
-    Bullet = function(pos, vel, time, owner) {
+    Bullet = function(pos, vel, spec, owner) {
       this.pos = pos;
       this.vel = vel;
-      this.time = time;
+      this.spec = spec;
       this.owner = owner != null ? owner : void 0;
+      this.time = this.spec.time;
       return this.isDead = false;
     };
-    Bullet.RADIUS = 0.1;
-    Bullet.DESTROY_PROB = 0.2;
-    Bullet.MASS = 2;
-    Bullet.DAMAGE = 60;
     Bullet.prototype.move = Particle.prototype.move;
     Bullet.prototype.draw = function(ctx) {
       ctx.beginPath();
-      ctx.arc(this.pos.x, this.pos.y, Bullet.RADIUS, 0, 2 * Math.PI);
-      ctx.fillStyle = "#f00";
+      ctx.arc(this.pos.x, this.pos.y, this.spec.radius, 0, 2 * Math.PI);
+      ctx.fillStyle = this.spec.color;
       return ctx.fill();
     };
     return Bullet;

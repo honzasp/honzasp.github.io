@@ -104,13 +104,14 @@ define ["exports", "jquery", "map", "window", "tank", "bullet", "particle", "col
     backwardOn = (idx) -> game.tanks[idx].acc = -1
     leftOn     = (idx) -> game.tanks[idx].rot = 1
     rightOn    = (idx) -> game.tanks[idx].rot = -1
-    fireOn     = (idx) -> game.tanks[idx].fire(game)
+    fireOn     = (idx) -> game.tanks[idx].firing = true
+    changeOn   = (idx) -> game.tanks[idx].change()
 
     forwardOff  = (idx) -> game.tanks[idx].acc = 0 if game.tanks[idx].acc > 0
     backwardOff = (idx) -> game.tanks[idx].acc = 0 if game.tanks[idx].acc < 0
     leftOff     = (idx) -> game.tanks[idx].rot = 0 if game.tanks[idx].rot > 0
     rightOff    = (idx) -> game.tanks[idx].rot = 0 if game.tanks[idx].rot < 0
-    fireOff     = (idx) ->
+    fireOff     = (idx) -> game.tanks[idx].firing = false
 
     keydown: (evt) ->
       for {keys} , idx in game.playerInfos
@@ -119,6 +120,7 @@ define ["exports", "jquery", "map", "window", "tank", "bullet", "particle", "col
         leftOn(idx) if evt.which == keys.left
         rightOn(idx) if evt.which == keys.right
         fireOn(idx) if evt.which == keys.fire
+        changeOn(idx) if evt.which == keys.change
       undefined
 
     keyup: (evt) ->
@@ -190,7 +192,7 @@ define ["exports", "jquery", "map", "window", "tank", "bullet", "particle", "col
 
   Game.updateTanks = (game, t) ->
     for i in [0...game.tanks.length]
-      game.tanks[i].move(t)
+      game.tanks[i].update(game, t)
 
     for i in [0...game.tanks.length]
       for j in [i+1...game.tanks.length]
