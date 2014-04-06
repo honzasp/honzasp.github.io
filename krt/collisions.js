@@ -268,7 +268,7 @@
       }
     };
     Collisions.bullet = function(bullet, game, t) {
-      var angle, end, i, m, map, nearestHit, pos, speed, start, tankHit, tanks, toughness, vel, _i, _j, _ref;
+      var angle, end, i, m, map, nearestHit, pos, speed, start, tank, tankHit, tanks, toughness, vel, _i, _j, _ref;
       tanks = game.tanks, map = game.map;
       start = {
         x: bullet.pos.x,
@@ -300,12 +300,12 @@
             Map.set(map, m.x, m.y, Map.EMPTY);
           }
         }
-        if ((t = nearestHit.tank) != null) {
-          Tank.impulse(t, {
+        if ((tank = nearestHit.tank) != null) {
+          tank.impulse({
             x: bullet.vel.x * Bullet.MASS,
             y: bullet.vel.y * Bullet.MASS
           });
-          Tank.damage(t, game, Bullet.DAMAGE);
+          tank.damage(game, Bullet.DAMAGE);
         }
         for (i = _j = 0; _j < 20; i = ++_j) {
           angle = Math.random() * 2 * Math.PI;
@@ -318,7 +318,7 @@
             x: Math.sin(angle) * speed,
             y: Math.cos(angle) * speed
           };
-          game.particles.push(Particle.init(pos, vel, 0.2, Math.random() * 0.4 + 0.1, "rgba(255,100,100,0.3)"));
+          game.particles.push(new Particle(pos, vel, 0.2, Math.random() * 0.4 + 0.1, "rgba(255,100,100,0.3)"));
         }
       }
       return void 0;

@@ -1,5 +1,14 @@
-define ["exports", "map", "bullet", "game"], (exports, Map, Bullet, Game) ->
-  Tank = exports
+define ["map", "bullet", "game"], (Map, Bullet, Game) ->
+  Tank = (idx, x, y, angle = 0) ->
+    @index = idx
+    @pos = {x, y}
+    @angle = angle
+    @vel = {x: 0, y: 0}
+    @acc = 0
+    @rot = 0
+    @energy = Tank.MAX_ENERGY
+    @matter = Tank.MAX_MATTER
+
   Tank.RADIUS = 0.45
   Tank.WALL_DISTANCE = 0.01
   Tank.MASS = 100
@@ -13,55 +22,43 @@ define ["exports", "map", "bullet", "game"], (exports, Map, Bullet, Game) ->
   Tank.MAX_ENERGY = 100
   Tank.MAX_MATTER = 100
 
-  Tank.init = (idx, x, y, angle = 0) ->
-    index: idx
-    pos: {x, y}
-    angle: angle
-    vel: {x: 0, y: 0}
-    acc: 0
-    rot: 0
-    energy: Tank.MAX_ENERGY
-    matter: Tank.MAX_MATTER
-
-  Tank.fire = (tank, game) ->
+  Tank::fire = (game) ->
     pos =
-      x: tank.pos.x + Math.sin(tank.angle) * Tank.RADIUS * Tank.BULLET_DIST
-      y: tank.pos.y + Math.cos(tank.angle) * Tank.RADIUS * Tank.BULLET_DIST
+      x: @pos.x + Math.sin(@angle) * Tank.RADIUS * Tank.BULLET_DIST
+      y: @pos.y + Math.cos(@angle) * Tank.RADIUS * Tank.BULLET_DIST
     relVel =
-      x: Math.sin(tank.angle) * Tank.BULLET_SPEED
-      y: Math.cos(tank.angle) * Tank.BULLET_SPEED
+      x: Math.sin(@angle) * Tank.BULLET_SPEED
+      y: Math.cos(@angle) * Tank.BULLET_SPEED
     vel = 
-      x: relVel.x + tank.vel.x
-      y: relVel.y + tank.vel.y
-    game.bullets.push(Bullet.init(pos, vel, Tank.BULLET_TIME))
-    Tank.impulse(tank, x: -relVel.x * Bullet.MASS, y: -relVel.y * Bullet.MASS)
+      x: relVel.x + @vel.x
+      y: relVel.y + @vel.y
+    game.bullets.push(new Bullet(pos, vel, Tank.BULLET_TIME))
+    @impulse(x: -relVel.x * Bullet.MASS, y: -relVel.y * Bullet.MASS)
 
-  Tank.damage = (tank, game, dmg) ->
-    if tank.energy > dmg
-      tank.energy -= dmg
+  Tank::damage = (game, dmg) ->
+    if @energy > dmg
+      @energy -= dmg
     else
-      tank.energy = 0
-      Game.tankDestroyed(game, tank)
+      @energy = 0
+      Game.tankDestroyed(game, @index)
 
-  Tank.impulse = (tank, imp) ->
-    tank.vel.x += imp.x / Tank.MASS
-    tank.vel.y += imp.y / Tank.MASS
+  Tank::impulse = (imp) ->
+    @vel.x += imp.x / Tank.MASS
+    @vel.y += imp.y / Tank.MASS
 
-  Tank.move = (tank, t) ->
-    force =
-      x: -tank.vel.x * Tank.FRICTION + tank.acc * Math.sin(tank.angle) * Tank.FORCE
-      y: -tank.vel.y * Tank.FRICTION + tank.acc * Math.cos(tank.angle) * Tank.FORCE
-    tank.vel.x += force.x * t / Tank.MASS
-    tank.vel.y += force.y * t / Tank.MASS
-    tank.pos.x += tank.vel.x * t
-    tank.pos.y += tank.vel.y * t
-    tank.angle += tank.rot * Tank.ANGULAR_SPEED * t
+  Tank::move = (t) ->
+    forceX = -@vel.x * Tank.FRICTION + @acc * Math.sin(@angle) * Tank.FORCE
+    forceY = -@vel.y * Tank.FRICTION + @acc * Math.cos(@angle) * Tank.FORCE
+    @vel.x += forceX * t / Tank.MASS
+    @vel.y += forceY * t / Tank.MASS
+    @pos.x += @vel.x * t
+    @pos.y += @vel.y * t
+    @angle += @rot * Tank.ANGULAR_SPEED * t
 
-
-  Tank.draw = (tank, ctx) ->
+  Tank::draw = (ctx) ->
     ctx.save()
-    ctx.translate(tank.pos.x, tank.pos.y)
-    ctx.rotate(-tank.angle)
+    ctx.translate(@pos.x, @pos.y)
+    ctx.rotate(-@angle)
     ctx.scale(Tank.RADIUS, Tank.RADIUS)
 
     ctx.beginPath()

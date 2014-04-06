@@ -2,27 +2,24 @@
 (function() {
   define([], function() {
     var Particle;
-    Particle = {};
-    Particle.init = function(pos, vel, time, radius, color) {
-      return {
-        pos: pos,
-        vel: vel,
-        time: time,
-        radius: radius,
-        color: color,
-        isDead: false
-      };
+    Particle = function(pos, vel, time, radius, color) {
+      this.pos = pos;
+      this.vel = vel;
+      this.time = time;
+      this.radius = radius;
+      this.color = color;
+      return this.isDead = false;
     };
-    Particle.move = function(particle, t) {
-      particle.time -= t;
-      particle.isDead || (particle.isDead = particle.time < 0);
-      particle.pos.x += particle.vel.x * t;
-      return particle.pos.y += particle.vel.y * t;
+    Particle.prototype.move = function(t) {
+      this.time -= t;
+      this.isDead || (this.isDead = this.time < 0);
+      this.pos.x += this.vel.x * t;
+      return this.pos.y += this.vel.y * t;
     };
-    Particle.draw = function(particle, ctx) {
+    Particle.prototype.draw = function(ctx) {
       ctx.beginPath();
-      ctx.arc(particle.pos.x, particle.pos.y, particle.radius, 0, 2 * Math.PI);
-      ctx.fillStyle = particle.color;
+      ctx.arc(this.pos.x, this.pos.y, this.radius, 0, 2 * Math.PI);
+      ctx.fillStyle = this.color;
       return ctx.fill();
     };
     return Particle;

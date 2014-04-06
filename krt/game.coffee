@@ -65,11 +65,11 @@ define ["exports", "jquery", "map", "window", "tank", "bullet", "particle", "col
 
   Game.createTank = (game, playerInfo) ->
     {index: idx, base: {x, y}} = playerInfo
-    Tank.init(idx, x+Game.BASE_SIZE/2, y+Game.BASE_SIZE/2)
+    new Tank(idx, x+Game.BASE_SIZE/2, y+Game.BASE_SIZE/2)
 
-  Game.tankDestroyed = (game, tank) ->
-    game.tanks[tank.index] = Game.createTank(game, game.playerInfos[tank.index])
-    game.playerInfos[tank.index].destroyed += 1
+  Game.tankDestroyed = (game, index) ->
+    game.tanks[index] = Game.createTank(game, game.playerInfos[index])
+    game.playerInfos[index].destroyed += 1
 
   Game.rebindListeners = (game) ->
     Game.unbindListeners(game) if game.events?
@@ -95,7 +95,7 @@ define ["exports", "jquery", "map", "window", "tank", "bullet", "particle", "col
         when 68 # d
           game.tanks[0].rot = -1
         when 81 # q
-          Tank.fire(game.tanks[0], game)
+          game.tanks[0].fire(game)
 
     keyup: (evt) ->
       switch evt.which
@@ -160,7 +160,7 @@ define ["exports", "jquery", "map", "window", "tank", "bullet", "particle", "col
 
   Game.updateTanks = (game, t) ->
     for i in [0...game.tanks.length]
-      Tank.move(game.tanks[i], t)
+      game.tanks[i].move(t)
 
     for i in [0...game.tanks.length]
       for j in [i+1...game.tanks.length]
@@ -174,12 +174,12 @@ define ["exports", "jquery", "map", "window", "tank", "bullet", "particle", "col
   Game.updateBullets = (game, t) ->
     Game.updateLiving(game, game.bullets, (bullet) ->
       Collisions.bullet(bullet, game, t)
-      Bullet.move(bullet, t)
+      bullet.move(t)
     )
 
   Game.updateParticles = (game, t) ->
     Game.updateLiving(game, game.particles, (particle) ->
-      Particle.move(particle, t)
+      particle.move(t)
     )
 
   Game.updateLiving = (game, objs, update) ->

@@ -206,16 +206,16 @@ define ["map", "tank", "bullet", "particle"], (Map, Tank, Bullet, Particle) ->
         toughness = Map.squares[Map.get(map, m.x, m.y)].toughness
         if Math.random() > toughness
           Map.set(map, m.x, m.y, Map.EMPTY)
-      if (t = nearestHit.tank)?
-        Tank.impulse(t, x: bullet.vel.x * Bullet.MASS, y: bullet.vel.y * Bullet.MASS)
-        Tank.damage(t, game, Bullet.DAMAGE)
+      if (tank = nearestHit.tank)?
+        tank.impulse(x: bullet.vel.x * Bullet.MASS, y: bullet.vel.y * Bullet.MASS)
+        tank.damage(game, Bullet.DAMAGE)
 
       for i in [0...20]
         angle = Math.random() * 2*Math.PI
         pos = {x: nearestHit.pos.x, y: nearestHit.pos.y}
         speed = Math.random() * 10 + 2
         vel = {x: Math.sin(angle) * speed, y: Math.cos(angle) * speed}
-        game.particles.push(Particle.init(pos, vel, 0.2, Math.random()*0.4+0.1, "rgba(255,100,100,0.3)"))
+        game.particles.push(new Particle(pos, vel, 0.2, Math.random()*0.4+0.1, "rgba(255,100,100,0.3)"))
 
     undefined
 

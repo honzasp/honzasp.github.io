@@ -100,11 +100,11 @@
     Game.createTank = function(game, playerInfo) {
       var idx, x, y, _ref;
       idx = playerInfo.index, (_ref = playerInfo.base, x = _ref.x, y = _ref.y);
-      return Tank.init(idx, x + Game.BASE_SIZE / 2, y + Game.BASE_SIZE / 2);
+      return new Tank(idx, x + Game.BASE_SIZE / 2, y + Game.BASE_SIZE / 2);
     };
-    Game.tankDestroyed = function(game, tank) {
-      game.tanks[tank.index] = Game.createTank(game, game.playerInfos[tank.index]);
-      return game.playerInfos[tank.index].destroyed += 1;
+    Game.tankDestroyed = function(game, index) {
+      game.tanks[index] = Game.createTank(game, game.playerInfos[index]);
+      return game.playerInfos[index].destroyed += 1;
     };
     Game.rebindListeners = function(game) {
       if (game.events != null) {
@@ -135,7 +135,7 @@
             case 68:
               return game.tanks[0].rot = -1;
             case 81:
-              return Tank.fire(game.tanks[0], game);
+              return game.tanks[0].fire(game);
           }
         },
         keyup: function(evt) {
@@ -273,7 +273,7 @@
     Game.updateTanks = function(game, t) {
       var i, j, _i, _j, _k, _l, _ref, _ref1, _ref2, _ref3, _ref4;
       for (i = _i = 0, _ref = game.tanks.length; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
-        Tank.move(game.tanks[i], t);
+        game.tanks[i].move(t);
       }
       for (i = _j = 0, _ref1 = game.tanks.length; 0 <= _ref1 ? _j < _ref1 : _j > _ref1; i = 0 <= _ref1 ? ++_j : --_j) {
         for (j = _k = _ref2 = i + 1, _ref3 = game.tanks.length; _ref2 <= _ref3 ? _k < _ref3 : _k > _ref3; j = _ref2 <= _ref3 ? ++_k : --_k) {
@@ -288,12 +288,12 @@
     Game.updateBullets = function(game, t) {
       return Game.updateLiving(game, game.bullets, function(bullet) {
         Collisions.bullet(bullet, game, t);
-        return Bullet.move(bullet, t);
+        return bullet.move(t);
       });
     };
     Game.updateParticles = function(game, t) {
       return Game.updateLiving(game, game.particles, function(particle) {
-        return Particle.move(particle, t);
+        return particle.move(t);
       });
     };
     Game.updateLiving = function(game, objs, update) {

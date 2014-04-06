@@ -1,4 +1,4 @@
-define ["map", "tank", "bullet", "particle"], (Map, Tank, Bullet, Particle) ->
+define ["map"], (Map) ->
   Window = {}
 
   Window.borderColor = "#aaa"
@@ -18,15 +18,15 @@ define ["map", "tank", "bullet", "particle"], (Map, Tank, Bullet, Particle) ->
       ctx.save()
 
       for i in [0...game.tanks.length]
-        Tank.draw(game.tanks[i], ctx)
+        game.tanks[i].draw(ctx)
 
       for i in [0...game.bullets.length]
         unless game.bullets[i].isDead
-          Bullet.draw(game.bullets[i], ctx)
+          game.bullets[i].draw(ctx)
 
       for i in [0...game.particles.length]
         unless game.particles[i].isDead
-          Particle.draw(game.particles[i], ctx)
+          game.particles[i].draw(ctx)
 
       ctx.restore()
 
