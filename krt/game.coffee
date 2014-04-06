@@ -8,7 +8,7 @@ define ["exports", "jquery", "map", "window", "tank", "bullet", "particle", "col
   Game.init = ($root, settings, callback) ->
     playerInfos = Game.init.createPlayers(settings)
     game = 
-      dom: Game.init.prepareDom($root)
+      dom: Game.init.prepareDom($root, game)
       map: Game.init.createMap(settings, playerInfos)
       tanks: Game.createTank(game, info) for info in playerInfos
       bullets: []
@@ -24,7 +24,7 @@ define ["exports", "jquery", "map", "window", "tank", "bullet", "particle", "col
     Game.rebindListeners(game)
     game
 
-  Game.init.prepareDom = ($root) ->
+  Game.init.prepareDom = ($root, game) ->
     $main = $("<div />").appendTo($root)
     $canvas = $("<canvas />").appendTo($main)
     $canvas.css
@@ -34,9 +34,9 @@ define ["exports", "jquery", "map", "window", "tank", "bullet", "particle", "col
       "left": "0px"
       "margin": "0px"
       "padding": "0px"
-
     ctx = $canvas[0].getContext("2d")
-    { $root, $main, $canvas, ctx}
+
+    { $root, $main, $canvas, ctx, $pauseBox: undefined }
 
   Game.init.createPlayers = (settings) ->
     for def, idx in settings.playerDefs
@@ -114,7 +114,10 @@ define ["exports", "jquery", "map", "window", "tank", "bullet", "particle", "col
     fireOff     = (idx) -> game.tanks[idx].firing = false
 
     keydown: (evt) ->
-      for {keys} , idx in game.playerInfos
+      if evt.which == 27
+        Game.pause(game)
+
+      for {keys}, idx in game.playerInfos
         forwardOn(idx) if evt.which == keys.forward
         backwardOn(idx) if evt.which == keys.backward
         leftOn(idx) if evt.which == keys.left
@@ -124,7 +127,7 @@ define ["exports", "jquery", "map", "window", "tank", "bullet", "particle", "col
       undefined
 
     keyup: (evt) ->
-      for {keys} , idx in game.playerInfos
+      for {keys}, idx in game.playerInfos
         forwardOff(idx) if evt.which == keys.forward
         backwardOff(idx) if evt.which == keys.backward
         leftOff(idx) if evt.which == keys.left
@@ -140,6 +143,7 @@ define ["exports", "jquery", "map", "window", "tank", "bullet", "particle", "col
     game.size.y = window.innerHeight
     game.dom.$canvas.attr("width", game.size.x)
     game.dom.$canvas.attr("height", game.size.y)
+    Game.draw(game)
 
   Game.start = (game) ->
     Game.stop(game) if game.timer?
@@ -148,6 +152,36 @@ define ["exports", "jquery", "map", "window", "tank", "bullet", "particle", "col
   Game.stop = (game) ->
     clearInterval(game.timer) if game.timer?
     game.timer = undefined
+
+  Game.pause = (game) ->
+    Game.stop(game)
+    Game.unbindListeners(game)
+    game.dom.$pauseBox?.remove()
+    game.dom.$pauseBox = Game.pause.createBox(game)
+
+  Game.pause.createBox = (game) ->
+    $box = $("<div class='pause-box' />").appendTo(game.dom.$main)
+    $box.css
+      "position": "absolute"
+      "top": "100px"
+      "left": "100px"
+      "background": "#fff"
+
+    $resumeBtn = $("<input type='button' name='resume' value='Resume'>").appendTo($box)
+    $quitBtn = $("<input type='button' name='quit' value='Quit'>").appendTo($box)
+    $quitBtn.attr("disabled", "disabled")
+    setTimeout((-> $quitBtn.removeAttr("disabled")), 1500)
+
+    $resumeBtn.click -> Game.resume(game)
+    $quitBtn.click -> Game.finish(game)
+
+    $box
+
+  Game.resume = (game) ->
+    game.dom.$pauseBox?.remove()
+    game.dom.$pauseBox = undefined
+    Game.rebindListeners(game)
+    Game.start(game)
 
   Game.finish = (game) ->
     Game.deinit(game)

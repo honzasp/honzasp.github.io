@@ -10,7 +10,7 @@
       var game, info, playerInfos;
       playerInfos = Game.init.createPlayers(settings);
       game = {
-        dom: Game.init.prepareDom($root),
+        dom: Game.init.prepareDom($root, game),
         map: Game.init.createMap(settings, playerInfos),
         tanks: (function() {
           var _i, _len, _results;
@@ -37,7 +37,7 @@
       Game.rebindListeners(game);
       return game;
     };
-    Game.init.prepareDom = function($root) {
+    Game.init.prepareDom = function($root, game) {
       var $canvas, $main, ctx;
       $main = $("<div />").appendTo($root);
       $canvas = $("<canvas />").appendTo($main);
@@ -54,7 +54,8 @@
         $root: $root,
         $main: $main,
         $canvas: $canvas,
-        ctx: ctx
+        ctx: ctx,
+        $pauseBox: void 0
       };
     };
     Game.init.createPlayers = function(settings) {
@@ -194,6 +195,9 @@
       return {
         keydown: function(evt) {
           var idx, keys, _i, _len, _ref;
+          if (evt.which === 27) {
+            Game.pause(game);
+          }
           _ref = game.playerInfos;
           for (idx = _i = 0, _len = _ref.length; _i < _len; idx = ++_i) {
             keys = _ref[idx].keys;
@@ -250,7 +254,8 @@
       game.size.x = window.innerWidth;
       game.size.y = window.innerHeight;
       game.dom.$canvas.attr("width", game.size.x);
-      return game.dom.$canvas.attr("height", game.size.y);
+      game.dom.$canvas.attr("height", game.size.y);
+      return Game.draw(game);
     };
     Game.start = function(game) {
       if (game.timer != null) {
@@ -265,6 +270,47 @@
         clearInterval(game.timer);
       }
       return game.timer = void 0;
+    };
+    Game.pause = function(game) {
+      var _ref;
+      Game.stop(game);
+      Game.unbindListeners(game);
+      if ((_ref = game.dom.$pauseBox) != null) {
+        _ref.remove();
+      }
+      return game.dom.$pauseBox = Game.pause.createBox(game);
+    };
+    Game.pause.createBox = function(game) {
+      var $box, $quitBtn, $resumeBtn;
+      $box = $("<div class='pause-box' />").appendTo(game.dom.$main);
+      $box.css({
+        "position": "absolute",
+        "top": "100px",
+        "left": "100px",
+        "background": "#fff"
+      });
+      $resumeBtn = $("<input type='button' name='resume' value='Resume'>").appendTo($box);
+      $quitBtn = $("<input type='button' name='quit' value='Quit'>").appendTo($box);
+      $quitBtn.attr("disabled", "disabled");
+      setTimeout((function() {
+        return $quitBtn.removeAttr("disabled");
+      }), 1500);
+      $resumeBtn.click(function() {
+        return Game.resume(game);
+      });
+      $quitBtn.click(function() {
+        return Game.finish(game);
+      });
+      return $box;
+    };
+    Game.resume = function(game) {
+      var _ref;
+      if ((_ref = game.dom.$pauseBox) != null) {
+        _ref.remove();
+      }
+      game.dom.$pauseBox = void 0;
+      Game.rebindListeners(game);
+      return Game.start(game);
     };
     Game.finish = function(game) {
       return Game.deinit(game);
