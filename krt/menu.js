@@ -3,6 +3,41 @@
   define(["jquery", "game"], function($, Game) {
     var Menu;
     Menu = {};
+    Menu.PLAYER_DEFS = [
+      {
+        keys: {
+          forward: 87,
+          backward: 83,
+          left: 65,
+          right: 68,
+          fire: 81
+        }
+      }, {
+        keys: {
+          forward: 38,
+          backward: 40,
+          left: 37,
+          right: 39,
+          fire: 17
+        }
+      }, {
+        keys: {
+          forward: 73,
+          backward: 75,
+          left: 74,
+          right: 76,
+          fire: 85
+        }
+      }, {
+        keys: {
+          forward: 104,
+          backward: 101,
+          left: 100,
+          right: 102,
+          fire: 103
+        }
+      }
+    ];
     Menu.init = function($root) {
       var menu;
       menu = {
@@ -60,7 +95,7 @@
         fps: 30,
         mapWidth: 100,
         mapHeight: 50,
-        playerCount: playerCount,
+        playerDefs: Menu.PLAYER_DEFS.slice(0, playerCount),
         startLives: startLives
       };
       if (menu.game == null) {

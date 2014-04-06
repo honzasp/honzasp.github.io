@@ -58,19 +58,22 @@
       };
     };
     Game.init.createPlayers = function(settings) {
-      var i, x, y, _i, _ref, _results;
+      var def, idx, x, y, _i, _len, _ref, _results;
+      _ref = settings.playerDefs;
       _results = [];
-      for (i = _i = 0, _ref = settings.playerCount; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
+      for (idx = _i = 0, _len = _ref.length; _i < _len; idx = ++_i) {
+        def = _ref[idx];
         x = Math.floor(Math.random() * (settings.mapWidth - Game.BASE_SIZE));
         y = Math.floor(Math.random() * (settings.mapHeight - Game.BASE_SIZE));
         _results.push({
-          index: i,
+          index: idx,
           base: {
             x: x,
             y: y
           },
           lives: settings.startLives,
-          hits: 0
+          hits: 0,
+          keys: def.keys
         });
       }
       return _results;
@@ -146,43 +149,89 @@
       return game.events = void 0;
     };
     Game.events = function(game) {
+      var backwardOff, backwardOn, fireOff, fireOn, forwardOff, forwardOn, leftOff, leftOn, rightOff, rightOn;
+      forwardOn = function(idx) {
+        return game.tanks[idx].acc = 1;
+      };
+      backwardOn = function(idx) {
+        return game.tanks[idx].acc = -1;
+      };
+      leftOn = function(idx) {
+        return game.tanks[idx].rot = 1;
+      };
+      rightOn = function(idx) {
+        return game.tanks[idx].rot = -1;
+      };
+      fireOn = function(idx) {
+        return game.tanks[idx].fire(game);
+      };
+      forwardOff = function(idx) {
+        if (game.tanks[idx].acc > 0) {
+          return game.tanks[idx].acc = 0;
+        }
+      };
+      backwardOff = function(idx) {
+        if (game.tanks[idx].acc < 0) {
+          return game.tanks[idx].acc = 0;
+        }
+      };
+      leftOff = function(idx) {
+        if (game.tanks[idx].rot > 0) {
+          return game.tanks[idx].rot = 0;
+        }
+      };
+      rightOff = function(idx) {
+        if (game.tanks[idx].rot < 0) {
+          return game.tanks[idx].rot = 0;
+        }
+      };
+      fireOff = function(idx) {};
       return {
         keydown: function(evt) {
-          switch (evt.which) {
-            case 87:
-              return game.tanks[0].acc = 1;
-            case 83:
-              return game.tanks[0].acc = -1;
-            case 65:
-              return game.tanks[0].rot = 1;
-            case 68:
-              return game.tanks[0].rot = -1;
-            case 81:
-              return game.tanks[0].fire(game);
+          var idx, keys, _i, _len, _ref;
+          _ref = game.playerInfos;
+          for (idx = _i = 0, _len = _ref.length; _i < _len; idx = ++_i) {
+            keys = _ref[idx].keys;
+            if (evt.which === keys.forward) {
+              forwardOn(idx);
+            }
+            if (evt.which === keys.backward) {
+              backwardOn(idx);
+            }
+            if (evt.which === keys.left) {
+              leftOn(idx);
+            }
+            if (evt.which === keys.right) {
+              rightOn(idx);
+            }
+            if (evt.which === keys.fire) {
+              fireOn(idx);
+            }
           }
+          return void 0;
         },
         keyup: function(evt) {
-          switch (evt.which) {
-            case 87:
-              if (game.tanks[0].acc > 0) {
-                return game.tanks[0].acc = 0;
-              }
-              break;
-            case 83:
-              if (game.tanks[0].acc < 0) {
-                return game.tanks[0].acc = 0;
-              }
-              break;
-            case 65:
-              if (game.tanks[0].rot > 0) {
-                return game.tanks[0].rot = 0;
-              }
-              break;
-            case 68:
-              if (game.tanks[0].rot < 0) {
-                return game.tanks[0].rot = 0;
-              }
+          var idx, keys, _i, _len, _ref;
+          _ref = game.playerInfos;
+          for (idx = _i = 0, _len = _ref.length; _i < _len; idx = ++_i) {
+            keys = _ref[idx].keys;
+            if (evt.which === keys.forward) {
+              forwardOff(idx);
+            }
+            if (evt.which === keys.backward) {
+              backwardOff(idx);
+            }
+            if (evt.which === keys.left) {
+              leftOff(idx);
+            }
+            if (evt.which === keys.right) {
+              rightOff(idx);
+            }
+            if (evt.which === keys.fire) {
+              fireOff(idx);
+            }
           }
+          return void 0;
         },
         resize: function(evt) {
           return Game.resizeCanvas(game);

@@ -39,10 +39,10 @@ define ["exports", "jquery", "map", "window", "tank", "bullet", "particle", "col
     { $root, $main, $canvas, ctx}
 
   Game.init.createPlayers = (settings) ->
-    for i in [0...settings.playerCount]
+    for def, idx in settings.playerDefs
       x = Math.floor(Math.random() * (settings.mapWidth - Game.BASE_SIZE))
       y = Math.floor(Math.random() * (settings.mapHeight - Game.BASE_SIZE))
-      {index: i, base: {x, y}, lives: settings.startLives, hits: 0}
+      {index: idx, base: {x, y}, lives: settings.startLives, hits: 0, keys: def.keys}
 
   Game.init.createMap = (settings, playerInfos) ->
     map = Map.init(settings.mapWidth, settings.mapHeight)
@@ -100,29 +100,35 @@ define ["exports", "jquery", "map", "window", "tank", "bullet", "particle", "col
     game.events = undefined
 
   Game.events = (game) ->
+    forwardOn  = (idx) -> game.tanks[idx].acc = 1
+    backwardOn = (idx) -> game.tanks[idx].acc = -1
+    leftOn     = (idx) -> game.tanks[idx].rot = 1
+    rightOn    = (idx) -> game.tanks[idx].rot = -1
+    fireOn     = (idx) -> game.tanks[idx].fire(game)
+
+    forwardOff  = (idx) -> game.tanks[idx].acc = 0 if game.tanks[idx].acc > 0
+    backwardOff = (idx) -> game.tanks[idx].acc = 0 if game.tanks[idx].acc < 0
+    leftOff     = (idx) -> game.tanks[idx].rot = 0 if game.tanks[idx].rot > 0
+    rightOff    = (idx) -> game.tanks[idx].rot = 0 if game.tanks[idx].rot < 0
+    fireOff     = (idx) ->
+
     keydown: (evt) ->
-      switch evt.which
-        when 87 # w
-          game.tanks[0].acc = 1
-        when 83 # s
-          game.tanks[0].acc = -1
-        when 65 # a
-          game.tanks[0].rot = 1
-        when 68 # d
-          game.tanks[0].rot = -1
-        when 81 # q
-          game.tanks[0].fire(game)
+      for {keys} , idx in game.playerInfos
+        forwardOn(idx) if evt.which == keys.forward
+        backwardOn(idx) if evt.which == keys.backward
+        leftOn(idx) if evt.which == keys.left
+        rightOn(idx) if evt.which == keys.right
+        fireOn(idx) if evt.which == keys.fire
+      undefined
 
     keyup: (evt) ->
-      switch evt.which
-        when 87 # w
-          game.tanks[0].acc = 0 if game.tanks[0].acc > 0
-        when 83 # s
-          game.tanks[0].acc = 0 if game.tanks[0].acc < 0
-        when 65 # a
-          game.tanks[0].rot = 0 if game.tanks[0].rot > 0
-        when 68 # d
-          game.tanks[0].rot = 0 if game.tanks[0].rot < 0
+      for {keys} , idx in game.playerInfos
+        forwardOff(idx) if evt.which == keys.forward
+        backwardOff(idx) if evt.which == keys.backward
+        leftOff(idx) if evt.which == keys.left
+        rightOff(idx) if evt.which == keys.right
+        fireOff(idx) if evt.which == keys.fire
+      undefined
 
     resize: (evt) ->
       Game.resizeCanvas(game)
