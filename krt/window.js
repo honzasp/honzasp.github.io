@@ -3,9 +3,11 @@
   define(["map"], function(Map) {
     var Window;
     Window = {};
-    Window.borderColor = "#aaa";
-    Window.draw = function(game, center, dim) {
-      var ctx, drawObjects, drawTile, drawTiles, mapToWin, winToMap;
+    Window.BORDER_COLOR = "#aaa";
+    Window.STAT_FONT = "12px monospace";
+    Window.STAT_COLOR = "#0f0";
+    Window.draw = function(game, center, tank, dim) {
+      var ctx, drawObjects, drawStats, drawTile, drawTiles, lastSquare, mapToWin, winToMap;
       ctx = game.dom.ctx;
       mapToWin = function(m) {
         return {
@@ -20,25 +22,31 @@
         };
       };
       drawObjects = function() {
-        var i, _i, _j, _k, _ref, _ref1, _ref2;
+        var bullet, particle, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2;
         ctx.save();
-        for (i = _i = 0, _ref = game.tanks.length; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
-          game.tanks[i].draw(ctx);
+        _ref = game.tanks;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          tank = _ref[_i];
+          tank.draw(ctx);
         }
-        for (i = _j = 0, _ref1 = game.bullets.length; 0 <= _ref1 ? _j < _ref1 : _j > _ref1; i = 0 <= _ref1 ? ++_j : --_j) {
-          if (!game.bullets[i].isDead) {
-            game.bullets[i].draw(ctx);
+        _ref1 = game.bullets;
+        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+          bullet = _ref1[_j];
+          if (!bullet.isDead) {
+            bullet.draw(ctx);
           }
         }
-        for (i = _k = 0, _ref2 = game.particles.length; 0 <= _ref2 ? _k < _ref2 : _k > _ref2; i = 0 <= _ref2 ? ++_k : --_k) {
-          if (!game.particles[i].isDead) {
-            game.particles[i].draw(ctx);
+        _ref2 = game.particles;
+        for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
+          particle = _ref2[_k];
+          if (!particle.isDead) {
+            particle.draw(ctx);
           }
         }
         return ctx.restore();
       };
       drawTiles = function() {
-        var east, north, south, west, x, y, _i, _j, _ref, _ref1, _ref2, _ref3, _ref4, _ref5;
+        var east, north, south, west, x, xMax, xMin, y, yMax, yMin, _ref, _ref1;
         _ref = winToMap({
           x: 0,
           y: 0
@@ -47,33 +55,59 @@
           x: dim.w,
           y: dim.h
         }), east = _ref1.x, south = _ref1.y;
-        for (x = _i = _ref2 = Math.floor(west), _ref3 = Math.ceil(east); _ref2 <= _ref3 ? _i <= _ref3 : _i >= _ref3; x = _ref2 <= _ref3 ? ++_i : --_i) {
-          for (y = _j = _ref4 = Math.floor(north), _ref5 = Math.ceil(south); _ref4 <= _ref5 ? _j <= _ref5 : _j >= _ref5; y = _ref4 <= _ref5 ? ++_j : --_j) {
-            drawTile({
-              x: x,
-              y: y
-            });
+        xMin = Math.floor(west);
+        xMax = Math.ceil(east);
+        yMin = Math.floor(north);
+        yMax = Math.ceil(south);
+        x = xMin;
+        while (x <= xMax) {
+          y = yMin;
+          while (y <= yMax) {
+            drawTile(x, y);
+            y += 1;
           }
+          x += 1;
         }
         return void 0;
       };
-      drawTile = function(pos) {
-        var _ref;
-        ctx.fillStyle = Map.contains(game.map, pos.x, pos.y) ? ((_ref = Map.squares[Map.get(game.map, pos.x, pos.y)]) != null ? _ref.color : void 0) || "#f0f" : Map.voidSquare.color;
-        return ctx.fillRect(pos.x, pos.y, 1, 1);
+      lastSquare = void 0;
+      drawTile = function(x, y) {
+        var square;
+        square = Map.contains(game.map, x, y) ? Map.get(game.map, x, y) : Map.VOID;
+        if (square !== lastSquare) {
+          ctx.fillStyle = Map.squares[square].color;
+          lastSquare = square;
+        }
+        return ctx.fillRect(x, y, 1, 1);
       };
+      if (tank != null) {
+        drawStats = function() {
+          var info, stat;
+          info = game.playerInfos[tank.index];
+          stat = "E " + (Math.floor(tank.energy)) + "\nM " + (Math.floor(tank.matter)) + "\nL " + info.lives + "\nH " + info.hits;
+          ctx.font = Window.STAT_FONT;
+          ctx.textAlign = "left";
+          ctx.fillStyle = Window.STAT_COLOR;
+          return ctx.fillText(stat, 5, dim.h - 5);
+        };
+      } else {
+        drawStats = function() {};
+      }
       ctx.save();
       ctx.translate(dim.x, dim.y);
-      ctx.strokeStyle = Window.borderColor;
+      ctx.strokeStyle = Window.BORDER_COLOR;
       ctx.strokeRect(0, 0, dim.w, dim.h);
       ctx.beginPath();
       ctx.rect(0, 0, dim.w, dim.h);
       ctx.clip();
+      ctx.save();
       ctx.translate(dim.w * 0.5, dim.h * 0.5);
       ctx.scale(dim.scale, dim.scale);
       ctx.translate(-center.x, -center.y);
       drawTiles();
       drawObjects();
+      ctx.restore();
+      drawStats();
       return ctx.restore();
     };
     return Window;

@@ -6,7 +6,7 @@
     Game.MAX_GARBAGE_RATIO = 0.5;
     Game.BASE_SIZE = 8;
     Game.BASE_DOOR_SIZE = 2;
-    Game.init = function($root, settings) {
+    Game.init = function($root, settings, callback) {
       var game, info, playerInfos;
       playerInfos = Game.init.createPlayers(settings);
       game = {
@@ -30,7 +30,8 @@
         events: void 0,
         tickLen: 1.0 / settings["fps"],
         timer: void 0,
-        playerInfos: playerInfos
+        playerInfos: playerInfos,
+        callback: callback
       };
       Game.resizeCanvas(game);
       Game.rebindListeners(game);
@@ -40,6 +41,14 @@
       var $canvas, $main, ctx;
       $main = $("<div />").appendTo($root);
       $canvas = $("<canvas />").appendTo($main);
+      $canvas.css({
+        "display": "block",
+        "position": "absolute",
+        "top": "0px",
+        "left": "0px",
+        "margin": "0px",
+        "padding": "0px"
+      });
       ctx = $canvas[0].getContext("2d");
       return {
         $root: $root,
@@ -60,7 +69,8 @@
             x: x,
             y: y
           },
-          destroyed: 0
+          lives: settings.startLives,
+          hits: 0
         });
       }
       return _results;
@@ -102,24 +112,37 @@
       idx = playerInfo.index, (_ref = playerInfo.base, x = _ref.x, y = _ref.y);
       return new Tank(idx, x + Game.BASE_SIZE / 2, y + Game.BASE_SIZE / 2);
     };
-    Game.tankDestroyed = function(game, index) {
+    Game.deinit = function(game) {
+      Game.stop(game);
+      Game.unbindListeners(game);
+      game.dom.$main.remove();
+      return game.callback();
+    };
+    Game.tankDestroyed = function(game, index, guilty) {
+      if (guilty == null) {
+        guilty = void 0;
+      }
       game.tanks[index] = Game.createTank(game, game.playerInfos[index]);
-      return game.playerInfos[index].destroyed += 1;
+      if (guilty != null) {
+        game.playerInfos[guilty].hits += 1;
+      }
+      game.playerInfos[index].lives -= 1;
+      if (game.playerInfos[index].lives <= 0) {
+        return Game.finish(game);
+      }
     };
     Game.rebindListeners = function(game) {
       if (game.events != null) {
         Game.unbindListeners(game);
       }
       game.events = Game.events(game);
-      $(document).on("keydown", game.events.keydown);
-      return $(document).on("keyup", game.events.keyup);
+      return $(window).on(game.events);
     };
     Game.unbindListeners = function(game) {
       if (game.events == null) {
         return;
       }
-      $(document).off("keydown", game.events.keydown);
-      $(document).off("keyup", game.events.keyup);
+      $(window).off(game.events);
       return game.events = void 0;
     };
     Game.events = function(game) {
@@ -160,10 +183,15 @@
                 return game.tanks[0].rot = 0;
               }
           }
+        },
+        resize: function(evt) {
+          return Game.resizeCanvas(game);
         }
       };
     };
     Game.resizeCanvas = function(game) {
+      game.size.x = window.innerWidth;
+      game.size.y = window.innerHeight;
       game.dom.$canvas.attr("width", game.size.x);
       return game.dom.$canvas.attr("height", game.size.y);
     };
@@ -181,6 +209,9 @@
       }
       return game.timer = void 0;
     };
+    Game.finish = function(game) {
+      return Game.deinit(game);
+    };
     Game.tick = function(game) {
       Game.update(game, game.tickLen);
       return Game.draw(game);
@@ -188,7 +219,7 @@
     Game.draw = function(game) {
       switch (game.playerInfos.length) {
         case 1:
-          return Window.draw(game, game.tanks[0].pos, {
+          return Window.draw(game, game.tanks[0].pos, game.tanks[0], {
             x: 0,
             y: 0,
             w: game.size.x,
@@ -196,14 +227,14 @@
             scale: 16
           });
         case 2:
-          Window.draw(game, game.tanks[0].pos, {
+          Window.draw(game, game.tanks[0].pos, game.tanks[0], {
             x: 0,
             y: 0,
             w: game.size.x / 2,
             h: game.size.y,
             scale: 14
           });
-          return Window.draw(game, game.tanks[1].pos, {
+          return Window.draw(game, game.tanks[1].pos, game.tanks[1], {
             x: game.size.x / 2,
             y: 0,
             w: game.size.x / 2,
@@ -211,21 +242,21 @@
             scale: 14
           });
         case 3:
-          Window.draw(game, game.tanks[0].pos, {
+          Window.draw(game, game.tanks[0].pos, game.tanks[0], {
             x: 0,
             y: 0,
             w: game.size.x / 3,
             h: game.size.y,
             scale: 13
           });
-          Window.draw(game, game.tanks[1].pos, {
+          Window.draw(game, game.tanks[1].pos, game.tanks[1], {
             x: game.size.x / 3,
             y: 0,
             w: game.size.x / 3,
             h: game.size.y,
             scale: 13
           });
-          return Window.draw(game, game.tanks[2].pos, {
+          return Window.draw(game, game.tanks[2].pos, game.tanks[2], {
             x: 2 * game.size.x / 3,
             y: 0,
             w: game.size.x / 3,
@@ -233,28 +264,28 @@
             scale: 13
           });
         case 4:
-          Window.draw(game, game.tanks[0].pos, {
+          Window.draw(game, game.tanks[0].pos, game.tanks[0], {
             x: 0,
             y: 0,
             w: game.size.x / 2,
             h: game.size.y / 2,
             scale: 12
           });
-          Window.draw(game, game.tanks[1].pos, {
+          Window.draw(game, game.tanks[1].pos, game.tanks[1], {
             x: game.size.x / 2,
             y: 0,
             w: game.size.x / 2,
             h: game.size.y / 2,
             scale: 12
           });
-          Window.draw(game, game.tanks[2].pos, {
+          Window.draw(game, game.tanks[2].pos, game.tanks[2], {
             x: 0,
             y: game.size.y / 2,
             w: game.size.x / 2,
             h: game.size.y / 2,
             scale: 12
           });
-          return Window.draw(game, game.tanks[3].pos, {
+          return Window.draw(game, game.tanks[3].pos, game.tanks[3], {
             x: game.size.x / 2,
             y: game.size.y / 2,
             w: game.size.x / 2,

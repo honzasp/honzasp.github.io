@@ -47,18 +47,21 @@
         x: relVel.x + this.vel.x,
         y: relVel.y + this.vel.y
       };
-      game.bullets.push(new Bullet(pos, vel, Tank.BULLET_TIME));
+      game.bullets.push(new Bullet(pos, vel, Tank.BULLET_TIME, this.index));
       return this.impulse({
         x: -relVel.x * Bullet.MASS,
         y: -relVel.y * Bullet.MASS
       });
     };
-    Tank.prototype.damage = function(game, dmg) {
+    Tank.prototype.damage = function(game, dmg, guilty) {
+      if (guilty == null) {
+        guilty = void 0;
+      }
       if (this.energy > dmg) {
         return this.energy -= dmg;
       } else {
         this.energy = 0;
-        return Game.tankDestroyed(game, this.index);
+        return Game.tankDestroyed(game, this.index, guilty);
       }
     };
     Tank.prototype.impulse = function(imp) {

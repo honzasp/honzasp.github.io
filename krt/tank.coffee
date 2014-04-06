@@ -32,15 +32,15 @@ define ["map", "bullet", "game"], (Map, Bullet, Game) ->
     vel = 
       x: relVel.x + @vel.x
       y: relVel.y + @vel.y
-    game.bullets.push(new Bullet(pos, vel, Tank.BULLET_TIME))
+    game.bullets.push(new Bullet(pos, vel, Tank.BULLET_TIME, @index))
     @impulse(x: -relVel.x * Bullet.MASS, y: -relVel.y * Bullet.MASS)
 
-  Tank::damage = (game, dmg) ->
+  Tank::damage = (game, dmg, guilty = undefined) ->
     if @energy > dmg
       @energy -= dmg
     else
       @energy = 0
-      Game.tankDestroyed(game, @index)
+      Game.tankDestroyed(game, @index, guilty)
 
   Tank::impulse = (imp) ->
     @vel.x += imp.x / Tank.MASS

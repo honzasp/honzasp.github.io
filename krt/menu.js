@@ -10,18 +10,23 @@
         game: void 0
       };
       Menu.init.bindListeners(menu);
+      Menu.show(menu);
       return menu;
     };
     Menu.init.prepareDom = function($root) {
-      var $main, $playBtn, $playerCountInp;
+      var $errorBox, $main, $playBtn, $playerCountInp, $startLivesInp;
       $main = $("<div />").appendTo($root);
       $playBtn = $("<input type='button' value='Play' name='play'>").appendTo($main);
       $playerCountInp = $("<input type='text' value='2' name='player-count'>").appendTo($main);
+      $startLivesInp = $("<input type='text' value='10' name='start-lives'>").appendTo($main);
+      $errorBox = $("<p class='error'></p>").appendTo($main);
+      $errorBox.hide();
       return {
         $root: $root,
         $main: $main,
         $playBtn: $playBtn,
-        $playerCountInp: $playerCountInp
+        $playerCountInp: $playerCountInp,
+        $startLivesInp: $startLivesInp
       };
     };
     Menu.init.bindListeners = function(menu) {
@@ -29,21 +34,41 @@
         return Menu.play(menu);
       });
     };
+    Menu.error = function(menu, msg) {
+      menu.dom.$errorBox.text(msg);
+      return menu.dom.$errorBox.show();
+    };
+    Menu.show = function(menu) {
+      return menu.dom.$main.show();
+    };
+    Menu.hide = function(menu) {
+      return menu.dom.$main.hide();
+    };
     Menu.play = function(menu) {
-      var playerCount, settings;
+      var playerCount, settings, startLives;
       playerCount = Math.floor(menu.dom.$playerCountInp.val() * 1);
       if (!(playerCount >= 1 && playerCount <= 4)) {
-        Menu.error("Please select one to four players");
+        Menu.error(menu, "Please select one to four players");
+        return;
+      }
+      startLives = Math.floor(menu.dom.$startLivesInp.val() * 1);
+      if (!(startLives > 0)) {
+        Menu.error(menu, "Please set positive number of lives");
         return;
       }
       settings = {
         fps: 30,
         mapWidth: 100,
         mapHeight: 50,
-        playerCount: playerCount
+        playerCount: playerCount,
+        startLives: startLives
       };
       if (menu.game == null) {
-        menu.game = Game.init(menu.dom.$root, settings);
+        Menu.hide(menu);
+        menu.game = Game.init(menu.dom.$root, settings, function() {
+          Menu.show(menu);
+          return menu.game = void 0;
+        });
         return Game.start(menu.game);
       }
     };

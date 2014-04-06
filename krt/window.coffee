@@ -1,9 +1,11 @@
 define ["map"], (Map) ->
   Window = {}
 
-  Window.borderColor = "#aaa"
+  Window.BORDER_COLOR = "#aaa"
+  Window.STAT_FONT = "12px monospace"
+  Window.STAT_COLOR = "#0f0"
 
-  Window.draw = (game, center, dim) ->
+  Window.draw = (game, center, tank, dim) ->
     ctx = game.dom.ctx
 
     mapToWin = (m) ->
@@ -17,16 +19,12 @@ define ["map"], (Map) ->
     drawObjects = ->
       ctx.save()
 
-      for i in [0...game.tanks.length]
-        game.tanks[i].draw(ctx)
-
-      for i in [0...game.bullets.length]
-        unless game.bullets[i].isDead
-          game.bullets[i].draw(ctx)
-
-      for i in [0...game.particles.length]
-        unless game.particles[i].isDead
-          game.particles[i].draw(ctx)
+      for tank in game.tanks
+        tank.draw(ctx)
+      for bullet in game.bullets
+        bullet.draw(ctx) unless bullet.isDead
+      for particle in game.particles
+        particle.draw(ctx) unless particle.isDead
 
       ctx.restore()
 
@@ -34,35 +32,66 @@ define ["map"], (Map) ->
       { x: west, y: north } = winToMap({x: 0, y: 0})
       { x: east, y: south } = winToMap({x: dim.w, y: dim.h})
 
-      for x in [Math.floor(west) .. Math.ceil(east)]
-        for y in [Math.floor(north) .. Math.ceil(south)]
-          drawTile({x, y})
+      xMin = Math.floor(west)
+      xMax = Math.ceil(east)
+      yMin = Math.floor(north)
+      yMax = Math.ceil(south)
+
+      x = xMin
+      while x <= xMax
+        y = yMin
+        while y <= yMax
+          drawTile(x, y)
+          y += 1
+        x += 1
       undefined
 
-    drawTile = (pos) ->
-      ctx.fillStyle = if Map.contains(game.map, pos.x, pos.y)
-          Map.squares[Map.get(game.map, pos.x, pos.y)]?.color || "#f0f"
+    lastSquare = undefined
+    drawTile = (x, y) ->
+      square = if Map.contains(game.map, x, y)
+          Map.get(game.map, x, y)
         else
-          Map.voidSquare.color
-      ctx.fillRect(pos.x, pos.y, 1, 1)
+          Map.VOID
+      if square != lastSquare
+        ctx.fillStyle = Map.squares[square].color
+        lastSquare = square
+      ctx.fillRect(x, y, 1, 1)
+
+    if tank?
+      drawStats = ->
+        info = game.playerInfos[tank.index]
+        stat = """
+          E #{Math.floor(tank.energy)}
+          M #{Math.floor(tank.matter)}
+          L #{info.lives}
+          H #{info.hits}
+          """
+        ctx.font = Window.STAT_FONT
+        ctx.textAlign = "left"
+        ctx.fillStyle = Window.STAT_COLOR
+        ctx.fillText(stat, 5, dim.h - 5)
+    else
+      drawStats = ->
 
     ctx.save()
     ctx.translate(dim.x, dim.y)
 
-    ctx.strokeStyle = Window.borderColor
+    ctx.strokeStyle = Window.BORDER_COLOR
     ctx.strokeRect(0, 0, dim.w, dim.h)
 
     ctx.beginPath()
     ctx.rect(0, 0, dim.w, dim.h)
     ctx.clip()
 
+    ctx.save()
     ctx.translate(dim.w * 0.5, dim.h * 0.5)
     ctx.scale(dim.scale, dim.scale)
     ctx.translate(-center.x, -center.y)
-
     drawTiles()
     drawObjects()
+    ctx.restore()
 
+    drawStats()
     ctx.restore()
 
   Window

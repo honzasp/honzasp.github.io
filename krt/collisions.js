@@ -305,7 +305,7 @@
             x: bullet.vel.x * Bullet.MASS,
             y: bullet.vel.y * Bullet.MASS
           });
-          tank.damage(game, Bullet.DAMAGE);
+          tank.damage(game, Bullet.DAMAGE, bullet.owner);
         }
         for (i = _j = 0; _j < 20; i = ++_j) {
           angle = Math.random() * 2 * Math.PI;

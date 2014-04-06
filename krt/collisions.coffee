@@ -208,7 +208,7 @@ define ["map", "tank", "bullet", "particle"], (Map, Tank, Bullet, Particle) ->
           Map.set(map, m.x, m.y, Map.EMPTY)
       if (tank = nearestHit.tank)?
         tank.impulse(x: bullet.vel.x * Bullet.MASS, y: bullet.vel.y * Bullet.MASS)
-        tank.damage(game, Bullet.DAMAGE)
+        tank.damage(game, Bullet.DAMAGE, bullet.owner)
 
       for i in [0...20]
         angle = Math.random() * 2*Math.PI

@@ -24,7 +24,8 @@
     Map.CONCRETE = 2;
     Map.STEEL = 3;
     Map.TITANIUM = 4;
-    Map.squares = [];
+    Map.VOID = 255;
+    Map.squares = new Array(256);
     Map.squares[Map.EMPTY] = {
       color: "#333"
     };
@@ -44,7 +45,7 @@
       color: "#558",
       toughness: 0.99
     };
-    Map.voidSquare = {
+    Map.squares[Map.VOID] = {
       color: "#000"
     };
     Map.get = function(map, x, y) {

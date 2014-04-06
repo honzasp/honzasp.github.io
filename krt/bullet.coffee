@@ -1,5 +1,5 @@
 define ["particle"], (Particle) ->
-  Bullet = (@pos, @vel, @time) ->
+  Bullet = (@pos, @vel, @time, @owner = undefined) ->
     @isDead = false
 
   Bullet.RADIUS = 0.1

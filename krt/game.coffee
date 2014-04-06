@@ -5,7 +5,7 @@ define ["exports", "jquery", "map", "window", "tank", "bullet", "particle", "col
   Game.BASE_SIZE = 8
   Game.BASE_DOOR_SIZE = 2
 
-  Game.init = ($root, settings) ->
+  Game.init = ($root, settings, callback) ->
     playerInfos = Game.init.createPlayers(settings)
     game = 
       dom: Game.init.prepareDom($root)
@@ -18,6 +18,7 @@ define ["exports", "jquery", "map", "window", "tank", "bullet", "particle", "col
       tickLen: 1.0 / settings["fps"]
       timer: undefined
       playerInfos: playerInfos
+      callback: callback
 
     Game.resizeCanvas(game)
     Game.rebindListeners(game)
@@ -26,6 +27,14 @@ define ["exports", "jquery", "map", "window", "tank", "bullet", "particle", "col
   Game.init.prepareDom = ($root) ->
     $main = $("<div />").appendTo($root)
     $canvas = $("<canvas />").appendTo($main)
+    $canvas.css
+      "display": "block"
+      "position": "absolute"
+      "top": "0px"
+      "left": "0px"
+      "margin": "0px"
+      "padding": "0px"
+
     ctx = $canvas[0].getContext("2d")
     { $root, $main, $canvas, ctx}
 
@@ -33,7 +42,7 @@ define ["exports", "jquery", "map", "window", "tank", "bullet", "particle", "col
     for i in [0...settings.playerCount]
       x = Math.floor(Math.random() * (settings.mapWidth - Game.BASE_SIZE))
       y = Math.floor(Math.random() * (settings.mapHeight - Game.BASE_SIZE))
-      {index: i, base: {x, y}, destroyed: 0}
+      {index: i, base: {x, y}, lives: settings.startLives, hits: 0}
 
   Game.init.createMap = (settings, playerInfos) ->
     map = Map.init(settings.mapWidth, settings.mapHeight)
@@ -67,20 +76,27 @@ define ["exports", "jquery", "map", "window", "tank", "bullet", "particle", "col
     {index: idx, base: {x, y}} = playerInfo
     new Tank(idx, x+Game.BASE_SIZE/2, y+Game.BASE_SIZE/2)
 
-  Game.tankDestroyed = (game, index) ->
+  Game.deinit = (game) ->
+    Game.stop(game)
+    Game.unbindListeners(game)
+    game.dom.$main.remove()
+    game.callback()
+
+  Game.tankDestroyed = (game, index, guilty = undefined) ->
     game.tanks[index] = Game.createTank(game, game.playerInfos[index])
-    game.playerInfos[index].destroyed += 1
+    game.playerInfos[guilty].hits += 1 if guilty?
+    game.playerInfos[index].lives -= 1
+    if game.playerInfos[index].lives <= 0
+      Game.finish(game)
 
   Game.rebindListeners = (game) ->
     Game.unbindListeners(game) if game.events?
     game.events = Game.events(game)
-    $(document).on("keydown", game.events.keydown)
-    $(document).on("keyup", game.events.keyup)
+    $(window).on(game.events)
 
   Game.unbindListeners = (game) ->
     return unless game.events?
-    $(document).off("keydown", game.events.keydown)
-    $(document).off("keyup", game.events.keyup)
+    $(window).off(game.events)
     game.events = undefined
 
   Game.events = (game) ->
@@ -108,7 +124,12 @@ define ["exports", "jquery", "map", "window", "tank", "bullet", "particle", "col
         when 68 # d
           game.tanks[0].rot = 0 if game.tanks[0].rot < 0
 
+    resize: (evt) ->
+      Game.resizeCanvas(game)
+
   Game.resizeCanvas = (game) ->
+    game.size.x = window.innerWidth
+    game.size.y = window.innerHeight
     game.dom.$canvas.attr("width", game.size.x)
     game.dom.$canvas.attr("height", game.size.y)
 
@@ -120,6 +141,9 @@ define ["exports", "jquery", "map", "window", "tank", "bullet", "particle", "col
     clearInterval(game.timer) if game.timer?
     game.timer = undefined
 
+  Game.finish = (game) ->
+    Game.deinit(game)
+
   Game.tick = (game) ->
     Game.update(game, game.tickLen)
     Game.draw(game)
@@ -127,28 +151,28 @@ define ["exports", "jquery", "map", "window", "tank", "bullet", "particle", "col
   Game.draw = (game) ->
     switch game.playerInfos.length
       when 1
-        Window.draw(game, game.tanks[0].pos,
+        Window.draw(game, game.tanks[0].pos, game.tanks[0],
           x: 0, y: 0, w: game.size.x, h: game.size.y, scale: 16)
       when 2
-        Window.draw(game, game.tanks[0].pos,
+        Window.draw(game, game.tanks[0].pos, game.tanks[0],
           x: 0, y: 0, w: game.size.x / 2, h: game.size.y, scale: 14)
-        Window.draw(game, game.tanks[1].pos,
+        Window.draw(game, game.tanks[1].pos, game.tanks[1],
           x: game.size.x / 2, y: 0, w: game.size.x / 2, h: game.size.y, scale: 14)
       when 3
-        Window.draw(game, game.tanks[0].pos,
+        Window.draw(game, game.tanks[0].pos, game.tanks[0],
           x: 0, y: 0, w: game.size.x / 3, h: game.size.y, scale: 13)
-        Window.draw(game, game.tanks[1].pos,
+        Window.draw(game, game.tanks[1].pos, game.tanks[1],
           x: game.size.x / 3, y: 0, w: game.size.x / 3, h: game.size.y, scale: 13)
-        Window.draw(game, game.tanks[2].pos,
+        Window.draw(game, game.tanks[2].pos, game.tanks[2],
           x: 2 *game.size.x / 3, y: 0, w: game.size.x / 3, h: game.size.y, scale: 13)
       when 4
-        Window.draw(game, game.tanks[0].pos,
+        Window.draw(game, game.tanks[0].pos, game.tanks[0],
           x: 0, y: 0, w: game.size.x / 2, h: game.size.y / 2, scale: 12)
-        Window.draw(game, game.tanks[1].pos,
+        Window.draw(game, game.tanks[1].pos, game.tanks[1],
           x: game.size.x / 2, y: 0, w: game.size.x / 2, h: game.size.y / 2, scale: 12)
-        Window.draw(game, game.tanks[2].pos,
+        Window.draw(game, game.tanks[2].pos, game.tanks[2],
           x: 0, y: game.size.y / 2, w: game.size.x / 2, h: game.size.y / 2, scale: 12)
-        Window.draw(game, game.tanks[3].pos,
+        Window.draw(game, game.tanks[3].pos, game.tanks[3],
           x: game.size.x / 2, y: game.size.y / 2, w: game.size.x / 2, h: game.size.y / 2, scale: 12)
       else
         throw new Error("Unknown layout for given count of players")

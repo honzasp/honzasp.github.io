@@ -2,10 +2,11 @@
 (function() {
   define(["particle"], function(Particle) {
     var Bullet;
-    Bullet = function(pos, vel, time) {
+    Bullet = function(pos, vel, time, owner) {
       this.pos = pos;
       this.vel = vel;
       this.time = time;
+      this.owner = owner != null ? owner : void 0;
       return this.isDead = false;
     };
     Bullet.RADIUS = 0.1;
