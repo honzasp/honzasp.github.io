@@ -1,5 +1,5 @@
-define ["map", "bullet"], (Map, Bullet) ->
-  Tank = {}
+define ["exports", "map", "bullet", "game"], (exports, Map, Bullet, Game) ->
+  Tank = exports
   Tank.RADIUS = 0.45
   Tank.WALL_DISTANCE = 0.01
   Tank.MASS = 100
@@ -9,14 +9,19 @@ define ["map", "bullet"], (Map, Bullet) ->
   Tank.BUMP_FACTOR = 0.3
   Tank.BULLET_SPEED = 100
   Tank.BULLET_TIME = 2
-  Tank.BULLET_DIST = 1.1
+  Tank.BULLET_DIST = 1.2
+  Tank.MAX_ENERGY = 100
+  Tank.MAX_MATTER = 100
 
-  Tank.init = (x, y, angle = 0) ->
+  Tank.init = (idx, x, y, angle = 0) ->
+    index: idx
     pos: {x, y}
     angle: angle
     vel: {x: 0, y: 0}
     acc: 0
     rot: 0
+    energy: Tank.MAX_ENERGY
+    matter: Tank.MAX_MATTER
 
   Tank.fire = (tank, game) ->
     pos =
@@ -30,6 +35,13 @@ define ["map", "bullet"], (Map, Bullet) ->
       y: relVel.y + tank.vel.y
     game.bullets.push(Bullet.init(pos, vel, Tank.BULLET_TIME))
     Tank.impulse(tank, x: -relVel.x * Bullet.MASS, y: -relVel.y * Bullet.MASS)
+
+  Tank.damage = (tank, game, dmg) ->
+    if tank.energy > dmg
+      tank.energy -= dmg
+    else
+      tank.energy = 0
+      Game.tankDestroyed(game, tank)
 
   Tank.impulse = (tank, imp) ->
     tank.vel.x += imp.x / Tank.MASS

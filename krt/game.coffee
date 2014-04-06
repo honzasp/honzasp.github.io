@@ -1,22 +1,23 @@
-define ["jquery", "map", "window", "tank", "bullet", "collisions"], \
-($, Map, Window, Tank, Bullet, Collisions) ->
-  Game = {}
+define ["exports", "jquery", "map", "window", "tank", "bullet", "particle", "collisions"], \
+(exports, $, Map, Window, Tank, Bullet, Particle, Collisions) ->
+  Game = exports
   Game.MAX_GARBAGE_RATIO = 0.5
   Game.BASE_SIZE = 8
   Game.BASE_DOOR_SIZE = 2
 
   Game.init = ($root, settings) ->
-    playerInits = Game.init.createPlayers(settings)
+    playerInfos = Game.init.createPlayers(settings)
     game = 
       dom: Game.init.prepareDom($root)
-      map: Game.init.createMap(settings, playerInits)
-      tanks: Game.init.createTanks(settings, playerInits)
+      map: Game.init.createMap(settings, playerInfos)
+      tanks: Game.createTank(game, info) for info in playerInfos
       bullets: []
+      particles: []
       size: {x: 800, y: 600}
       events: undefined
       tickLen: 1.0 / settings["fps"]
       timer: undefined
-      playerCount: settings.playerCount
+      playerInfos: playerInfos
 
     Game.resizeCanvas(game)
     Game.rebindListeners(game)
@@ -32,17 +33,17 @@ define ["jquery", "map", "window", "tank", "bullet", "collisions"], \
     for i in [0...settings.playerCount]
       x = Math.floor(Math.random() * (settings.mapWidth - Game.BASE_SIZE))
       y = Math.floor(Math.random() * (settings.mapHeight - Game.BASE_SIZE))
-      {x, y}
+      {index: i, base: {x, y}, destroyed: 0}
 
-  Game.init.createMap = (settings, playerInits) ->
+  Game.init.createMap = (settings, playerInfos) ->
     map = Map.init(settings.mapWidth, settings.mapHeight)
     for y in [2..20]
       for x in [3..13]
         Map.set(map, x, y, Map.ROCK)
     Map.set(map, 4, 3, Map.STEEL)
 
-    for playerInit in playerInits
-      {x, y} = playerInit
+    for playerInfo in playerInfos
+      {base: {x, y}} = playerInfo
       s = Game.BASE_SIZE
 
       for i in [0...s]
@@ -62,9 +63,13 @@ define ["jquery", "map", "window", "tank", "bullet", "collisions"], \
 
     map
 
-  Game.init.createTanks = (settings, playerInits) ->
-    for {x, y} in playerInits
-      Tank.init(x+Game.BASE_SIZE/2, y+Game.BASE_SIZE/2)
+  Game.createTank = (game, playerInfo) ->
+    {index: idx, base: {x, y}} = playerInfo
+    Tank.init(idx, x+Game.BASE_SIZE/2, y+Game.BASE_SIZE/2)
+
+  Game.tankDestroyed = (game, tank) ->
+    game.tanks[tank.index] = Game.createTank(game, game.playerInfos[tank.index])
+    game.playerInfos[tank.index].destroyed += 1
 
   Game.rebindListeners = (game) ->
     Game.unbindListeners(game) if game.events?
@@ -120,7 +125,7 @@ define ["jquery", "map", "window", "tank", "bullet", "collisions"], \
     Game.draw(game)
 
   Game.draw = (game) ->
-    switch game.playerCount
+    switch game.playerInfos.length
       when 1
         Window.draw(game, game.tanks[0].pos,
           x: 0, y: 0, w: game.size.x, h: game.size.y, scale: 16)
@@ -149,8 +154,9 @@ define ["jquery", "map", "window", "tank", "bullet", "collisions"], \
         throw new Error("Unknown layout for given count of players")
 
   Game.update = (game, t) ->
-    Game.updateTanks(game, t)
     Game.updateBullets(game, t)
+    Game.updateParticles(game, t)
+    Game.updateTanks(game, t)
 
   Game.updateTanks = (game, t) ->
     for i in [0...game.tanks.length]
@@ -166,21 +172,30 @@ define ["jquery", "map", "window", "tank", "bullet", "collisions"], \
     undefined
 
   Game.updateBullets = (game, t) ->
-    bullets = game.bullets
+    Game.updateLiving(game, game.bullets, (bullet) ->
+      Collisions.bullet(bullet, game, t)
+      Bullet.move(bullet, t)
+    )
+
+  Game.updateParticles = (game, t) ->
+    Game.updateLiving(game, game.particles, (particle) ->
+      Particle.move(particle, t)
+    )
+
+  Game.updateLiving = (game, objs, update) ->
     dead = 0
-    for i in [0...bullets.length]
-      unless bullets[i].isDead
-        Collisions.bullet(bullets[i], t, game.map, game.tanks)
-        Bullet.move(bullets[i], t)
+    for i in [0...objs.length]
+      unless objs[i].isDead
+        update(objs[i])
       else
         dead = dead + 1
 
-    if dead > bullets.length * Game.MAX_GARBAGE_RATIO
+    if dead > objs.length * Game.MAX_GARBAGE_RATIO
       p = 0
-      for i in [0...bullets.length]
-        unless bullets[i].isDead
-          bullets[p] = bullets[i]
+      for i in [0...objs.length]
+        unless objs[i].isDead
+          objs[p] = objs[i]
           p = p + 1
-      bullets.length = p
+      objs.length = p
 
   Game

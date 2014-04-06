@@ -60,6 +60,9 @@
       return map.ary[x * map.height + y] = val;
     };
     Map.contains = function(map, x, y) {
+      if (!(x === Math.floor(x) && y === Math.floor(y))) {
+        throw new Error("only integer coordinates allowed");
+      }
       return x >= 0 && x < map.width && y >= 0 && y < map.height;
     };
     return Map;

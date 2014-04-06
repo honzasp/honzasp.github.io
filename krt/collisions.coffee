@@ -1,4 +1,4 @@
-define ["map", "tank", "bullet"], (Map, Tank, Bullet) ->
+define ["map", "tank", "bullet", "particle"], (Map, Tank, Bullet, Particle) ->
   Collisions = {}
   Collisions.tankMap = (tank, map) ->
     pos = {x: tank.pos.x, y: tank.pos.y}
@@ -92,12 +92,15 @@ define ["map", "tank", "bullet"], (Map, Tank, Bullet) ->
     wallHit = null
 
     hit = (x, y, mapX, mapY, d) ->
+      return unless d >= 0
       unless mapX >= 0 and mapX < map.width and mapY >= 0 and mapY < map.height
         wallHit = {d:Infinity, pos: {x,y}}
       else
         return if Map.get(map, mapX, mapY) == Map.EMPTY
         if !wallHit or d < wallHit.d
           wallHit = {d, pos: {x,y}, map: {x:mapX, y:mapY}}
+
+    hit(start.x, start.y, Math.floor(start.x), Math.floor(start.y), 0)
 
     northEdges = ->
       y = Math.ceil(start.y)
@@ -109,7 +112,7 @@ define ["map", "tank", "bullet"], (Map, Tank, Bullet) ->
       undefined
 
     southEdges = ->
-      y = Math.floor(start.y)
+      y = Math.floor(start.y) - 1
       while y > Math.floor(end.y)
         d = (start.y - y - 1) / (start.y - end.y)
         x = start.x + (end.x - start.x) * d
@@ -127,13 +130,29 @@ define ["map", "tank", "bullet"], (Map, Tank, Bullet) ->
       undefined
 
     eastEdges = ->
-      x = Math.floor(start.x)
+      x = Math.floor(start.x) - 1
       while x > Math.floor(end.x)
         d = (start.x - x - 1) / (start.x - end.x)
         y = start.y + (end.y - start.y) * d
         hit(x, y, x, Math.floor(y), d)
         x = x - 1
       undefined
+
+    if false
+      northEdges = ->
+        y = Math.ceil(start.y)
+        while y <= Math.floor(end.y)
+          d = (y - start.y) / (end.y - start.y)
+          x = d*(end.x - start.x) + start.x
+          hit(x, y, Math.floor(x), y, d)
+          y = y + 1
+        undefined
+      southEdges = ->
+        undefined
+      westEdges = ->
+        undefined
+      eastEdges = ->
+        undefined
 
     northEdges()
     southEdges()
@@ -167,11 +186,12 @@ define ["map", "tank", "bullet"], (Map, Tank, Bullet) ->
     else
       []
 
-  Collisions.bullet = (bullet, t, map, tanks) ->
+  Collisions.bullet = (bullet, game, t) ->
+    {tanks, map} = game
     start = {x: bullet.pos.x, y: bullet.pos.y}
     end = {x: bullet.pos.x + bullet.vel.x*t, y: bullet.pos.y + bullet.vel.y*t}
-    end.x = end.x + 0.001 if end.x == start.x
-    end.y = end.y + 0.001 if end.y == start.y
+    end.x = end.x + 0.001 if Math.abs(end.x - start.x) < 0.001
+    end.y = end.y + 0.001 if Math.abs(end.y - start.y) < 0.001
 
     nearestHit = lineMap(start, end, map)
 
@@ -183,9 +203,19 @@ define ["map", "tank", "bullet"], (Map, Tank, Bullet) ->
     if nearestHit
       bullet.isDead = true
       if (m = nearestHit.map)?
-        Map.set(map, m.x, m.y, Map.EMPTY)
+        toughness = Map.squares[Map.get(map, m.x, m.y)].toughness
+        if Math.random() > toughness
+          Map.set(map, m.x, m.y, Map.EMPTY)
       if (t = nearestHit.tank)?
         Tank.impulse(t, x: bullet.vel.x * Bullet.MASS, y: bullet.vel.y * Bullet.MASS)
+        Tank.damage(t, game, Bullet.DAMAGE)
+
+      for i in [0...20]
+        angle = Math.random() * 2*Math.PI
+        pos = {x: nearestHit.pos.x, y: nearestHit.pos.y}
+        speed = Math.random() * 10 + 2
+        vel = {x: Math.sin(angle) * speed, y: Math.cos(angle) * speed}
+        game.particles.push(Particle.init(pos, vel, 0.2, Math.random()*0.4+0.1, "rgba(255,100,100,0.3)"))
 
     undefined
 

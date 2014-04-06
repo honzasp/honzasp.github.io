@@ -33,6 +33,7 @@ define [], ->
     map.ary[x * map.height + y] = val
 
   Map.contains = (map, x, y) ->
+    throw new Error("only integer coordinates allowed") unless x == Math.floor(x) and y == Math.floor(y)
     x >= 0 and x < map.width and y >= 0 and y < map.height
 
   Map

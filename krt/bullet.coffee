@@ -3,6 +3,7 @@ define [], () ->
   Bullet.RADIUS = 0.1
   Bullet.DESTROY_PROB = 0.2
   Bullet.MASS = 2
+  Bullet.DAMAGE = 60
 
   Bullet.init = (pos, vel, time) ->
     { pos, vel, time, isDead: false }
