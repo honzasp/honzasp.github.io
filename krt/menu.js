@@ -239,6 +239,25 @@
               });
             }
             return _results;
+          })(),
+          mode: (function() {
+            switch (state.modes.mode) {
+              case "time":
+                return {
+                  mode: "time",
+                  time: state.modes.time
+                };
+              case "lives":
+                return {
+                  mode: "lives",
+                  lives: state.modes.lives
+                };
+              case "hits":
+                return {
+                  mode: "hits",
+                  hits: state.modes.hits
+                };
+            }
           })()
         };
         game = Game.init(settings, function() {});

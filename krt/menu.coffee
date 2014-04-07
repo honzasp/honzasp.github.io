@@ -236,6 +236,14 @@ define ["jquery", "game"], ($, Game) ->
         fps: state.fps
         playerDefs: for i in [0...state.playerCount]
           keys: $.extend({}, state.playerDefs[i].keys)
+        mode: switch state.modes.mode
+          when "time"
+            { mode: "time", time: state.modes.time }
+          when "lives"
+            { mode: "lives", lives: state.modes.lives }
+          when "hits"
+            { mode: "hits", hits: state.modes.hits }
+
 
       game = Game.init(settings, ->)
       Game.start(game)

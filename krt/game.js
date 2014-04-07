@@ -31,7 +31,9 @@
         tickLen: 1.0 / settings["fps"],
         timer: void 0,
         playerInfos: playerInfos,
-        callback: callback
+        callback: callback,
+        mode: settings.mode,
+        time: 0
       };
       Game.resizeCanvas(game);
       Game.rebindListeners(game);
@@ -75,7 +77,7 @@
             x: x,
             y: y
           },
-          lives: settings.startLives,
+          destroyed: 0,
           hits: 0,
           keys: def.keys
         });
@@ -134,7 +136,18 @@
       if (guilty != null) {
         game.playerInfos[guilty].hits += 1;
       }
-      game.playerInfos[index].lives -= 1;
+      game.playerInfos[index].destroyed += 1;
+      switch (game.mode.mode) {
+        case "lives":
+          if (game.playerInfos[index].destroyed >= game.mode.lives) {
+            Game.finish(game);
+          }
+          break;
+        case "hits":
+          if ((guilty != null) && game.playerInfos[guilty].hits >= game.mode.hits) {
+            Game.finish(game);
+          }
+      }
       if (game.playerInfos[index].lives <= 0) {
         return Game.finish(game);
       }
@@ -319,6 +332,7 @@
     };
     Game.finish = function(game) {
       var $box, $okBtn;
+      Game.stop(game);
       $box = $("<div class='finish-box' />").appendTo(game.dom.$main);
       $box.css({
         "position": "absolute",
@@ -338,7 +352,7 @@
       _ref = game.playerInfos;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         info = _ref[_i];
-        $("<li />").text("" + info.index + ": " + info.lives + " lives, " + info.hits + " hits").appendTo($list);
+        $("<li />").text("" + info.index + ": -" + info.destroyed + "/+" + info.hits).appendTo($list);
       }
       return $list;
     };
@@ -429,7 +443,14 @@
     Game.update = function(game, t) {
       Game.updateBullets(game, t);
       Game.updateParticles(game, t);
-      return Game.updateTanks(game, t);
+      Game.updateTanks(game, t);
+      game.time += t;
+      switch (game.mode.mode) {
+        case "time":
+          if (game.time > game.mode.time) {
+            return Game.finish(game);
+          }
+      }
     };
     Game.updateTanks = function(game, t) {
       var i, j, _i, _j, _k, _l, _ref, _ref1, _ref2, _ref3, _ref4;

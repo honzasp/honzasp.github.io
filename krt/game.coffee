@@ -19,6 +19,8 @@ define ["exports", "jquery", "map", "window", "tank", "bullet", "particle", "col
       timer: undefined
       playerInfos: playerInfos
       callback: callback
+      mode: settings.mode
+      time: 0
 
     Game.resizeCanvas(game)
     Game.rebindListeners(game)
@@ -44,7 +46,7 @@ define ["exports", "jquery", "map", "window", "tank", "bullet", "particle", "col
     for def, idx in settings.playerDefs
       x = Math.floor(Math.random() * (settings.mapWidth - Game.BASE_SIZE))
       y = Math.floor(Math.random() * (settings.mapHeight - Game.BASE_SIZE))
-      {index: idx, base: {x, y}, lives: settings.startLives, hits: 0, keys: def.keys}
+      {index: idx, base: {x, y}, destroyed: 0, hits: 0, keys: def.keys}
 
   Game.init.createMap = (settings, playerInfos) ->
     map = Map.init(settings.mapWidth, settings.mapHeight)
@@ -88,7 +90,15 @@ define ["exports", "jquery", "map", "window", "tank", "bullet", "particle", "col
   Game.tankDestroyed = (game, index, guilty = undefined) ->
     game.tanks[index] = Game.createTank(game, game.playerInfos[index])
     game.playerInfos[guilty].hits += 1 if guilty?
-    game.playerInfos[index].lives -= 1
+    game.playerInfos[index].destroyed += 1
+    switch game.mode.mode
+      when "lives"
+        if game.playerInfos[index].destroyed >= game.mode.lives
+          Game.finish(game)
+      when "hits"
+        if guilty? and game.playerInfos[guilty].hits >= game.mode.hits
+          Game.finish(game)
+
     if game.playerInfos[index].lives <= 0
       Game.finish(game)
 
@@ -189,6 +199,7 @@ define ["exports", "jquery", "map", "window", "tank", "bullet", "particle", "col
     Game.start(game)
 
   Game.finish = (game) ->
+    Game.stop(game)
     $box = $("<div class='finish-box' />").appendTo(game.dom.$main)
     $box.css
       "position": "absolute"
@@ -204,7 +215,7 @@ define ["exports", "jquery", "map", "window", "tank", "bullet", "particle", "col
     $list = $("<ul />")
     for info in game.playerInfos
       $("<li />")\
-        .text("#{info.index}: #{info.lives} lives, #{info.hits} hits")\
+        .text("#{info.index}: -#{info.destroyed}/+#{info.hits}")\
         .appendTo($list)
     $list
 
@@ -246,6 +257,12 @@ define ["exports", "jquery", "map", "window", "tank", "bullet", "particle", "col
     Game.updateBullets(game, t)
     Game.updateParticles(game, t)
     Game.updateTanks(game, t)
+
+    game.time += t
+    switch game.mode.mode
+      when "time"
+        if game.time > game.mode.time
+          Game.finish(game)
 
   Game.updateTanks = (game, t) ->
     for i in [0...game.tanks.length]

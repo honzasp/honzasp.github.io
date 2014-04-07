@@ -62,12 +62,21 @@ define ["map"], (Map) ->
         info = game.playerInfos[tank.index]
         weapon = tank.weapons[tank.activeWeapon]
         progress = Array(Math.floor(weapon.temperature * 10) + 1).join(".")
+        game_state = switch game.mode.mode
+          when "time"
+            "#{Math.max(0, Math.floor(game.mode.time - game.time))} s"
+          when "lives"
+            "#{game.mode.lives - info.destroyed}/#{game.mode.lives} lives"
+          when "hits"
+            "#{info.hits}/#{game.mode.hits} hits"
+
         stat = 
           "E #{Math.floor(tank.energy)} " +
-          "L #{info.lives} " +
-          "H #{info.hits} | " +
+          "-#{info.destroyed}/" +
+          "+#{info.hits} | " +
           "#{weapon.spec.name} " +
-          "#{progress}"
+          "#{progress} | " +
+          "#{game_state}"
 
         ctx.font = Window.STAT_FONT
         ctx.textAlign = "left"
