@@ -6,11 +6,11 @@
     Game.MAX_GARBAGE_RATIO = 0.5;
     Game.BASE_SIZE = 8;
     Game.BASE_DOOR_SIZE = 2;
-    Game.init = function($root, settings, callback) {
+    Game.init = function(settings, callback) {
       var game, info, playerInfos;
       playerInfos = Game.init.createPlayers(settings);
       game = {
-        dom: Game.init.prepareDom($root, game),
+        dom: Game.init.prepareDom(game),
         map: Game.init.createMap(settings, playerInfos),
         tanks: (function() {
           var _i, _len, _results;
@@ -37,13 +37,15 @@
       Game.rebindListeners(game);
       return game;
     };
-    Game.init.prepareDom = function($root, game) {
-      var $canvas, $main, ctx;
-      $main = $("<div />").appendTo($root);
-      $canvas = $("<canvas />").appendTo($main);
+    Game.init.prepareDom = function(game) {
+      var $body, $canvas, $main, $oldBody, ctx;
+      $oldBody = $("body").detach();
+      $body = $("<body>").appendTo($("html"));
+      $main = $("<div>").appendTo($body);
+      $canvas = $("<canvas>").appendTo($main);
       $canvas.css({
         "display": "block",
-        "position": "absolute",
+        "position": "fixed",
         "top": "0px",
         "left": "0px",
         "margin": "0px",
@@ -51,7 +53,8 @@
       });
       ctx = $canvas[0].getContext("2d");
       return {
-        $root: $root,
+        $body: $body,
+        $oldBody: $oldBody,
         $main: $main,
         $canvas: $canvas,
         ctx: ctx,
@@ -119,7 +122,8 @@
     Game.deinit = function(game) {
       Game.stop(game);
       Game.unbindListeners(game);
-      game.dom.$main.remove();
+      game.dom.$body.remove();
+      game.dom.$oldBody.appendTo($("html"));
       return game.callback();
     };
     Game.tankDestroyed = function(game, index, guilty) {
@@ -295,11 +299,12 @@
       setTimeout((function() {
         return $quitBtn.removeAttr("disabled");
       }), 1500);
+      Game.createResults(game).appendTo($box);
       $resumeBtn.click(function() {
         return Game.resume(game);
       });
       $quitBtn.click(function() {
-        return Game.finish(game);
+        return Game.deinit(game);
       });
       return $box;
     };
@@ -313,7 +318,29 @@
       return Game.start(game);
     };
     Game.finish = function(game) {
-      return Game.deinit(game);
+      var $box, $okBtn;
+      $box = $("<div class='finish-box' />").appendTo(game.dom.$main);
+      $box.css({
+        "position": "absolute",
+        "top": "100px",
+        "left": "100px",
+        "background": "#fff"
+      });
+      Game.createResults(game).appendTo($box);
+      $okBtn = $("<input type='button' name='ok' value='Ok'>").appendTo($box);
+      return $okBtn.click(function() {
+        return Game.deinit(game);
+      });
+    };
+    Game.createResults = function(game) {
+      var $list, info, _i, _len, _ref;
+      $list = $("<ul />");
+      _ref = game.playerInfos;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        info = _ref[_i];
+        $("<li />").text("" + info.index + ": " + info.lives + " lives, " + info.hits + " hits").appendTo($list);
+      }
+      return $list;
     };
     Game.tick = function(game) {
       Game.update(game, game.tickLen);

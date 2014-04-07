@@ -5,10 +5,10 @@ define ["exports", "jquery", "map", "window", "tank", "bullet", "particle", "col
   Game.BASE_SIZE = 8
   Game.BASE_DOOR_SIZE = 2
 
-  Game.init = ($root, settings, callback) ->
+  Game.init = (settings, callback) ->
     playerInfos = Game.init.createPlayers(settings)
     game = 
-      dom: Game.init.prepareDom($root, game)
+      dom: Game.init.prepareDom(game)
       map: Game.init.createMap(settings, playerInfos)
       tanks: Game.createTank(game, info) for info in playerInfos
       bullets: []
@@ -24,19 +24,21 @@ define ["exports", "jquery", "map", "window", "tank", "bullet", "particle", "col
     Game.rebindListeners(game)
     game
 
-  Game.init.prepareDom = ($root, game) ->
-    $main = $("<div />").appendTo($root)
-    $canvas = $("<canvas />").appendTo($main)
+  Game.init.prepareDom = (game) ->
+    $oldBody = $("body").detach()
+    $body = $("<body>").appendTo($("html"))
+    $main = $("<div>").appendTo($body)
+    $canvas = $("<canvas>").appendTo($main)
     $canvas.css
       "display": "block"
-      "position": "absolute"
+      "position": "fixed"
       "top": "0px"
       "left": "0px"
       "margin": "0px"
       "padding": "0px"
     ctx = $canvas[0].getContext("2d")
 
-    { $root, $main, $canvas, ctx, $pauseBox: undefined }
+    { $body, $oldBody, $main, $canvas, ctx, $pauseBox: undefined }
 
   Game.init.createPlayers = (settings) ->
     for def, idx in settings.playerDefs
@@ -79,7 +81,8 @@ define ["exports", "jquery", "map", "window", "tank", "bullet", "particle", "col
   Game.deinit = (game) ->
     Game.stop(game)
     Game.unbindListeners(game)
-    game.dom.$main.remove()
+    game.dom.$body.remove()
+    game.dom.$oldBody.appendTo($("html"))
     game.callback()
 
   Game.tankDestroyed = (game, index, guilty = undefined) ->
@@ -172,8 +175,10 @@ define ["exports", "jquery", "map", "window", "tank", "bullet", "particle", "col
     $quitBtn.attr("disabled", "disabled")
     setTimeout((-> $quitBtn.removeAttr("disabled")), 1500)
 
+    Game.createResults(game).appendTo($box)
+
     $resumeBtn.click -> Game.resume(game)
-    $quitBtn.click -> Game.finish(game)
+    $quitBtn.click -> Game.deinit(game)
 
     $box
 
@@ -184,7 +189,25 @@ define ["exports", "jquery", "map", "window", "tank", "bullet", "particle", "col
     Game.start(game)
 
   Game.finish = (game) ->
-    Game.deinit(game)
+    $box = $("<div class='finish-box' />").appendTo(game.dom.$main)
+    $box.css
+      "position": "absolute"
+      "top": "100px"
+      "left": "100px"
+      "background": "#fff"
+
+    Game.createResults(game).appendTo($box)
+    $okBtn = $("<input type='button' name='ok' value='Ok'>").appendTo($box)
+    $okBtn.click -> Game.deinit(game)
+
+  Game.createResults = (game) ->
+    $list = $("<ul />")
+    for info in game.playerInfos
+      $("<li />")\
+        .text("#{info.index}: #{info.lives} lives, #{info.hits} hits")\
+        .appendTo($list)
+    $list
+
 
   Game.tick = (game) ->
     Game.update(game, game.tickLen)

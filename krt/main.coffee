@@ -1,2 +1,2 @@
 require ["jquery", "menu"], ($, Menu) ->
-  Menu.init($("#krt"))
+  Menu($("#krt"))
