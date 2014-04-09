@@ -195,7 +195,7 @@
         });
         $players.find("input[name=remove-player]").click(function() {
           if (state.playerCount > 0) {
-            $players.find(".players-list li:last-child").remove();
+            $players.find(".players-list>li:last-child").remove();
             state.playerCount -= 1;
             $players.trigger("changed-players.krt");
             return save();

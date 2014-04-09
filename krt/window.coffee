@@ -25,6 +25,8 @@ define ["map"], (Map) ->
         bullet.draw(ctx) unless bullet.isDead
       for particle in game.particles
         particle.draw(ctx) unless particle.isDead
+      for bonus in game.bonuses
+        bonus.draw(ctx) unless bonus.isDead
 
       ctx.restore()
 
@@ -72,6 +74,7 @@ define ["map"], (Map) ->
 
         stat = 
           "E #{Math.floor(tank.energy)} " +
+          "M #{Math.floor(tank.mass)} " +
           "-#{info.destroyed}/" +
           "+#{info.hits} | " +
           "#{weapon.spec.name} " +

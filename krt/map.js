@@ -31,7 +31,9 @@
     };
     Map.squares[Map.ROCK] = {
       color: "#aaa",
-      toughness: 0.4
+      toughness: 0.4,
+      energy: 30,
+      mass: 20
     };
     Map.squares[Map.CONCRETE] = {
       color: "#ccc",

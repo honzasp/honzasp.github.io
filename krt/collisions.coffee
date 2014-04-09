@@ -1,9 +1,10 @@
-define ["map", "tank", "bullet", "particle", "weapon"], (Map, Tank, Bullet, Particle, Weapon) ->
+define ["map", "tank", "bullet", "particle", "weapon", "bonus"], \
+(Map, Tank, Bullet, Particle, Weapon, Bonus) ->
   Collisions = {}
   Collisions.tankMap = (tank, map) ->
     pos = {x: tank.pos.x, y: tank.pos.y}
     vel = {x: tank.vel.x, y: tank.vel.y}
-    r = Tank.RADIUS
+    r = tank.radius
 
     edgeW = (x, y) ->
       if y < pos.y and pos.y < y + 1 and pos.x < x and pos.x + r > x
@@ -64,29 +65,30 @@ define ["map", "tank", "bullet", "particle", "weapon"], (Map, Tank, Bullet, Part
   Collisions.tankTank = (tank1, tank2) ->
     d = {x: tank1.pos.x - tank2.pos.x, y: tank1.pos.y - tank2.pos.y}
     l = Math.sqrt(d.x*d.x + d.y*d.y)
-    r = Tank.RADIUS
+    r1 = tank1.radius
+    r2 = tank2.radius
 
-    if l < 2*r
+    if l < r1+r2
       u = {x: d.x / l, y: d.y / l}
       tank1.pos =
-        x: tank1.pos.x + u.x * (r-l/2)
-        y: tank1.pos.y + u.y * (r-l/2)
+        x: tank1.pos.x + u.x * (r1-l/2)
+        y: tank1.pos.y + u.y * (r1-l/2)
       tank2.pos =
-        x: tank2.pos.x - u.x * (r-l/2)
-        y: tank2.pos.y - u.y * (r-l/2)
+        x: tank2.pos.x - u.x * (r2-l/2)
+        y: tank2.pos.y - u.y * (r2-l/2)
 
-      vel1 = tank1.vel
-      vel2 = tank2.vel
-      velP1 = vel1.x * u.y - vel1.y * u.x
-      velP2 = vel2.x * u.y - vel2.y * u.x
+      mom1 = {x: tank1.vel.x * tank1.mass, y: tank1.vel.y * tank1.mass}
+      mom2 = {x: tank2.vel.x * tank2.mass, y: tank2.vel.y * tank2.mass}
+      momP1 = mom1.x * u.y - mom1.y * u.x
+      momP2 = mom2.x * u.y - mom2.y * u.x
 
-      tank1.vel = 
-        x: velP1*u.y + vel2.x - velP2*u.y
-        y: velP1*(-u.x) + vel2.y - velP1*(-u.x)
+      tank1.vel =
+        x: (momP1*u.y + mom2.x - momP2*u.y) / tank1.mass
+        y: (momP1*(-u.x) + mom2.y - momP2*(-u.x)) / tank1.mass
 
       tank2.vel =
-        x: velP2*u.y + vel1.x - velP1*u.y
-        y: velP2*(-u.x) + vel1.y - velP1*(-u.x)
+        x: (momP2*u.y + mom1.x - momP1*u.y) / tank2.mass
+        y: (momP2*(-u.x) + mom1.y - momP1*(-u.x)) / tank2.mass
 
   lineMap = (start, end, map) ->
     wallHit = null
@@ -162,7 +164,7 @@ define ["map", "tank", "bullet", "particle", "weapon"], (Map, Tank, Bullet, Part
     wallHit
 
   lineTank = (start, end, tank) ->
-    [s, e, p, r] = [start, end, tank.pos, Tank.RADIUS]
+    [s, e, p, r] = [start, end, tank.pos, tank.radius]
     ds = solveQuad \
       (e.x-s.x)*(e.x-s.x) + (e.y-s.y)*(e.y-s.y),
       2*(e.x-s.x)*(s.x-p.x) + 2*(e.y-s.y)*(s.y-p.y),
@@ -195,8 +197,8 @@ define ["map", "tank", "bullet", "particle", "weapon"], (Map, Tank, Bullet, Part
 
     nearestHit = lineMap(start, end, map)
 
-    for i in [0...tanks.length]
-      if tankHit = lineTank(start, end, tanks[i])
+    for tank in tanks
+      if tankHit = lineTank(start, end, tank)
         if !nearestHit or tankHit.d < nearestHit.d
           nearestHit = tankHit
 
@@ -205,9 +207,23 @@ define ["map", "tank", "bullet", "particle", "weapon"], (Map, Tank, Bullet, Part
       spec = bullet.spec
 
       if (m = nearestHit.map)?
-        toughness = Map.squares[Map.get(map, m.x, m.y)].toughness
+        {toughness, energy, mass} = Map.squares[Map.get(map, m.x, m.y)]
         if Math.pow(toughness, spec.damage) < Math.random()
           Map.set(map, m.x, m.y, Map.EMPTY)
+          gain = 
+            if energy? and ((mass? and Math.random() < 0.5) or not mass?)
+              energy: energy*(0.5 + Math.random())
+            else if mass?
+              mass: mass*(0.5 + Math.random())
+          if gain?
+            pos = { x: m.x + 0.5, y: m.y + 0.5 }
+            angle = Math.random() * 2*Math.PI
+            speed = Bonus.SPEED * (0.5 + Math.random())
+            vel = { x: Math.sin(angle) * speed, y: Math.cos(angle) * speed }
+            radiusSinVel = Bonus.RADIUS_SIN_VEL * (0.5 + Math.random())
+            bonus = new Bonus(pos, vel, gain, radiusSinVel)
+            game.bonuses.push(bonus)
+
       if (tank = nearestHit.tank)?
         tank.impulse(x: bullet.vel.x * spec.mass, y: bullet.vel.y * spec.mass)
         tank.damage(game, spec.damage, bullet.owner)
@@ -218,8 +234,8 @@ define ["map", "tank", "bullet", "particle", "weapon"], (Map, Tank, Bullet, Part
           angle = 2*Math.PI * Math.random()
           posX = Math.sin(angle) * Weapon.FRAGMENT_RADIUS + nearestHit.pos.x
           posY = Math.cos(angle) * Weapon.FRAGMENT_RADIUS + nearestHit.pos.y
-          velX = Math.sin(angle) * fragment.speed + bullet.vel.x
-          velY = Math.cos(angle) * fragment.speed + bullet.vel.y
+          velX = Math.sin(angle) * fragment.speed
+          velY = Math.cos(angle) * fragment.speed
           bullet = new Bullet(
             {x: nearestHit.pos.x, y: nearestHit.pos.y},
             {x: velX, y: velY},
@@ -229,5 +245,15 @@ define ["map", "tank", "bullet", "particle", "weapon"], (Map, Tank, Bullet, Part
       spec.boom(game, nearestHit.pos)
 
     undefined
+
+  Collisions.bonus = (bonus, game, t) ->
+    for tank in game.tanks
+      dx = tank.pos.x - bonus.pos.x
+      dy = tank.pos.y - bonus.pos.y
+      l = Math.sqrt(dx*dx + dy*dy)
+      if l < bonus.radius + tank.radius
+        tank.receive(game, bonus.content)
+        bonus.isDead = true
+        break
 
   Collisions

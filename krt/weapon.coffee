@@ -16,7 +16,7 @@ define ["boom"], (Boom) ->
       boom: Boom.boom
         count: 8, speed: 20, time: 0.2, radius: 0.2, color: "#f00"
     energy: 0.5
-    cooldown: 0.1
+    cooldown: 0.05
     angleVariance: 2*Math.PI / 50
 
   Weapon.Autocannon =

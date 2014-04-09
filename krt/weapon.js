@@ -25,7 +25,7 @@
         })
       },
       energy: 0.5,
-      cooldown: 0.1,
+      cooldown: 0.05,
       angleVariance: 2 * Math.PI / 50
     };
     Weapon.Autocannon = {

@@ -23,7 +23,7 @@
       };
       drawObjects = function() {
         return (function() {
-          var bullet, particle, tank1, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2;
+          var bonus, bullet, particle, tank1, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2, _ref3;
           ctx.save();
           _ref = game.tanks;
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -42,6 +42,13 @@
             particle = _ref2[_k];
             if (!particle.isDead) {
               particle.draw(ctx);
+            }
+          }
+          _ref3 = game.bonuses;
+          for (_l = 0, _len3 = _ref3.length; _l < _len3; _l++) {
+            bonus = _ref3[_l];
+            if (!bonus.isDead) {
+              bonus.draw(ctx);
             }
           }
           return ctx.restore();
@@ -98,7 +105,7 @@
                 return "" + info.hits + "/" + game.mode.hits + " hits";
             }
           })();
-          stat = ("E " + (Math.floor(tank.energy)) + " ") + ("-" + info.destroyed + "/") + ("+" + info.hits + " | ") + ("" + weapon.spec.name + " ") + ("" + progress + " | ") + ("" + game_state);
+          stat = ("E " + (Math.floor(tank.energy)) + " ") + ("M " + (Math.floor(tank.mass)) + " ") + ("-" + info.destroyed + "/") + ("+" + info.hits + " | ") + ("" + weapon.spec.name + " ") + ("" + progress + " | ") + ("" + game_state);
           ctx.font = Window.STAT_FONT;
           ctx.textAlign = "left";
           ctx.fillStyle = Window.STAT_COLOR;

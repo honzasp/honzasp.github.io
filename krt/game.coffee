@@ -13,6 +13,7 @@ define ["exports", "jquery", "map", "window", "tank", "bullet", "particle", "col
       tanks: Game.createTank(game, info) for info in playerInfos
       bullets: []
       particles: []
+      bonuses: []
       size: {x: 800, y: 600}
       events: undefined
       tickLen: 1.0 / settings["fps"]
@@ -256,6 +257,7 @@ define ["exports", "jquery", "map", "window", "tank", "bullet", "particle", "col
   Game.update = (game, t) ->
     Game.updateBullets(game, t)
     Game.updateParticles(game, t)
+    Game.updateBonuses(game, t)
     Game.updateTanks(game, t)
 
     game.time += t
@@ -265,40 +267,46 @@ define ["exports", "jquery", "map", "window", "tank", "bullet", "particle", "col
           Game.finish(game)
 
   Game.updateTanks = (game, t) ->
-    for i in [0...game.tanks.length]
+    for i in [0...game.tanks.length] by 1
       game.tanks[i].update(game, t)
 
-    for i in [0...game.tanks.length]
-      for j in [i+1...game.tanks.length]
+    for i in [0...game.tanks.length] by 1
+      for j in [i+1...game.tanks.length] by 1
         Collisions.tankTank(game.tanks[i], game.tanks[j])
 
-    for i in [0...game.tanks.length]
+    for i in [0...game.tanks.length] by 1
       Collisions.tankMap(game.tanks[i], game.map)
 
     undefined
 
   Game.updateBullets = (game, t) ->
-    Game.updateLiving(game, game.bullets, (bullet) ->
+    Game.updateLive(game, game.bullets, (bullet) ->
       Collisions.bullet(bullet, game, t)
       bullet.move(t)
     )
 
   Game.updateParticles = (game, t) ->
-    Game.updateLiving(game, game.particles, (particle) ->
+    Game.updateLive(game, game.particles, (particle) ->
       particle.move(t)
     )
 
-  Game.updateLiving = (game, objs, update) ->
+  Game.updateBonuses = (game, t) ->
+    Game.updateLive(game, game.bonuses, (bonus) ->
+      Collisions.bonus(bonus, game, t)
+      bonus.update(t)
+    )
+
+  Game.updateLive = (game, objs, update) ->
     dead = 0
-    for i in [0...objs.length]
-      unless objs[i].isDead
-        update(objs[i])
+    for obj in objs
+      unless obj.isDead
+        update(obj)
       else
         dead = dead + 1
 
     if dead > objs.length * Game.MAX_GARBAGE_RATIO
       p = 0
-      for i in [0...objs.length]
+      for i in [0...objs.length] by 1
         unless objs[i].isDead
           objs[p] = objs[i]
           p = p + 1

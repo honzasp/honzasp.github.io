@@ -7,7 +7,8 @@ define ["map", "weapon", "bullet", "game"], (Map, Weapon, Bullet, Game) ->
     @acc = 0
     @rot = 0
     @firing = false
-    @energy = Tank.MAX_ENERGY
+    @.setEnergy(Tank.START_ENERGY)
+    @.setMass(Tank.START_MASS)
     @weapons = [
       new Weapon(Weapon.MachineGun)
       new Weapon(Weapon.Autocannon)
@@ -16,31 +17,33 @@ define ["map", "weapon", "bullet", "game"], (Map, Weapon, Bullet, Game) ->
     @activeWeapon = 0
 
 
-  Tank.RADIUS = 0.45
   Tank.WALL_DISTANCE = 0.01
-  Tank.MASS = 100
   Tank.FORCE = 1000
   Tank.FRICTION = 100
   Tank.ANGULAR_SPEED = 1.5*Math.PI
   Tank.FIRING_ANGULAR_SPEED = 0.5*Math.PI
   Tank.BUMP_FACTOR = 0.3
   Tank.BULLET_DIST = 1.2
-  Tank.MAX_ENERGY = 100
+  Tank.START_ENERGY = 1000
+  Tank.START_MASS = 100
+  Tank.MIN_FIRE_ENERGY = 10
+  Tank.MIN_MASS = 50
+  Tank.LIVE_ENERGY_CONSUM = 2
+  Tank.MOVE_ENERGY_CONSUM = 5
+  Tank.DENSITY = 100
 
   Tank::change = ->
     @activeWeapon = (@activeWeapon + 1) % @weapons.length
 
   Tank::fire = (game) ->
-    spec = @weapons[@activeWeapon].spec
-    if @energy > spec.energy
-      @energy -= spec.energy
-      @weapons[@activeWeapon].temperature = spec.cooldown
-    else
-      return
+    {spec} = weapon = @weapons[@activeWeapon]
+    return unless weapon.temperature <= 0
+    return unless @mass - spec.bullet.mass >= Tank.MIN_MASS
+    return unless @energy - spec.energy >= Tank.MIN_FIRE_ENERGY
 
     angle = @angle + (2*spec.angleVariance * Math.random()) - spec.angleVariance
-    posX = @pos.x + Math.sin(angle) * Tank.RADIUS * Tank.BULLET_DIST
-    posY = @pos.y + Math.cos(angle) * Tank.RADIUS * Tank.BULLET_DIST
+    posX = @pos.x + Math.sin(angle) * @radius * Tank.BULLET_DIST
+    posY = @pos.y + Math.cos(angle) * @radius * Tank.BULLET_DIST
     relVelX = Math.sin(angle) * spec.bullet.speed
     relVelY = Math.cos(angle) * spec.bullet.speed
 
@@ -49,43 +52,63 @@ define ["map", "weapon", "bullet", "game"], (Map, Weapon, Bullet, Game) ->
       {x: @vel.x + relVelX, y: @vel.y + relVelY},
       spec.bullet, @index))
 
+    weapon.temperature = spec.cooldown
+    @.setMass(@mass - spec.bullet.mass, game)
+    @.setEnergy(@energy - spec.energy, game)
     @.impulse(x: -relVelX * spec.bullet.mass, y: -relVelY * spec.bullet.mass)
 
   Tank::damage = (game, dmg, guilty = undefined) ->
-    if @energy > dmg
-      @energy -= dmg
-    else
+    @.setEnergy(@energy - dmg, game, guilty)
+
+  Tank::receive = (game, content) ->
+    if content.energy?
+      @.setEnergy(@energy + content.energy, game)
+    if content.mass?
+      @.setMass(@mass + content.mass, game)
+
+  Tank::setEnergy = (energy, game, guilty = undefined) ->
+    if energy < 0
       @energy = 0
+      Game.tankDestroyed(game, @index, guilty)
+    else
+      @energy = energy
+
+  Tank::setMass = (mass, game, guilty = undefined) ->
+    @mass = mass
+    @radius = Math.sqrt(@mass / Tank.DENSITY / Math.PI)
+    if mass < Tank.MIN_MASS
       Game.tankDestroyed(game, @index, guilty)
 
   Tank::impulse = (imp) ->
-    @vel.x += imp.x / Tank.MASS
-    @vel.y += imp.y / Tank.MASS
+    @vel.x += imp.x / @mass
+    @vel.y += imp.y / @mass
 
   Tank::update = (game, t) ->
     for weapon in @weapons
       weapon.temperature -= t if weapon.temperature > 0
 
-    forceX = -@vel.x * Tank.FRICTION + @acc * Math.sin(@angle) * Tank.FORCE
-    forceY = -@vel.y * Tank.FRICTION + @acc * Math.cos(@angle) * Tank.FORCE
-    @vel.x += forceX * t / Tank.MASS
-    @vel.y += forceY * t / Tank.MASS
     @pos.x += @vel.x * t
     @pos.y += @vel.y * t
+    forceX = -@vel.x * Tank.FRICTION + @acc * Math.sin(@angle) * Tank.FORCE
+    forceY = -@vel.y * Tank.FRICTION + @acc * Math.cos(@angle) * Tank.FORCE
+    @vel.x += forceX * t / @mass
+    @vel.y += forceY * t / @mass
 
     if @firing
       @angle += @rot * Tank.FIRING_ANGULAR_SPEED * t
-      if @weapons[@activeWeapon].temperature <= 0
-        @.fire(game)
+      @.fire(game)
     else
       @angle += @rot * Tank.ANGULAR_SPEED * t
 
+    @.setEnergy(@energy - Tank.LIVE_ENERGY_CONSUM * t, game)
+    if @acc != 0 or @rot != 0
+      @.setEnergy(@energy - Tank.MOVE_ENERGY_CONSUM * t, game)
 
   Tank::draw = (ctx) ->
     ctx.save()
     ctx.translate(@pos.x, @pos.y)
     ctx.rotate(-@angle)
-    ctx.scale(Tank.RADIUS, Tank.RADIUS)
+    ctx.scale(@radius, @radius)
 
     ctx.beginPath()
     ctx.arc(0, 0, 1.0, 0, Math.PI*2)

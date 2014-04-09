@@ -23,6 +23,7 @@
         })(),
         bullets: [],
         particles: [],
+        bonuses: [],
         size: {
           x: 800,
           y: 600
@@ -443,6 +444,7 @@
     Game.update = function(game, t) {
       Game.updateBullets(game, t);
       Game.updateParticles(game, t);
+      Game.updateBonuses(game, t);
       Game.updateTanks(game, t);
       game.time += t;
       switch (game.mode.mode) {
@@ -454,43 +456,50 @@
     };
     Game.updateTanks = function(game, t) {
       var i, j, _i, _j, _k, _l, _ref, _ref1, _ref2, _ref3, _ref4;
-      for (i = _i = 0, _ref = game.tanks.length; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
+      for (i = _i = 0, _ref = game.tanks.length; _i < _ref; i = _i += 1) {
         game.tanks[i].update(game, t);
       }
-      for (i = _j = 0, _ref1 = game.tanks.length; 0 <= _ref1 ? _j < _ref1 : _j > _ref1; i = 0 <= _ref1 ? ++_j : --_j) {
-        for (j = _k = _ref2 = i + 1, _ref3 = game.tanks.length; _ref2 <= _ref3 ? _k < _ref3 : _k > _ref3; j = _ref2 <= _ref3 ? ++_k : --_k) {
+      for (i = _j = 0, _ref1 = game.tanks.length; _j < _ref1; i = _j += 1) {
+        for (j = _k = _ref2 = i + 1, _ref3 = game.tanks.length; _k < _ref3; j = _k += 1) {
           Collisions.tankTank(game.tanks[i], game.tanks[j]);
         }
       }
-      for (i = _l = 0, _ref4 = game.tanks.length; 0 <= _ref4 ? _l < _ref4 : _l > _ref4; i = 0 <= _ref4 ? ++_l : --_l) {
+      for (i = _l = 0, _ref4 = game.tanks.length; _l < _ref4; i = _l += 1) {
         Collisions.tankMap(game.tanks[i], game.map);
       }
       return void 0;
     };
     Game.updateBullets = function(game, t) {
-      return Game.updateLiving(game, game.bullets, function(bullet) {
+      return Game.updateLive(game, game.bullets, function(bullet) {
         Collisions.bullet(bullet, game, t);
         return bullet.move(t);
       });
     };
     Game.updateParticles = function(game, t) {
-      return Game.updateLiving(game, game.particles, function(particle) {
+      return Game.updateLive(game, game.particles, function(particle) {
         return particle.move(t);
       });
     };
-    Game.updateLiving = function(game, objs, update) {
-      var dead, i, p, _i, _j, _ref, _ref1;
+    Game.updateBonuses = function(game, t) {
+      return Game.updateLive(game, game.bonuses, function(bonus) {
+        Collisions.bonus(bonus, game, t);
+        return bonus.update(t);
+      });
+    };
+    Game.updateLive = function(game, objs, update) {
+      var dead, i, obj, p, _i, _j, _len, _ref;
       dead = 0;
-      for (i = _i = 0, _ref = objs.length; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
-        if (!objs[i].isDead) {
-          update(objs[i]);
+      for (_i = 0, _len = objs.length; _i < _len; _i++) {
+        obj = objs[_i];
+        if (!obj.isDead) {
+          update(obj);
         } else {
           dead = dead + 1;
         }
       }
       if (dead > objs.length * Game.MAX_GARBAGE_RATIO) {
         p = 0;
-        for (i = _j = 0, _ref1 = objs.length; 0 <= _ref1 ? _j < _ref1 : _j > _ref1; i = 0 <= _ref1 ? ++_j : --_j) {
+        for (i = _j = 0, _ref = objs.length; _j < _ref; i = _j += 1) {
           if (!objs[i].isDead) {
             objs[p] = objs[i];
             p = p + 1;

@@ -19,35 +19,43 @@
       this.acc = 0;
       this.rot = 0;
       this.firing = false;
-      this.energy = Tank.MAX_ENERGY;
+      this.setEnergy(Tank.START_ENERGY);
+      this.setMass(Tank.START_MASS);
       this.weapons = [new Weapon(Weapon.MachineGun), new Weapon(Weapon.Autocannon), new Weapon(Weapon.HugeCannon)];
       return this.activeWeapon = 0;
     };
-    Tank.RADIUS = 0.45;
     Tank.WALL_DISTANCE = 0.01;
-    Tank.MASS = 100;
     Tank.FORCE = 1000;
     Tank.FRICTION = 100;
     Tank.ANGULAR_SPEED = 1.5 * Math.PI;
     Tank.FIRING_ANGULAR_SPEED = 0.5 * Math.PI;
     Tank.BUMP_FACTOR = 0.3;
     Tank.BULLET_DIST = 1.2;
-    Tank.MAX_ENERGY = 100;
+    Tank.START_ENERGY = 1000;
+    Tank.START_MASS = 100;
+    Tank.MIN_FIRE_ENERGY = 10;
+    Tank.MIN_MASS = 50;
+    Tank.LIVE_ENERGY_CONSUM = 2;
+    Tank.MOVE_ENERGY_CONSUM = 5;
+    Tank.DENSITY = 100;
     Tank.prototype.change = function() {
       return this.activeWeapon = (this.activeWeapon + 1) % this.weapons.length;
     };
     Tank.prototype.fire = function(game) {
-      var angle, posX, posY, relVelX, relVelY, spec;
-      spec = this.weapons[this.activeWeapon].spec;
-      if (this.energy > spec.energy) {
-        this.energy -= spec.energy;
-        this.weapons[this.activeWeapon].temperature = spec.cooldown;
-      } else {
+      var angle, posX, posY, relVelX, relVelY, spec, weapon;
+      spec = (weapon = this.weapons[this.activeWeapon]).spec;
+      if (!(weapon.temperature <= 0)) {
+        return;
+      }
+      if (!(this.mass - spec.bullet.mass >= Tank.MIN_MASS)) {
+        return;
+      }
+      if (!(this.energy - spec.energy >= Tank.MIN_FIRE_ENERGY)) {
         return;
       }
       angle = this.angle + (2 * spec.angleVariance * Math.random()) - spec.angleVariance;
-      posX = this.pos.x + Math.sin(angle) * Tank.RADIUS * Tank.BULLET_DIST;
-      posY = this.pos.y + Math.cos(angle) * Tank.RADIUS * Tank.BULLET_DIST;
+      posX = this.pos.x + Math.sin(angle) * this.radius * Tank.BULLET_DIST;
+      posY = this.pos.y + Math.cos(angle) * this.radius * Tank.BULLET_DIST;
       relVelX = Math.sin(angle) * spec.bullet.speed;
       relVelY = Math.cos(angle) * spec.bullet.speed;
       game.bullets.push(new Bullet({
@@ -57,6 +65,9 @@
         x: this.vel.x + relVelX,
         y: this.vel.y + relVelY
       }, spec.bullet, this.index));
+      weapon.temperature = spec.cooldown;
+      this.setMass(this.mass - spec.bullet.mass, game);
+      this.setEnergy(this.energy - spec.energy, game);
       return this.impulse({
         x: -relVelX * spec.bullet.mass,
         y: -relVelY * spec.bullet.mass
@@ -66,16 +77,40 @@
       if (guilty == null) {
         guilty = void 0;
       }
-      if (this.energy > dmg) {
-        return this.energy -= dmg;
-      } else {
+      return this.setEnergy(this.energy - dmg, game, guilty);
+    };
+    Tank.prototype.receive = function(game, content) {
+      if (content.energy != null) {
+        this.setEnergy(this.energy + content.energy, game);
+      }
+      if (content.mass != null) {
+        return this.setMass(this.mass + content.mass, game);
+      }
+    };
+    Tank.prototype.setEnergy = function(energy, game, guilty) {
+      if (guilty == null) {
+        guilty = void 0;
+      }
+      if (energy < 0) {
         this.energy = 0;
+        return Game.tankDestroyed(game, this.index, guilty);
+      } else {
+        return this.energy = energy;
+      }
+    };
+    Tank.prototype.setMass = function(mass, game, guilty) {
+      if (guilty == null) {
+        guilty = void 0;
+      }
+      this.mass = mass;
+      this.radius = Math.sqrt(this.mass / Tank.DENSITY / Math.PI);
+      if (mass < Tank.MIN_MASS) {
         return Game.tankDestroyed(game, this.index, guilty);
       }
     };
     Tank.prototype.impulse = function(imp) {
-      this.vel.x += imp.x / Tank.MASS;
-      return this.vel.y += imp.y / Tank.MASS;
+      this.vel.x += imp.x / this.mass;
+      return this.vel.y += imp.y / this.mass;
     };
     Tank.prototype.update = function(game, t) {
       var forceX, forceY, weapon, _i, _len, _ref;
@@ -86,26 +121,28 @@
           weapon.temperature -= t;
         }
       }
-      forceX = -this.vel.x * Tank.FRICTION + this.acc * Math.sin(this.angle) * Tank.FORCE;
-      forceY = -this.vel.y * Tank.FRICTION + this.acc * Math.cos(this.angle) * Tank.FORCE;
-      this.vel.x += forceX * t / Tank.MASS;
-      this.vel.y += forceY * t / Tank.MASS;
       this.pos.x += this.vel.x * t;
       this.pos.y += this.vel.y * t;
+      forceX = -this.vel.x * Tank.FRICTION + this.acc * Math.sin(this.angle) * Tank.FORCE;
+      forceY = -this.vel.y * Tank.FRICTION + this.acc * Math.cos(this.angle) * Tank.FORCE;
+      this.vel.x += forceX * t / this.mass;
+      this.vel.y += forceY * t / this.mass;
       if (this.firing) {
         this.angle += this.rot * Tank.FIRING_ANGULAR_SPEED * t;
-        if (this.weapons[this.activeWeapon].temperature <= 0) {
-          return this.fire(game);
-        }
+        this.fire(game);
       } else {
-        return this.angle += this.rot * Tank.ANGULAR_SPEED * t;
+        this.angle += this.rot * Tank.ANGULAR_SPEED * t;
+      }
+      this.setEnergy(this.energy - Tank.LIVE_ENERGY_CONSUM * t, game);
+      if (this.acc !== 0 || this.rot !== 0) {
+        return this.setEnergy(this.energy - Tank.MOVE_ENERGY_CONSUM * t, game);
       }
     };
     Tank.prototype.draw = function(ctx) {
       ctx.save();
       ctx.translate(this.pos.x, this.pos.y);
       ctx.rotate(-this.angle);
-      ctx.scale(Tank.RADIUS, Tank.RADIUS);
+      ctx.scale(this.radius, this.radius);
       ctx.beginPath();
       ctx.arc(0, 0, 1.0, 0, Math.PI * 2);
       ctx.fillStyle = "#833";
