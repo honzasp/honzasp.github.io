@@ -47,7 +47,7 @@ define ["exports", "jquery", "map", "window", "tank", "bullet", "particle", "col
     for def, idx in settings.playerDefs
       x = Math.floor(Math.random() * (settings.mapWidth - Game.BASE_SIZE))
       y = Math.floor(Math.random() * (settings.mapHeight - Game.BASE_SIZE))
-      {index: idx, base: {x, y}, destroyed: 0, hits: 0, keys: def.keys}
+      {index: idx, base: {x, y}, destroyed: 0, hits: 0, keys: def.keys, color: def.color}
 
   Game.init.createMap = (settings, playerInfos) ->
     map = Map.init(settings.mapWidth, settings.mapHeight)
@@ -78,8 +78,8 @@ define ["exports", "jquery", "map", "window", "tank", "bullet", "particle", "col
     map
 
   Game.createTank = (game, playerInfo) ->
-    {index: idx, base: {x, y}} = playerInfo
-    new Tank(idx, x+Game.BASE_SIZE/2, y+Game.BASE_SIZE/2)
+    {index: idx, base: {x, y}, color} = playerInfo
+    new Tank(idx, x+Game.BASE_SIZE/2, y+Game.BASE_SIZE/2, 0, color)
 
   Game.deinit = (game) ->
     Game.stop(game)

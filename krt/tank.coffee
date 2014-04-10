@@ -1,5 +1,5 @@
 define ["map", "weapon", "bullet", "game"], (Map, Weapon, Bullet, Game) ->
-  Tank = (idx, x, y, angle = 0) ->
+  Tank = (idx, x, y, angle, color) ->
     @index = idx
     @pos = {x, y}
     @angle = angle
@@ -15,6 +15,7 @@ define ["map", "weapon", "bullet", "game"], (Map, Weapon, Bullet, Game) ->
       new Weapon(Weapon.HugeCannon)
     ]
     @activeWeapon = 0
+    @color = color
 
 
   Tank.WALL_DISTANCE = 0.01
@@ -112,7 +113,7 @@ define ["map", "weapon", "bullet", "game"], (Map, Weapon, Bullet, Game) ->
 
     ctx.beginPath()
     ctx.arc(0, 0, 1.0, 0, Math.PI*2)
-    ctx.fillStyle = "#833"
+    ctx.fillStyle = @color
     ctx.fill()
 
     ctx.beginPath()

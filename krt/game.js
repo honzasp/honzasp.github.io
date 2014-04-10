@@ -80,7 +80,8 @@
           },
           destroyed: 0,
           hits: 0,
-          keys: def.keys
+          keys: def.keys,
+          color: def.color
         });
       }
       return _results;
@@ -118,9 +119,9 @@
       return map;
     };
     Game.createTank = function(game, playerInfo) {
-      var idx, x, y, _ref;
-      idx = playerInfo.index, (_ref = playerInfo.base, x = _ref.x, y = _ref.y);
-      return new Tank(idx, x + Game.BASE_SIZE / 2, y + Game.BASE_SIZE / 2);
+      var color, idx, x, y, _ref;
+      idx = playerInfo.index, (_ref = playerInfo.base, x = _ref.x, y = _ref.y), color = playerInfo.color;
+      return new Tank(idx, x + Game.BASE_SIZE / 2, y + Game.BASE_SIZE / 2, 0, color);
     };
     Game.deinit = function(game) {
       Game.stop(game);

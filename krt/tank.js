@@ -2,10 +2,7 @@
 (function() {
   define(["map", "weapon", "bullet", "game"], function(Map, Weapon, Bullet, Game) {
     var Tank;
-    Tank = function(idx, x, y, angle) {
-      if (angle == null) {
-        angle = 0;
-      }
+    Tank = function(idx, x, y, angle, color) {
       this.index = idx;
       this.pos = {
         x: x,
@@ -22,7 +19,8 @@
       this.setEnergy(Tank.START_ENERGY);
       this.setMass(Tank.START_MASS);
       this.weapons = [new Weapon(Weapon.MachineGun), new Weapon(Weapon.Autocannon), new Weapon(Weapon.HugeCannon)];
-      return this.activeWeapon = 0;
+      this.activeWeapon = 0;
+      return this.color = color;
     };
     Tank.WALL_DISTANCE = 0.01;
     Tank.FORCE = 1000;
@@ -145,7 +143,7 @@
       ctx.scale(this.radius, this.radius);
       ctx.beginPath();
       ctx.arc(0, 0, 1.0, 0, Math.PI * 2);
-      ctx.fillStyle = "#833";
+      ctx.fillStyle = this.color;
       ctx.fill();
       ctx.beginPath();
       ctx.moveTo(0.0, 0.6);

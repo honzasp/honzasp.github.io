@@ -1,0 +1,146 @@
+---
+---
+#header {
+  width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#krt .menu {
+  width: 600px;
+  margin: 0 auto;
+  color: #333;
+
+  input, select {
+    font-family: inherit;
+    font-size: 0.8em;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+  }
+
+  fieldset {
+    border: 1px solid #bbb;
+
+    legend {
+      margin-left: 8px;
+      padding: 2px 5px;
+      background-color: #ccc;
+      font-weight: bold;
+    }
+
+    p {
+      margin: 3px 12px;
+      padding: 0;
+    }
+
+    &.mode, &.map, &.fps {
+      width: 288px;
+      input[type="number"] {
+        margin-left: 10px;
+        width: 90px;
+      }
+      label>span {
+        width: 150px;
+        display: inline-block;
+      }
+      label {
+        display: inline-block;
+      }
+    }
+    &.mode {
+      float: left;
+      input[name="mode"] {
+        display: inline-block;
+        width: 20px;
+      }
+      label {
+        width: 150px;
+      }
+      label>span {
+        width: 110px;
+      }
+    }
+    &.map, &.fps {
+      margin-left: 310px - 1px;
+    }
+
+    &.players {
+      ul.players-list>li {
+        margin-top: 12px;
+        border-left-width: 10px;
+        border-left-style: solid;
+        border-left-color: #ddd;
+
+        label>span {
+          display: inline-block;
+          width: 60px;
+        }
+
+        input[name|="name"] {
+          width: 180px;
+        }
+        select[name|="color"] {
+          width: 100px;
+        }
+      }
+
+      ul.keys {
+        margin: 3px 18px;
+        &>li {
+          float: left;
+          width: 80px;
+          text-align: center;
+          label>span {
+            display: block;
+            margin: 3px auto;
+            font-size: 0.8em;
+          }
+          input[name|="key"] {
+            display: block;
+            margin: 4px auto;
+            width: 60px;
+          }
+        }
+        &:after {
+          content: ".";
+          clear: both;
+          height: 0;
+          display: block;
+          visibility: hidden;
+        }
+      }
+    }
+
+    &.start {
+      border-style: none;
+      input {
+        display: block;
+        width: 150px;
+        font-size: 20px;
+        margin: 10px auto;
+      }
+    }
+  }
+
+  .dialog {
+    position: fixed;
+    width: 100%;
+    top: 0px;
+    left: 0px;
+
+    .select-key {
+      background-color: #eee;
+      width: 200px;
+      height: 120px;
+      margin: 200px auto;
+      opacity: 0.8;
+
+      p { 
+        text-align: center;
+        margin: 20px;
+      }
+    }
+  }
+}
+

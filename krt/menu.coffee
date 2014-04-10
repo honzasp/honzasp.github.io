@@ -1,8 +1,8 @@
-define ["jquery", "game"], ($, Game) ->
+define ["jquery", "game", "keycodes"], ($, Game, Keycodes) ->
   COLORS = 
     "red": "#f00"
-    "blue": "#0f0"
-    "green": "#00f"
+    "green": "#0f0"
+    "blue": "#00f"
     "cyan": "#0ff"
 
   KEYS = ["forward", "backward", "left", "right", "fire", "change"]
@@ -71,15 +71,15 @@ define ["jquery", "game"], ($, Game) ->
         <fieldset class='mode'>
           <legend>mode</legend>
           <p>
-            <label><input type='radio' name='mode' value='time'> time:</label>
+            <label><input type='radio' name='mode' value='time'> <span>time:</span></label>
             <input type='number' name='time' value='0' class='mode-depends mode-time'>
           </p>
           <p>
-            <label><input type='radio' name='mode' value='lives'> lives:</label>
+            <label><input type='radio' name='mode' value='lives'> <span>lives:</span></label>
             <input type='number' name='lives' value='0' class='mode-depends mode-lives'>
           </p>
           <p>
-            <label><input type='radio' name='mode' value='hits'> hits:</label>
+            <label><input type='radio' name='mode' value='hits'> <span>hits:</span></label>
             <input type='number' name='hits' value='0' class='mode-depends mode-hits'>
           </p>
         </fieldset>
@@ -110,10 +110,10 @@ define ["jquery", "game"], ($, Game) ->
         <fieldset class='map'>
           <legend>map</legend>
           <p>
-            <label>width: <input type='number' name='map-width' value=''></label>
+            <label><span>width:</span> <input type='number' name='map-width' value=''></label>
           </p>
           <p>
-            <label>height: <input type='number' name='map-height' value=''></label>
+            <label><span>height:</span> <input type='number' name='map-height' value=''></label>
           </p>
         </fieldset>
         """
@@ -128,7 +128,7 @@ define ["jquery", "game"], ($, Game) ->
       $fps = $ """
         <fieldset class='fps'>
           <legend>fps</legend>
-          <p><label>frames per second: <input type='number' name='fps' value=''></label></p>
+          <p><label><span>frames per second:</span> <input type='number' name='fps' value=''></label></p>
         </fieldset>
         """
 
@@ -139,8 +139,8 @@ define ["jquery", "game"], ($, Game) ->
     buildPlayer = (idx) ->
       $player = $ """
         <li class='player-#{idx}'>
-          <p><label>name: <input type='text' name='name-#{idx}' value=''></label></p>
-          <p><select name='color-#{idx}'></select></p>
+          <p><label><span>name:</span> <input type='text' name='name-#{idx}' value=''></label></p>
+          <p><label><span>color:</span> <select name='color-#{idx}'></select></label></p>
           <ul class='keys'>
           </ul>
         </li>
@@ -150,23 +150,30 @@ define ["jquery", "game"], ($, Game) ->
         state.playerDefs[idx].name = $(@).val(); save()
 
       $player.find("select[name|=color]").append(
-        for colorName, colorValue of COLORS
-          $("<option>").text(colorName).attr("value", colorName)\
-            .attr("selected", colorName == state.playerDefs[idx].color)
+        for colorName of COLORS
+          $("<option>").text(colorName).attr(
+            value: colorName
+            selected: colorName == state.playerDefs[idx].color
+          )
       ).change ->
-        state.playerDefs[idx].color = $(@).find("option:selected").val()
-        save()
+        $player.trigger("changed-color.krt")
 
       $player.find(".keys").append(
         for key in KEYS
           buildPlayerKey(idx, key)
       )
 
-      $player
+      $player.on "changed-color.krt", ->
+        colorName = $(@).find("option:selected").val()
+        $player.css(borderLeftColor: COLORS[colorName])
+        state.playerDefs[idx].color = colorName
+        save()
+
+      $player.trigger("changed-color")
 
     buildPlayerKey = (idx, key) ->
       $li = $ """
-        <li><label>#{key}: 
+        <li><label><span>#{key}</span>
           <input type='button' name='key-#{key}-#{idx}' value=''>
         </label></li>
         """
@@ -221,12 +228,31 @@ define ["jquery", "game"], ($, Game) ->
         """
       $start.find("input[name=start-button]").click ->
         startGame()
+      $start
 
     keyName = (keycode) ->
-      "key #{keycode}"
+      Keycodes[keycode] || "key #{keycode}"
 
     selectKey = (callback) ->
-      alert("dummy key select")
+      $dialog = $ """
+        <div class='dialog'>
+          <div class='select-key'>
+            <p>Press key</p>
+            <p><input type='button' name='select-key-cancel' value='Cancel'></p>
+          </div>
+        </div>
+        """
+
+      $(document).one "keydown", (evt) ->
+        $dialog.trigger("dismiss-select-key.krt")
+        callback(evt.which)
+        evt.preventDefault()
+      $dialog.find("input[name=select-key-cancel]").click ->
+        $dialog.trigger("dismiss-select-key.krt")
+      $dialog.on "dismiss-select-key.krt", ->
+        $dialog.remove()
+
+      $dialog.appendTo($menu)
 
     startGame = ->
       settings =
@@ -235,6 +261,8 @@ define ["jquery", "game"], ($, Game) ->
         startLives: state.modes.lives
         fps: state.fps
         playerDefs: for i in [0...state.playerCount]
+          name: state.playerDefs[i].name
+          color: state.playerDefs[i].color
           keys: $.extend({}, state.playerDefs[i].keys)
         mode: switch state.modes.mode
           when "time"
@@ -248,4 +276,4 @@ define ["jquery", "game"], ($, Game) ->
       game = Game.init(settings, ->)
       Game.start(game)
 
-    build()
+    $menu = build()
