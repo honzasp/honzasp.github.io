@@ -4,14 +4,13 @@ define ["jquery", "game", "keycodes"], ($, Game, Keycodes) ->
     "green": "#0f0"
     "blue": "#00f"
     "cyan": "#0ff"
-
   KEYS = ["forward", "backward", "left", "right", "fire", "change"]
-
   MAX_PLAYERS = 4
+  STATE_VERSION = 2
 
   ($root) ->
-    DEFAULT_STATE = {
-      _version: 2
+    defaultState = ->
+      _version: STATE_VERSION
       mapWidth: 100
       mapHeight: 50
       playerCount: 2
@@ -43,19 +42,27 @@ define ["jquery", "game", "keycodes"], ($, Game, Keycodes) ->
           keys: { forward: 104, backward: 101, left: 100, right: 102, fire: 103, change: 105 }
         }
       ]
-    }
 
     if localStorage? and JSON?
       if jsonTxt = localStorage.getItem("krt settings")
         json = JSON.parse(jsonTxt)
-        if json._version == DEFAULT_STATE._version
+        if json._version == STATE_VERSION
           state = json
-
       save = -> localStorage.setItem("krt settings", JSON.stringify(state))
     else
       save = ->
 
-    state ||= DEFAULT_STATE
+    state ||= defaultState()
+    $menu = undefined
+
+    resetState = ->
+      state = defaultState()
+      save()
+      rebuild()
+
+    rebuild = ->
+      $menu.remove() if $menu?
+      $menu = build()
 
     build = ->
       $("<div class='menu' />")\
@@ -223,11 +230,14 @@ define ["jquery", "game", "keycodes"], ($, Game, Keycodes) ->
     buildStart = ->
       $start = $ """
         <fieldset class='start'>
-          <p><input type='button' name='start-button' value='start'></p>
+          <input type='button' name='start-button' value='start'>
+          <input type='button' name='reset-button' value='reset settings'>
         </fieldset>
         """
       $start.find("input[name=start-button]").click ->
         startGame()
+      $start.find("input[name=reset-button]").click ->
+        resetState()
       $start
 
     keyName = (keycode) ->
