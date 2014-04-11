@@ -1,5 +1,7 @@
-define ["exports", "jquery", "map", "window", "tank", "bullet", "particle", "collisions"], \
-(exports, $, Map, Window, Tank, Bullet, Particle, Collisions) ->
+define \
+["exports", "jquery", "map", "render", "tank", "bullet", "particle", "collisions", "update"], \
+(exports, $, Map, Render, Tank, Bullet, Particle, Collisions, Update) ->
+
   Game = exports
   Game.MAX_GARBAGE_RATIO = 0.5
   Game.BASE_SIZE = 8
@@ -157,7 +159,7 @@ define ["exports", "jquery", "map", "window", "tank", "bullet", "particle", "col
     game.size.y = window.innerHeight
     game.dom.$canvas.attr("width", game.size.x)
     game.dom.$canvas.attr("height", game.size.y)
-    Game.draw(game)
+    Render.game(game)
 
   Game.start = (game) ->
     Game.stop(game) if game.timer?
@@ -222,94 +224,9 @@ define ["exports", "jquery", "map", "window", "tank", "bullet", "particle", "col
 
 
   Game.tick = (game) ->
-    Game.update(game, game.tickLen)
-    Game.draw(game)
-
-  Game.draw = (game) ->
-    switch game.playerInfos.length
-      when 1
-        Window.draw(game, game.tanks[0].pos, game.tanks[0],
-          x: 0, y: 0, w: game.size.x, h: game.size.y, scale: 16)
-      when 2
-        Window.draw(game, game.tanks[0].pos, game.tanks[0],
-          x: 0, y: 0, w: game.size.x / 2, h: game.size.y, scale: 14)
-        Window.draw(game, game.tanks[1].pos, game.tanks[1],
-          x: game.size.x / 2, y: 0, w: game.size.x / 2, h: game.size.y, scale: 14)
-      when 3
-        Window.draw(game, game.tanks[0].pos, game.tanks[0],
-          x: 0, y: 0, w: game.size.x / 3, h: game.size.y, scale: 13)
-        Window.draw(game, game.tanks[1].pos, game.tanks[1],
-          x: game.size.x / 3, y: 0, w: game.size.x / 3, h: game.size.y, scale: 13)
-        Window.draw(game, game.tanks[2].pos, game.tanks[2],
-          x: 2 *game.size.x / 3, y: 0, w: game.size.x / 3, h: game.size.y, scale: 13)
-      when 4
-        Window.draw(game, game.tanks[0].pos, game.tanks[0],
-          x: 0, y: 0, w: game.size.x / 2, h: game.size.y / 2, scale: 12)
-        Window.draw(game, game.tanks[1].pos, game.tanks[1],
-          x: game.size.x / 2, y: 0, w: game.size.x / 2, h: game.size.y / 2, scale: 12)
-        Window.draw(game, game.tanks[2].pos, game.tanks[2],
-          x: 0, y: game.size.y / 2, w: game.size.x / 2, h: game.size.y / 2, scale: 12)
-        Window.draw(game, game.tanks[3].pos, game.tanks[3],
-          x: game.size.x / 2, y: game.size.y / 2, w: game.size.x / 2, h: game.size.y / 2, scale: 12)
-      else
-        throw new Error("Unknown layout for given count of players")
-
-  Game.update = (game, t) ->
-    Game.updateBullets(game, t)
-    Game.updateParticles(game, t)
-    Game.updateBonuses(game, t)
-    Game.updateTanks(game, t)
-
-    game.time += t
-    switch game.mode.mode
-      when "time"
-        if game.time > game.mode.time
-          Game.finish(game)
-
-  Game.updateTanks = (game, t) ->
-    for i in [0...game.tanks.length] by 1
-      game.tanks[i].update(game, t)
-
-    for i in [0...game.tanks.length] by 1
-      for j in [i+1...game.tanks.length] by 1
-        Collisions.tankTank(game.tanks[i], game.tanks[j])
-
-    for i in [0...game.tanks.length] by 1
-      Collisions.tankMap(game.tanks[i], game.map)
-
-    undefined
-
-  Game.updateBullets = (game, t) ->
-    Game.updateLive(game, game.bullets, (bullet) ->
-      Collisions.bullet(bullet, game, t)
-      bullet.move(t)
-    )
-
-  Game.updateParticles = (game, t) ->
-    Game.updateLive(game, game.particles, (particle) ->
-      particle.move(t)
-    )
-
-  Game.updateBonuses = (game, t) ->
-    Game.updateLive(game, game.bonuses, (bonus) ->
-      Collisions.bonus(bonus, game, t)
-      bonus.update(t)
-    )
-
-  Game.updateLive = (game, objs, update) ->
-    dead = 0
-    for obj in objs
-      unless obj.isDead
-        update(obj)
-      else
-        dead = dead + 1
-
-    if dead > objs.length * Game.MAX_GARBAGE_RATIO
-      p = 0
-      for i in [0...objs.length] by 1
-        unless objs[i].isDead
-          objs[p] = objs[i]
-          p = p + 1
-      objs.length = p
+    Update.game(game, game.tickLen)
+    Render.game(game)
+    if game.mode.mode == "time" and game.time > game.mode.time
+      Game.finish(game)
 
   Game

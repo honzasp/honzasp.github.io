@@ -1,6 +1,6 @@
-define ["map", "tank", "bullet", "particle", "weapon", "bonus"], \
-(Map, Tank, Bullet, Particle, Weapon, Bonus) ->
-  Collisions = {}
+define ["exports", "map", "tank", "bullet", "particle", "weapon", "bonus", "update"], \
+(exports, Map, Tank, Bullet, Particle, Weapon, Bonus, Update) ->
+  Collisions = exports
   Collisions.tankMap = (tank, map) ->
     pos = {x: tank.pos.x, y: tank.pos.y}
     vel = {x: tank.vel.x, y: tank.vel.y}
@@ -140,22 +140,6 @@ define ["map", "tank", "bullet", "particle", "weapon", "bonus"], \
         x = x - 1
       undefined
 
-    if false
-      northEdges = ->
-        y = Math.ceil(start.y)
-        while y <= Math.floor(end.y)
-          d = (y - start.y) / (end.y - start.y)
-          x = d*(end.x - start.x) + start.x
-          hit(x, y, Math.floor(x), y, d)
-          y = y + 1
-        undefined
-      southEdges = ->
-        undefined
-      westEdges = ->
-        undefined
-      eastEdges = ->
-        undefined
-
     northEdges()
     southEdges()
     westEdges()
@@ -164,7 +148,7 @@ define ["map", "tank", "bullet", "particle", "weapon", "bonus"], \
     wallHit
 
   lineTank = (start, end, tank) ->
-    [s, e, p, r] = [start, end, tank.pos, tank.radius]
+    s = start; e = end; p = tank.pos; r = tank.radius
     ds = solveQuad \
       (e.x-s.x)*(e.x-s.x) + (e.y-s.y)*(e.y-s.y),
       2*(e.x-s.x)*(s.x-p.x) + 2*(e.y-s.y)*(s.y-p.y),
@@ -199,50 +183,11 @@ define ["map", "tank", "bullet", "particle", "weapon", "bonus"], \
 
     for tank in tanks
       if tankHit = lineTank(start, end, tank)
-        if !nearestHit or tankHit.d < nearestHit.d
+        if !nearestHit? or tankHit.d < nearestHit.d
           nearestHit = tankHit
 
-    if nearestHit
-      bullet.isDead = true
-      spec = bullet.spec
-
-      if (m = nearestHit.map)?
-        {toughness, energy, mass} = Map.squares[Map.get(map, m.x, m.y)]
-        if Math.pow(toughness, spec.damage) < Math.random()
-          Map.set(map, m.x, m.y, Map.EMPTY)
-          gain = 
-            if energy? and ((mass? and Math.random() < 0.5) or not mass?)
-              energy: energy*(0.5 + Math.random())
-            else if mass?
-              mass: mass*(0.5 + Math.random())
-          if gain?
-            pos = { x: m.x + 0.5, y: m.y + 0.5 }
-            angle = Math.random() * 2*Math.PI
-            speed = Bonus.SPEED * (0.5 + Math.random())
-            vel = { x: Math.sin(angle) * speed, y: Math.cos(angle) * speed }
-            radiusSinVel = Bonus.RADIUS_SIN_VEL * (0.5 + Math.random())
-            bonus = new Bonus(pos, vel, gain, radiusSinVel)
-            game.bonuses.push(bonus)
-
-      if (tank = nearestHit.tank)?
-        tank.impulse(x: bullet.vel.x * spec.mass, y: bullet.vel.y * spec.mass)
-        tank.damage(game, spec.damage, bullet.owner)
-
-      if (fragment = spec.fragment)?
-        fragmentCount = Math.floor(spec.mass / fragment.mass)
-        for i in [0...fragmentCount]
-          angle = 2*Math.PI * Math.random()
-          posX = Math.sin(angle) * Weapon.FRAGMENT_RADIUS + nearestHit.pos.x
-          posY = Math.cos(angle) * Weapon.FRAGMENT_RADIUS + nearestHit.pos.y
-          velX = Math.sin(angle) * fragment.speed
-          velY = Math.cos(angle) * fragment.speed
-          bullet = new Bullet(
-            {x: nearestHit.pos.x, y: nearestHit.pos.y},
-            {x: velX, y: velY},
-            fragment, bullet.owner)
-          game.bullets.push(bullet)
-
-      spec.boom(game, nearestHit.pos)
+    if nearestHit?
+      Update.bulletHit(game, bullet, nearestHit)
 
     undefined
 
@@ -255,5 +200,6 @@ define ["map", "tank", "bullet", "particle", "weapon", "bonus"], \
         tank.receive(game, bonus.content)
         bonus.isDead = true
         break
+    undefined
 
   Collisions
