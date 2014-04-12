@@ -14,9 +14,9 @@
     };
     KEYS = ["forward", "backward", "left", "right", "fire", "change"];
     MAX_PLAYERS = 4;
-    STATE_VERSION = 3;
+    STATE_VERSION = 6;
     return function($root) {
-      var $menu, build, buildFps, buildMap, buildMode, buildPlayer, buildPlayerKey, buildPlayers, buildStart, defaultState, json, jsonTxt, keyName, rebuild, resetState, save, selectKey, startGame, state, valFloat, valInt;
+      var $menu, build, buildGfx, buildMap, buildMode, buildPlayer, buildPlayerKey, buildPlayers, buildStart, defaultState, json, jsonTxt, keyName, rebuild, resetState, save, selectKey, startGame, state, valFloat, valInt;
       defaultState = function() {
         return {
           _version: STATE_VERSION,
@@ -26,6 +26,8 @@
           mapEmptiness: 50,
           playerCount: 2,
           fps: 30,
+          hud: true,
+          nameTags: true,
           modes: {
             mode: "time",
             time: 120,
@@ -142,7 +144,7 @@
         return $menu = build();
       };
       build = function() {
-        return $("<div class='menu' />").append(buildMode()).append(buildMap()).append(buildFps()).append(buildPlayers()).append(buildStart()).appendTo($root);
+        return $("<div class='menu' />").append(buildMode()).append(buildMap()).append(buildGfx()).append(buildPlayers()).append(buildStart()).appendTo($root);
       };
       buildMode = function() {
         var $mode;
@@ -193,14 +195,22 @@
         });
         return $map;
       };
-      buildFps = function() {
-        var $fps;
-        $fps = $("<fieldset class='fps'>\n  <legend>fps</legend>\n  <p>\n    <label><span>frames per second:</span> \n    <input type='number' name='fps' value=''></label>\n  </p>\n</fieldset>");
-        $fps.find("input[name=fps]").val(state.fps).change(function() {
+      buildGfx = function() {
+        var $gfx;
+        $gfx = $("<fieldset class='gfx'>\n  <legend>gfx</legend>\n  <p>\n    <label><span>frames per second:</span> \n    <input type='number' name='fps' value=''></label>\n  </p>\n  <p>\n    <label><span>head-up display:</span>\n    <input type='checkbox' name='hud'></label>\n  </p>\n  <p>\n    <label><span>name tags:</span>\n    <input type='checkbox' name='name-tags'></label>\n  </p>\n</fieldset>");
+        $gfx.find("input[name=fps]").val(state.fps).change(function() {
           state.fps = valFloat(this, 1, 200);
           return save();
         });
-        return $fps;
+        $gfx.find("input[name=hud]").attr("checked", state.hud).change(function() {
+          state.hud = $(this).is(":checked");
+          return save();
+        });
+        $gfx.find("input[name=name-tags]").attr("checked", state.nameTags).change(function() {
+          state.nameTags = $(this).is(":checked");
+          return save();
+        });
+        return $gfx;
       };
       buildPlayer = function(idx) {
         var $player, colorName, key;
@@ -216,6 +226,8 @@
             _results.push($("<option>").text(colorName).attr({
               value: colorName,
               selected: colorName === state.playerDefs[idx].color
+            }).css({
+              color: COLORS[colorName]
             }));
           }
           return _results;
@@ -322,6 +334,8 @@
           mapCaveLimit: Math.pow((state.mapEmptiness - 50) / 50, 3),
           startLives: state.modes.lives,
           fps: state.fps,
+          useHud: state.hud,
+          useNameTags: state.nameTags,
           playerDefs: (function() {
             var _i, _ref, _results;
             _results = [];

@@ -10,7 +10,7 @@ define ["jquery", "game", "keycodes"], ($, Game, Keycodes) ->
     "green": "#86990a"
   KEYS = ["forward", "backward", "left", "right", "fire", "change"]
   MAX_PLAYERS = 4
-  STATE_VERSION = 3
+  STATE_VERSION = 6
 
   ($root) ->
     defaultState = ->
@@ -21,6 +21,8 @@ define ["jquery", "game", "keycodes"], ($, Game, Keycodes) ->
       mapEmptiness: 50
       playerCount: 2
       fps: 30
+      hud: true
+      nameTags: true
       modes:
         mode: "time"
         time: 120
@@ -86,7 +88,7 @@ define ["jquery", "game", "keycodes"], ($, Game, Keycodes) ->
       $("<div class='menu' />")\
         .append(buildMode())\
         .append(buildMap())\
-        .append(buildFps())\
+        .append(buildGfx())\
         .append(buildPlayers())\
         .append(buildStart())\
         .appendTo($root)
@@ -163,20 +165,32 @@ define ["jquery", "game", "keycodes"], ($, Game, Keycodes) ->
         state.mapEmptiness = valFloat(@, 1, 99); save()
       $map
 
-    buildFps = ->
-      $fps = $ """
-        <fieldset class='fps'>
-          <legend>fps</legend>
+    buildGfx = ->
+      $gfx = $ """
+        <fieldset class='gfx'>
+          <legend>gfx</legend>
           <p>
             <label><span>frames per second:</span> 
             <input type='number' name='fps' value=''></label>
           </p>
+          <p>
+            <label><span>head-up display:</span>
+            <input type='checkbox' name='hud'></label>
+          </p>
+          <p>
+            <label><span>name tags:</span>
+            <input type='checkbox' name='name-tags'></label>
+          </p>
         </fieldset>
         """
 
-      $fps.find("input[name=fps]").val(state.fps).change ->
+      $gfx.find("input[name=fps]").val(state.fps).change ->
         state.fps = valFloat(@, 1, 200); save()
-      $fps
+      $gfx.find("input[name=hud]").attr("checked", state.hud).change ->
+        state.hud = $(@).is(":checked"); save()
+      $gfx.find("input[name=name-tags]").attr("checked", state.nameTags).change ->
+        state.nameTags = $(@).is(":checked"); save()
+      $gfx
 
     buildPlayer = (idx) ->
       $player = $ """
@@ -196,7 +210,7 @@ define ["jquery", "game", "keycodes"], ($, Game, Keycodes) ->
           $("<option>").text(colorName).attr(
             value: colorName
             selected: colorName == state.playerDefs[idx].color
-          )
+          ).css(color: COLORS[colorName])
       ).change ->
         $player.trigger("changed-color.krt")
 
@@ -308,6 +322,8 @@ define ["jquery", "game", "keycodes"], ($, Game, Keycodes) ->
         mapCaveLimit: Math.pow((state.mapEmptiness - 50)/50, 3)
         startLives: state.modes.lives
         fps: state.fps
+        useHud: state.hud
+        useNameTags: state.nameTags
         playerDefs: for i in [0...state.playerCount]
           name: state.playerDefs[i].name
           color: COLORS[state.playerDefs[i].color]

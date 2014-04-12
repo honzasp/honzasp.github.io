@@ -35,6 +35,7 @@
     Tank.START_ENERGY = 1000;
     Tank.START_MASS = 100;
     Tank.MIN_FIRE_ENERGY = 10;
+    Tank.VISION_ENERGY = 400;
     Tank.MIN_MASS = 50;
     Tank.LIVE_ENERGY_CONSUM = 3;
     Tank.MOVE_ENERGY_CONSUM = 8;

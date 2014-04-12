@@ -23,6 +23,8 @@ define \
       callback: callback
       mode: settings.mode
       time: 0
+      useHud: settings.useHud
+      useNameTags: settings.useNameTags
 
     Game.resizeCanvas(game)
     Game.rebindListeners(game)
@@ -48,7 +50,7 @@ define \
     for def, idx in settings.playerDefs
       index: idx, base: map.bases[idx],
       destroyed: 0, hits: 0,
-      keys: def.keys, color: def.color
+      keys: def.keys, color: def.color, name: def.name
 
   Game.createTank = (game, playerInfo) ->
     {index: idx, base: {x, y}, color} = playerInfo

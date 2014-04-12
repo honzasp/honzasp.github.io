@@ -33,7 +33,9 @@
         playerInfos: playerInfos,
         callback: callback,
         mode: settings.mode,
-        time: 0
+        time: 0,
+        useHud: settings.useHud,
+        useNameTags: settings.useNameTags
       };
       Game.resizeCanvas(game);
       Game.rebindListeners(game);
@@ -75,7 +77,8 @@
           destroyed: 0,
           hits: 0,
           keys: def.keys,
-          color: def.color
+          color: def.color,
+          name: def.name
         });
       }
       return _results;

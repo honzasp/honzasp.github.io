@@ -1,11 +1,15 @@
-define ["map"], (Map) ->
+define ["map", "tank"], (Map, Tank) ->
   Render = {}
 
   Render.BORDER_COLOR = "#aaa"
   Render.STAT_FONT = "12px monospace"
-  Render.STAT_COLOR = "#ff192c"
-  Render.STAT_SHADOW_BLUR = 2
+  Render.STAT_SHADOW_BLUR = 3
   Render.STAT_SHADOW_COLOR = "rgba(255, 239, 171, 0.5)"
+  Render.STAT_MARGIN = 16
+  Render.HUD_MARGIN = 5
+  Render.HUD_ROW = 10
+  Render.NAME_TAG_FONT = "0.8px monospace"
+  Render.NAME_TAG_MARGIN = 4
 
   Render.game = (game) ->
     switch game.playerInfos.length
@@ -53,6 +57,9 @@ define ["map"], (Map) ->
     ctx.stroke()
     ctx.clip()
 
+    if tank.energy < Tank.VISION_ENERGY
+      ctx.globalAlpha = 1 - (Tank.VISION_ENERGY - tank.energy) / Tank.VISION_ENERGY
+
     ctx.save()
     ctx.translate(win.w * 0.5, win.h * 0.5)
     ctx.scale(win.scale, win.scale)
@@ -62,13 +69,14 @@ define ["map"], (Map) ->
     ctx.restore()
 
     Render.stats(ctx, game, tank, win)
+    Render.nameTags(ctx, game, win, center) if game.useNameTags
     ctx.restore()
 
   Render.objects = (ctx, game) ->
     ctx.save()
 
-    for tank_ in game.tanks
-      tank_.draw(ctx)
+    for tank in game.tanks
+      tank.draw(ctx)
     for bullet in game.bullets
       bullet.draw(ctx) unless bullet.isDead
     for particle in game.particles
@@ -77,6 +85,22 @@ define ["map"], (Map) ->
       bonus.draw(ctx) unless bonus.isDead
 
     ctx.restore()
+
+  Render.nameTags = (ctx, game, win, center) ->
+    for tank in game.tanks 
+      name = game.playerInfos[tank.index].name
+      {x, y} = Render.mapToWin(win, center, tank.pos)
+
+      ctx.save()
+      ctx.fillStyle = tank.color
+      ctx.font = Render.STAT_FONT
+      ctx.shadowColor = Render.STAT_SHADOW_COLOR
+      ctx.shadowBlur = Render.STAT_SHADOW_BLUR
+      ctx.textBaseline = "bottom"
+      ctx.textAlign = "center"
+      ctx.fillText(name, x, y - tank.radius*win.scale - Render.NAME_TAG_MARGIN)
+      ctx.restore()
+    undefined
 
   Render.map = (ctx, game, win, center) ->
     { x: west, y: north } = Render.winToMap(win, center, {x: 0, y: 0})
@@ -115,8 +139,10 @@ define ["map"], (Map) ->
   Render.stats = (ctx, game, tank, win) ->
     info = game.playerInfos[tank.index]
     weapon = tank.weapons[tank.activeWeapon]
-    progress = Array(Math.floor(weapon.temperature * 10) + 1).join(".")
-    game_state = switch game.mode.mode
+
+    coreStat = "E #{Math.floor(tank.energy)} M #{Math.floor(tank.mass)} "
+    weaponStat = "#{weapon.spec.name} #{Math.ceil(weapon.temperature * 10)}"
+    gameStat = "-#{info.destroyed}/+#{info.hits}  " + switch game.mode.mode
       when "time"
         "#{Math.max(0, Math.floor(game.mode.time - game.time))} s"
       when "lives"
@@ -124,23 +150,28 @@ define ["map"], (Map) ->
       when "hits"
         "#{info.hits}/#{game.mode.hits} hits"
 
-    stat = 
-      "E #{Math.floor(tank.energy)} " +
-      "M #{Math.floor(tank.mass)} " +
-      "-#{info.destroyed}/" +
-      "+#{info.hits} | " +
-      "#{weapon.spec.name} " +
-      "#{progress} | " +
-      "#{game_state}"
-
     ctx.save()
     ctx.font = Render.STAT_FONT
-    ctx.textAlign = "left"
-    ctx.textBaseline = "bottom"
-    ctx.fillStyle = Render.STAT_COLOR
+    ctx.fillStyle = tank.color
     ctx.shadowColor = Render.STAT_SHADOW_COLOR
     ctx.shadowBlur = Render.STAT_SHADOW_BLUR
-    ctx.fillText(stat, 5, win.h)
+
+    if game.useHud
+      ctx.textBaseline = "top"
+      ctx.textAlign = "center"
+      startY = win.h/2 + tank.radius * win.scale + Render.HUD_MARGIN
+      ctx.fillText(coreStat, win.w/2, startY)
+      ctx.fillText(weaponStat, win.w/2, startY + Render.HUD_ROW)
+      ctx.fillText(gameStat, win.w/2, startY + 2*Render.HUD_ROW)
+    else
+      ctx.textBaseline = "bottom"
+      ctx.textAlign = "left"
+      ctx.fillText(weaponStat, Render.STAT_MARGIN, win.h - Render.STAT_MARGIN)
+      ctx.textAlign = "center"
+      ctx.fillText(coreStat, win.w/2, win.h - Render.STAT_MARGIN)
+      ctx.textAlign = "right"
+      ctx.fillText(gameStat, win.w - Render.STAT_MARGIN, win.h - Render.STAT_MARGIN)
+
     ctx.restore()
 
   Render
