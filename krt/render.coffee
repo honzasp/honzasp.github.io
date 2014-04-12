@@ -8,17 +8,17 @@ define ["map"], (Map) ->
   Render.game = (game) ->
     switch game.playerInfos.length
       when 1
-        [w, h, scale] = [game.size.x, game.size.y, 16]
+        [w, h, scale] = [game.size.x, game.size.y, 18]
         Render.window(game, game.tanks[0],
           {x: 0, y: 0, w, h, scale})
       when 2
-        [w, h, scale] = [game.size.x / 2, game.size.y, 14]
+        [w, h, scale] = [game.size.x / 2, game.size.y, 16]
         Render.window(game, game.tanks[0],
           {x: 0, y: 0, w, h, scale})
         Render.window(game, game.tanks[1],
           {x: w, y: 0, w, h, scale})
       when 3
-        [w, h, scale] = [game.size.x / 3, game.size.y, 13]
+        [w, h, scale] = [game.size.x / 3, game.size.y, 15]
         Render.window(game, game.tanks[0],
           {x: 0, y: 0, w, h, scale})
         Render.window(game, game.tanks[1],
@@ -26,7 +26,7 @@ define ["map"], (Map) ->
         Render.window(game, game.tanks[2],
           {x: 2*w, y: 0, w, h, scale})
       when 4
-        [w, h, scale] = [game.size.x / 2, game.size.y / 2, 12]
+        [w, h, scale] = [game.size.x / 2, game.size.y / 2, 14]
         Render.window(game, game.tanks[0],
           {x: 0, y: 0, w, h, scale})
         Render.window(game, game.tanks[1],
@@ -91,9 +91,9 @@ define ["map"], (Map) ->
           Map.get(game.map, x, y)
         else
           Map.VOID
-      if square != lastSquare
-        ctx.fillStyle = Map.squares[square].color
-        lastSquare = square
+     #if square != lastSquare
+      ctx.fillStyle = Map.squares[square].color
+     #  lastSquare = square
       ctx.fillRect(x, y, 1, 1)
 
     x = xMin

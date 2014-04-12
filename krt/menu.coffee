@@ -220,11 +220,12 @@ define ["jquery", "game", "keycodes"], ($, Game, Keycodes) ->
 
       $players.on "changed-players.krt", ->
         $players.find("input[name=add-player]").attr("disabled", state.playerCount >= MAX_PLAYERS)
-        $players.find("input[name=remove-player]").attr("disabled", state.playerCount <= 0)
+        $players.find("input[name=remove-player]").attr("disabled", state.playerCount <= 1)
 
       for i in [0...state.playerCount]
         $players.find(".players-list").append(buildPlayer(i))
 
+      $players.trigger("changed-players.krt")
       $players
 
     buildStart = ->

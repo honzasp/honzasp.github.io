@@ -10,7 +10,7 @@
       var h, scale, w, _ref, _ref1, _ref2, _ref3;
       switch (game.playerInfos.length) {
         case 1:
-          _ref = [game.size.x, game.size.y, 16], w = _ref[0], h = _ref[1], scale = _ref[2];
+          _ref = [game.size.x, game.size.y, 18], w = _ref[0], h = _ref[1], scale = _ref[2];
           return Render.window(game, game.tanks[0], {
             x: 0,
             y: 0,
@@ -19,7 +19,7 @@
             scale: scale
           });
         case 2:
-          _ref1 = [game.size.x / 2, game.size.y, 14], w = _ref1[0], h = _ref1[1], scale = _ref1[2];
+          _ref1 = [game.size.x / 2, game.size.y, 16], w = _ref1[0], h = _ref1[1], scale = _ref1[2];
           Render.window(game, game.tanks[0], {
             x: 0,
             y: 0,
@@ -35,7 +35,7 @@
             scale: scale
           });
         case 3:
-          _ref2 = [game.size.x / 3, game.size.y, 13], w = _ref2[0], h = _ref2[1], scale = _ref2[2];
+          _ref2 = [game.size.x / 3, game.size.y, 15], w = _ref2[0], h = _ref2[1], scale = _ref2[2];
           Render.window(game, game.tanks[0], {
             x: 0,
             y: 0,
@@ -58,7 +58,7 @@
             scale: scale
           });
         case 4:
-          _ref3 = [game.size.x / 2, game.size.y / 2, 12], w = _ref3[0], h = _ref3[1], scale = _ref3[2];
+          _ref3 = [game.size.x / 2, game.size.y / 2, 14], w = _ref3[0], h = _ref3[1], scale = _ref3[2];
           Render.window(game, game.tanks[0], {
             x: 0,
             y: 0,
@@ -161,10 +161,7 @@
       drawSquare = function(x, y) {
         var square;
         square = Map.contains(game.map, x, y) ? Map.get(game.map, x, y) : Map.VOID;
-        if (square !== lastSquare) {
-          ctx.fillStyle = Map.squares[square].color;
-          lastSquare = square;
-        }
+        ctx.fillStyle = Map.squares[square].color;
         return ctx.fillRect(x, y, 1, 1);
       };
       x = xMin;

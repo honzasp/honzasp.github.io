@@ -4,14 +4,13 @@
     var Game;
     Game = exports;
     Game.MAX_GARBAGE_RATIO = 0.5;
-    Game.BASE_SIZE = 8;
-    Game.BASE_DOOR_SIZE = 2;
     Game.init = function(settings, callback) {
-      var game, info, playerInfos;
-      playerInfos = Game.init.createPlayers(settings);
+      var game, info, map, playerInfos;
+      map = Map.gen(settings);
+      playerInfos = Game.init.createPlayers(settings, map);
       game = {
         dom: Game.init.prepareDom(game),
-        map: Game.init.createMap(settings, playerInfos),
+        map: map,
         tanks: (function() {
           var _i, _len, _results;
           _results = [];
@@ -64,20 +63,15 @@
         $pauseBox: void 0
       };
     };
-    Game.init.createPlayers = function(settings) {
-      var def, idx, x, y, _i, _len, _ref, _results;
+    Game.init.createPlayers = function(settings, map) {
+      var def, idx, _i, _len, _ref, _results;
       _ref = settings.playerDefs;
       _results = [];
       for (idx = _i = 0, _len = _ref.length; _i < _len; idx = ++_i) {
         def = _ref[idx];
-        x = Math.floor(Math.random() * (settings.mapWidth - Game.BASE_SIZE));
-        y = Math.floor(Math.random() * (settings.mapHeight - Game.BASE_SIZE));
         _results.push({
           index: idx,
-          base: {
-            x: x,
-            y: y
-          },
+          base: map.bases[idx],
           destroyed: 0,
           hits: 0,
           keys: def.keys,
@@ -86,42 +80,10 @@
       }
       return _results;
     };
-    Game.init.createMap = function(settings, playerInfos) {
-      var dx, i, j, map, playerInfo, s, x, y, _i, _j, _k, _l, _len, _m, _n, _o, _ref, _ref1, _ref2, _ref3;
-      map = Map.init(settings.mapWidth, settings.mapHeight);
-      for (y = _i = 2; _i <= 20; y = ++_i) {
-        for (x = _j = 3; _j <= 13; x = ++_j) {
-          Map.set(map, x, y, Map.ROCK);
-        }
-      }
-      Map.set(map, 4, 3, Map.STEEL);
-      for (_k = 0, _len = playerInfos.length; _k < _len; _k++) {
-        playerInfo = playerInfos[_k];
-        _ref = playerInfo.base, x = _ref.x, y = _ref.y;
-        s = Game.BASE_SIZE;
-        for (i = _l = 0; 0 <= s ? _l < s : _l > s; i = 0 <= s ? ++_l : --_l) {
-          Map.set(map, x + i, y, Map.TITANIUM);
-          Map.set(map, x + i, y + s - 1, Map.TITANIUM);
-          Map.set(map, x, y + i, Map.TITANIUM);
-          Map.set(map, x + s - 1, y + i, Map.TITANIUM);
-        }
-        for (i = _m = 1, _ref1 = s - 1; 1 <= _ref1 ? _m < _ref1 : _m > _ref1; i = 1 <= _ref1 ? ++_m : --_m) {
-          for (j = _n = 1, _ref2 = s - 1; 1 <= _ref2 ? _n < _ref2 : _n > _ref2; j = 1 <= _ref2 ? ++_n : --_n) {
-            Map.set(map, x + i, y + j, Map.EMPTY);
-          }
-        }
-        for (i = _o = 0, _ref3 = Game.BASE_DOOR_SIZE; 0 <= _ref3 ? _o < _ref3 : _o > _ref3; i = 0 <= _ref3 ? ++_o : --_o) {
-          dx = x + Math.floor(s / 2 - Game.BASE_DOOR_SIZE / 2) + i;
-          Map.set(map, dx, y, Map.EMPTY);
-          Map.set(map, dx, y + s - 1, Map.EMPTY);
-        }
-      }
-      return map;
-    };
     Game.createTank = function(game, playerInfo) {
       var color, idx, x, y, _ref;
       idx = playerInfo.index, (_ref = playerInfo.base, x = _ref.x, y = _ref.y), color = playerInfo.color;
-      return new Tank(idx, x + Game.BASE_SIZE / 2, y + Game.BASE_SIZE / 2, 0, color);
+      return new Tank(idx, x + Map.BASE_SIZE / 2, y + Map.BASE_SIZE / 2, 0, color);
     };
     Game.deinit = function(game) {
       Game.stop(game);

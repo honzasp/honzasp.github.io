@@ -227,11 +227,12 @@
         });
         $players.on("changed-players.krt", function() {
           $players.find("input[name=add-player]").attr("disabled", state.playerCount >= MAX_PLAYERS);
-          return $players.find("input[name=remove-player]").attr("disabled", state.playerCount <= 0);
+          return $players.find("input[name=remove-player]").attr("disabled", state.playerCount <= 1);
         });
         for (i = _i = 0, _ref = state.playerCount; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
           $players.find(".players-list").append(buildPlayer(i));
         }
+        $players.trigger("changed-players.krt");
         return $players;
       };
       buildStart = function() {
