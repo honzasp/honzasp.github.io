@@ -16,7 +16,7 @@
     MAX_PLAYERS = 4;
     STATE_VERSION = 3;
     return function($root) {
-      var $menu, build, buildFps, buildMap, buildMode, buildPlayer, buildPlayerKey, buildPlayers, buildStart, defaultState, json, jsonTxt, keyName, rebuild, resetState, save, selectKey, startGame, state;
+      var $menu, build, buildFps, buildMap, buildMode, buildPlayer, buildPlayerKey, buildPlayers, buildStart, defaultState, json, jsonTxt, keyName, rebuild, resetState, save, selectKey, startGame, state, valFloat, valInt;
       defaultState = function() {
         return {
           _version: STATE_VERSION,
@@ -101,6 +101,40 @@
         save();
         return rebuild();
       };
+      valInt = function(elem, min, max) {
+        var val;
+        if (min == null) {
+          min = void 0;
+        }
+        if (max == null) {
+          max = void 0;
+        }
+        val = parseInt($(elem).val(), 10);
+        if ((min != null) && val < min) {
+          return min;
+        }
+        if ((max != null) && val > max) {
+          return max;
+        }
+        return val;
+      };
+      valFloat = function(elem, min, max) {
+        var val;
+        if (min == null) {
+          min = void 0;
+        }
+        if (max == null) {
+          max = void 0;
+        }
+        val = parseFloat($(elem).val());
+        if ((min != null) && val < min) {
+          return min;
+        }
+        if ((max != null) && val > max) {
+          return max;
+        }
+        return val;
+      };
       rebuild = function() {
         if ($menu != null) {
           $menu.remove();
@@ -112,17 +146,17 @@
       };
       buildMode = function() {
         var $mode;
-        $mode = $("<fieldset class='mode'>\n  <legend>mode</legend>\n  <p>\n    <label><input type='radio' name='mode' value='time'> <span>time:</span></label>\n    <input type='number' name='time' value='0' class='mode-depends mode-time'>\n  </p>\n  <p>\n    <label><input type='radio' name='mode' value='lives'> <span>lives:</span></label>\n    <input type='number' name='lives' value='0' class='mode-depends mode-lives'>\n  </p>\n  <p>\n    <label><input type='radio' name='mode' value='hits'> <span>hits:</span></label>\n    <input type='number' name='hits' value='0' class='mode-depends mode-hits'>\n  </p>\n</fieldset>");
+        $mode = $("<fieldset class='mode'>\n  <legend>mode</legend>\n  <p>\n    <label><input type='radio' name='mode' value='time'> <span>time:</span></label>\n    <input type='number' name='time' min='1' step='1' class='mode-depends mode-time'>\n  </p>\n  <p>\n    <label><input type='radio' name='mode' value='lives'> <span>lives:</span></label>\n    <input type='number' name='lives' min='1' step='1' class='mode-depends mode-lives'>\n  </p>\n  <p>\n    <label><input type='radio' name='mode' value='hits'> <span>hits:</span></label>\n    <input type='number' name='hits' min='1' step='1' class='mode-depends mode-hits'>\n  </p>\n</fieldset>");
         $mode.find("input[name=time]").val(state.modes.time).change(function() {
-          state.modes.time = $(this).val() * 1;
+          state.modes.time = valInt(this, 1);
           return save();
         });
         $mode.find("input[name=lives]").val(state.modes.lives).change(function() {
-          state.modes.lives = $(this).val() * 1;
+          state.modes.lives = valInt(this, 1);
           return save();
         });
         $mode.find("input[name=hits]").val(state.modes.hits).change(function() {
-          state.modes.hits = $(this).val() * 1;
+          state.modes.hits = valInt(this, 1);
           return save();
         });
         $mode.find("input[name=mode]").change(function() {
@@ -140,30 +174,30 @@
       };
       buildMap = function() {
         var $map;
-        $map = $("<fieldset class='map'>\n  <legend>map</legend>\n  <p>\n    <label><span>width:</span> <input type='number' name='map-width' value=''></label>\n  </p>\n  <p>\n    <label><span>height:</span> <input type='number' name='map-height' value=''></label>\n  </p>\n  <p>\n    <label><span>noisiness:</span> <input type='number' name='map-noisiness' value=''></label>\n  </p>\n  <p>\n    <label><span>emptiness:</span> <input type='number' name='map-emptiness' value=''></label>\n  </p>\n</fieldset>");
+        $map = $("<fieldset class='map'>\n  <legend>map</legend>\n  <p>\n    <label><span>width:</span> \n    <input type='number' name='map-width' min='50' step='1'></label>\n  </p>\n  <p>\n    <label><span>height:</span> \n    <input type='number' name='map-height' min='50' step='1'></label>\n  </p>\n  <p>\n    <label><span>noisiness:</span>\n    <input type='number' name='map-noisiness' min='1' max='99'></label>\n  </p>\n  <p>\n    <label><span>emptiness:</span> \n    <input type='number' name='map-emptiness' min='1' max='99'></label>\n  </p>\n</fieldset>");
         $map.find("input[name=map-width]").val(state.mapWidth).change(function() {
-          state.mapWidth = $(this).val() * 1;
+          state.mapWidth = valInt(this, 50);
           return save();
         });
         $map.find("input[name=map-height]").val(state.mapHeight).change(function() {
-          state.mapHeight = $(this).val() * 1;
+          state.mapHeight = valInt(this, 50);
           return save();
         });
         $map.find("input[name=map-noisiness]").val(state.mapNoisiness).change(function() {
-          state.mapNoisiness = $(this).val() * 1;
+          state.mapNoisiness = valFloat(this, 1, 99);
           return save();
         });
         $map.find("input[name=map-emptiness]").val(state.mapEmptiness).change(function() {
-          state.mapEmptiness = $(this).val() * 1;
+          state.mapEmptiness = valFloat(this, 1, 99);
           return save();
         });
         return $map;
       };
       buildFps = function() {
         var $fps;
-        $fps = $("<fieldset class='fps'>\n  <legend>fps</legend>\n  <p><label><span>frames per second:</span> <input type='number' name='fps' value=''></label></p>\n</fieldset>");
+        $fps = $("<fieldset class='fps'>\n  <legend>fps</legend>\n  <p>\n    <label><span>frames per second:</span> \n    <input type='number' name='fps' value=''></label>\n  </p>\n</fieldset>");
         $fps.find("input[name=fps]").val(state.fps).change(function() {
-          state.fps = $(this).val() * 1;
+          state.fps = valFloat(this, 1, 200);
           return save();
         });
         return $fps;
@@ -252,7 +286,7 @@
       buildStart = function() {
         var $start;
         $start = $("<fieldset class='start'>\n  <input type='button' name='start-button' value='start'>\n  <input type='button' name='reset-button' value='reset settings'>\n</fieldset>");
-        $start.find("input[name=start-button]").click(function() {
+        $start.find("input[name=start-button]").click(function(evt) {
           return startGame();
         });
         $start.find("input[name=reset-button]").click(function() {
@@ -285,7 +319,7 @@
           mapWidth: state.mapWidth,
           mapHeight: state.mapHeight,
           mapAmp: state.mapNoisiness / 100,
-          mapCaveLimit: state.mapEmptiness / 50 - 1,
+          mapCaveLimit: Math.pow((state.mapEmptiness - 50) / 50, 3),
           startLives: state.modes.lives,
           fps: state.fps,
           playerDefs: (function() {

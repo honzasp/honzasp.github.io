@@ -66,6 +66,18 @@ define ["jquery", "game", "keycodes"], ($, Game, Keycodes) ->
       save()
       rebuild()
 
+    valInt = (elem, min = undefined, max = undefined) ->
+      val = parseInt($(elem).val(), 10)
+      return min if min? and val < min
+      return max if max? and val > max
+      val
+
+    valFloat = (elem, min = undefined, max = undefined) ->
+      val = parseFloat($(elem).val())
+      return min if min? and val < min
+      return max if max? and val > max
+      val
+
     rebuild = ->
       $menu.remove() if $menu?
       $menu = build()
@@ -85,25 +97,25 @@ define ["jquery", "game", "keycodes"], ($, Game, Keycodes) ->
           <legend>mode</legend>
           <p>
             <label><input type='radio' name='mode' value='time'> <span>time:</span></label>
-            <input type='number' name='time' value='0' class='mode-depends mode-time'>
+            <input type='number' name='time' min='1' step='1' class='mode-depends mode-time'>
           </p>
           <p>
             <label><input type='radio' name='mode' value='lives'> <span>lives:</span></label>
-            <input type='number' name='lives' value='0' class='mode-depends mode-lives'>
+            <input type='number' name='lives' min='1' step='1' class='mode-depends mode-lives'>
           </p>
           <p>
             <label><input type='radio' name='mode' value='hits'> <span>hits:</span></label>
-            <input type='number' name='hits' value='0' class='mode-depends mode-hits'>
+            <input type='number' name='hits' min='1' step='1' class='mode-depends mode-hits'>
           </p>
         </fieldset>
         """
         
       $mode.find("input[name=time]").val(state.modes.time).change ->
-        state.modes.time = $(@).val() * 1; save()
+        state.modes.time = valInt(@, 1); save()
       $mode.find("input[name=lives]").val(state.modes.lives).change ->
-        state.modes.lives = $(@).val() * 1; save()
+        state.modes.lives = valInt(@, 1); save()
       $mode.find("input[name=hits]").val(state.modes.hits).change ->
-        state.modes.hits = $(@).val() * 1; save()
+        state.modes.hits = valInt(@, 1); save()
 
       $mode.find("input[name=mode]").change ->
         state.modes.mode = $mode.find("input[name=mode]:checked").val()
@@ -123,40 +135,47 @@ define ["jquery", "game", "keycodes"], ($, Game, Keycodes) ->
         <fieldset class='map'>
           <legend>map</legend>
           <p>
-            <label><span>width:</span> <input type='number' name='map-width' value=''></label>
+            <label><span>width:</span> 
+            <input type='number' name='map-width' min='50' step='1'></label>
           </p>
           <p>
-            <label><span>height:</span> <input type='number' name='map-height' value=''></label>
+            <label><span>height:</span> 
+            <input type='number' name='map-height' min='50' step='1'></label>
           </p>
           <p>
-            <label><span>noisiness:</span> <input type='number' name='map-noisiness' value=''></label>
+            <label><span>noisiness:</span>
+            <input type='number' name='map-noisiness' min='1' max='99'></label>
           </p>
           <p>
-            <label><span>emptiness:</span> <input type='number' name='map-emptiness' value=''></label>
+            <label><span>emptiness:</span> 
+            <input type='number' name='map-emptiness' min='1' max='99'></label>
           </p>
         </fieldset>
         """
 
       $map.find("input[name=map-width]").val(state.mapWidth).change ->
-        state.mapWidth = $(@).val() * 1; save()
+        state.mapWidth = valInt(@, 50); save()
       $map.find("input[name=map-height]").val(state.mapHeight).change ->
-        state.mapHeight = $(@).val() * 1; save()
+        state.mapHeight = valInt(@, 50); save()
       $map.find("input[name=map-noisiness]").val(state.mapNoisiness).change ->
-        state.mapNoisiness = $(@).val() * 1; save()
+        state.mapNoisiness = valFloat(@, 1, 99); save()
       $map.find("input[name=map-emptiness]").val(state.mapEmptiness).change ->
-        state.mapEmptiness = $(@).val() * 1; save()
+        state.mapEmptiness = valFloat(@, 1, 99); save()
       $map
 
     buildFps = ->
       $fps = $ """
         <fieldset class='fps'>
           <legend>fps</legend>
-          <p><label><span>frames per second:</span> <input type='number' name='fps' value=''></label></p>
+          <p>
+            <label><span>frames per second:</span> 
+            <input type='number' name='fps' value=''></label>
+          </p>
         </fieldset>
         """
 
       $fps.find("input[name=fps]").val(state.fps).change ->
-        state.fps = $(@).val() * 1; save()
+        state.fps = valFloat(@, 1, 200); save()
       $fps
 
     buildPlayer = (idx) ->
@@ -251,7 +270,7 @@ define ["jquery", "game", "keycodes"], ($, Game, Keycodes) ->
           <input type='button' name='reset-button' value='reset settings'>
         </fieldset>
         """
-      $start.find("input[name=start-button]").click ->
+      $start.find("input[name=start-button]").click (evt) ->
         startGame()
       $start.find("input[name=reset-button]").click ->
         resetState()
@@ -286,7 +305,7 @@ define ["jquery", "game", "keycodes"], ($, Game, Keycodes) ->
         mapWidth: state.mapWidth
         mapHeight: state.mapHeight
         mapAmp: state.mapNoisiness / 100
-        mapCaveLimit: state.mapEmptiness / 50 - 1
+        mapCaveLimit: Math.pow((state.mapEmptiness - 50)/50, 3)
         startLives: state.modes.lives
         fps: state.fps
         playerDefs: for i in [0...state.playerCount]
