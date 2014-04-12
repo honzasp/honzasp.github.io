@@ -75,11 +75,11 @@
       return Update.boom(game, hit.pos, bullet.spec.boom);
     };
     Update.bulletHit.map = function(game, bullet, hit) {
-      var angle, bonus, content, energy, mass, pos, radiusSinVel, speed, toughness, vel, _ref;
-      _ref = Map.squares[Map.get(game.map, hit.map.x, hit.map.y)], toughness = _ref.toughness, energy = _ref.energy, mass = _ref.mass;
+      var angle, bonus, content, energy, mass, pos, prob, radiusSinVel, speed, toughness, vel, _ref;
+      _ref = Map.squares[Map.get(game.map, hit.map.x, hit.map.y)], toughness = _ref.toughness, energy = _ref.energy, mass = _ref.mass, prob = _ref.prob;
       if (Math.pow(toughness, bullet.spec.damage) < Math.random()) {
         Map.set(game.map, hit.map.x, hit.map.y, Map.EMPTY);
-        content = (energy != null) && (((mass != null) && Math.random() < 0.5) || (mass == null)) ? new Bonus.Energy(energy * (0.5 + Math.random())) : mass != null ? new Bonus.Mass(mass * (0.5 + Math.random())) : void 0;
+        content = (prob == null) || prob > Math.random() ? (energy != null) && (((mass != null) && Math.random() < 0.5) || (mass == null)) ? new Bonus.Energy(energy * (0.5 + Math.random())) : mass != null ? new Bonus.Mass(mass * (0.5 + Math.random())) : void 0 : void 0;
         if (content != null) {
           pos = {
             x: hit.map.x + 0.5,
@@ -103,7 +103,7 @@
         x: bullet.vel.x * bullet.spec.mass,
         y: bullet.vel.y * bullet.spec.mass
       });
-      hit.tank.damage(game, bullet.spec.damage, bullet.owner);
+      hit.tank.hurt(game, bullet.spec.hurt, bullet.owner);
       return void 0;
     };
     Update.bulletHit.fragments = function(game, bullet, hit) {

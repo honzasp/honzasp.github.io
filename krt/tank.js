@@ -18,12 +18,12 @@
       this.firing = false;
       this.setEnergy(Tank.START_ENERGY);
       this.setMass(Tank.START_MASS);
-      this.weapons = [new Weapon(Weapon.MachineGun), new Weapon(Weapon.Autocannon), new Weapon(Weapon.HugeCannon)];
+      this.weapons = [new Weapon(Weapon.MachineGun), new Weapon(Weapon.MiningGun), new Weapon(Weapon.EmergencyGun), new Weapon(Weapon.Autocannon), new Weapon(Weapon.HugeCannon)];
       this.activeWeapon = 0;
       return this.color = color;
     };
     Tank.WALL_DISTANCE = 0.01;
-    Tank.FORCE = 1000;
+    Tank.FORCE = 1500;
     Tank.FRICTION = 100;
     Tank.ANGULAR_SPEED = 1.5 * Math.PI;
     Tank.FIRING_ANGULAR_SPEED = 0.5 * Math.PI;
@@ -33,9 +33,9 @@
     Tank.START_MASS = 100;
     Tank.MIN_FIRE_ENERGY = 10;
     Tank.MIN_MASS = 50;
-    Tank.LIVE_ENERGY_CONSUM = 2;
-    Tank.MOVE_ENERGY_CONSUM = 5;
-    Tank.DENSITY = 100;
+    Tank.LIVE_ENERGY_CONSUM = 3;
+    Tank.MOVE_ENERGY_CONSUM = 8;
+    Tank.DENSITY = 120;
     Tank.prototype.change = function() {
       return this.activeWeapon = (this.activeWeapon + 1) % this.weapons.length;
     };
@@ -71,7 +71,7 @@
         y: -relVelY * spec.bullet.mass
       });
     };
-    Tank.prototype.damage = function(game, dmg, guilty) {
+    Tank.prototype.hurt = function(game, dmg, guilty) {
       if (guilty == null) {
         guilty = void 0;
       }

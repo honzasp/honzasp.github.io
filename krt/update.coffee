@@ -65,14 +65,15 @@ define "exports  collisions  game  map  weapon  bullet  particle  bonus".split(/
     Update.boom(game, hit.pos, bullet.spec.boom)
 
   Update.bulletHit.map = (game, bullet, hit) ->
-    {toughness, energy, mass} = Map.squares[Map.get(game.map, hit.map.x, hit.map.y)]
+    {toughness, energy, mass, prob} = Map.squares[Map.get(game.map, hit.map.x, hit.map.y)]
     if Math.pow(toughness, bullet.spec.damage) < Math.random()
       Map.set(game.map, hit.map.x, hit.map.y, Map.EMPTY)
       content = 
-        if energy? and ((mass? and Math.random() < 0.5) or not mass?)
-          new Bonus.Energy(energy*(0.5 + Math.random()))
-        else if mass?
-          new Bonus.Mass(mass*(0.5 + Math.random()))
+        if !prob? or prob > Math.random()
+          if energy? and ((mass? and Math.random() < 0.5) or not mass?)
+            new Bonus.Energy(energy*(0.5 + Math.random()))
+          else if mass?
+            new Bonus.Mass(mass*(0.5 + Math.random()))
       if content?
         pos = { x: hit.map.x + 0.5, y: hit.map.y + 0.5 }
         angle = Math.random() * 2*Math.PI
@@ -85,7 +86,7 @@ define "exports  collisions  game  map  weapon  bullet  particle  bonus".split(/
 
   Update.bulletHit.tank = (game, bullet, hit) ->
     hit.tank.impulse(x: bullet.vel.x * bullet.spec.mass, y: bullet.vel.y * bullet.spec.mass)
-    hit.tank.damage(game, bullet.spec.damage, bullet.owner)
+    hit.tank.hurt(game, bullet.spec.hurt, bullet.owner)
     undefined
 
   Update.bulletHit.fragments = (game, bullet, hit) ->

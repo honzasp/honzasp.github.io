@@ -12,10 +12,11 @@
       bullet: {
         speed: 120,
         time: 1,
+        mass: 0.5,
         radius: 0.1,
         color: "#ecb120",
-        mass: 0.5,
-        damage: 2.5,
+        hurt: 20,
+        damage: 0.1,
         boom: {
           count: 8,
           speed: 20,
@@ -27,6 +28,69 @@
       },
       energy: 0.5,
       cooldown: 0.05,
+      angleVariance: 2 * Math.PI / 70
+    };
+    Weapon.MiningGun = {
+      name: "mining gun",
+      bullet: {
+        speed: 40,
+        time: 2,
+        mass: 5,
+        radius: 0.2,
+        color: "#e337e6",
+        hurt: 50,
+        damage: 8,
+        boom: {
+          count: 25,
+          speed: 60,
+          time: 0.5,
+          radius: 0.7,
+          color: "#af4fca",
+          opacity: 0.5
+        },
+        fragment: {
+          speed: 50,
+          time: 0.5,
+          mass: 0.2,
+          radius: 0.2,
+          color: "#c637e6",
+          hurt: 10,
+          damage: 2,
+          boom: {
+            count: 8,
+            speed: 40,
+            time: 0.3,
+            radius: 0.4,
+            color: "#a044d9",
+            opacity: 0.4
+          }
+        }
+      },
+      energy: 8,
+      cooldown: 0.6,
+      angleVariance: 2 * Math.PI / 70
+    };
+    Weapon.EmergencyGun = {
+      name: "emergency gun",
+      bullet: {
+        speed: 80,
+        time: 1,
+        mass: 0,
+        radius: 0.1,
+        color: "#567aea",
+        hurt: 2,
+        damage: 0.1,
+        boom: {
+          count: 5,
+          speed: 20,
+          time: 0.2,
+          radius: 0.15,
+          color: "#446ae1",
+          opacity: 0.4
+        }
+      },
+      energy: 0.1,
+      cooldown: 0.1,
       angleVariance: 2 * Math.PI / 50
     };
     Weapon.Autocannon = {
@@ -34,10 +98,11 @@
       bullet: {
         speed: 80,
         time: 2,
+        mass: 5,
         radius: 0.15,
         color: "#e97a2d",
-        mass: 5,
-        damage: 10,
+        hurt: 240,
+        damage: 2,
         boom: {
           count: 10,
           speed: 40,
@@ -49,10 +114,11 @@
         fragment: {
           speed: 150,
           time: 0.5,
+          mass: 0.25,
           radius: 0.05,
           color: "#f36b24",
-          mass: 0.25,
-          damage: 1,
+          hurt: 10,
+          damage: 0.1,
           boom: {
             count: 5,
             speed: 30,
@@ -72,9 +138,10 @@
       bullet: {
         speed: 60,
         time: 5,
+        mass: 15,
         radius: 0.2,
         color: "#ed1895",
-        mass: 20,
+        hurt: 700,
         damage: 10,
         boom: {
           count: 30,
@@ -87,10 +154,11 @@
         fragment: {
           speed: 200,
           time: 0.15,
+          mass: 0.4,
           radius: 0.05,
           color: "#f23ca7",
-          mass: 0.5,
-          damage: 1,
+          hurt: 20,
+          damage: 0.5,
           boom: {
             count: 8,
             speed: 30,
@@ -101,7 +169,7 @@
           }
         }
       },
-      energy: 5,
+      energy: 10,
       cooldown: 2,
       angleVariance: 2 * Math.PI / 100
     };

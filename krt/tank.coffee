@@ -11,6 +11,8 @@ define ["map", "weapon", "bullet", "game"], (Map, Weapon, Bullet, Game) ->
     @.setMass(Tank.START_MASS)
     @weapons = [
       new Weapon(Weapon.MachineGun)
+      new Weapon(Weapon.MiningGun)
+      new Weapon(Weapon.EmergencyGun)
       new Weapon(Weapon.Autocannon)
       new Weapon(Weapon.HugeCannon)
     ]
@@ -19,7 +21,7 @@ define ["map", "weapon", "bullet", "game"], (Map, Weapon, Bullet, Game) ->
 
 
   Tank.WALL_DISTANCE = 0.01
-  Tank.FORCE = 1000
+  Tank.FORCE = 1500
   Tank.FRICTION = 100
   Tank.ANGULAR_SPEED = 1.5*Math.PI
   Tank.FIRING_ANGULAR_SPEED = 0.5*Math.PI
@@ -29,9 +31,9 @@ define ["map", "weapon", "bullet", "game"], (Map, Weapon, Bullet, Game) ->
   Tank.START_MASS = 100
   Tank.MIN_FIRE_ENERGY = 10
   Tank.MIN_MASS = 50
-  Tank.LIVE_ENERGY_CONSUM = 2
-  Tank.MOVE_ENERGY_CONSUM = 5
-  Tank.DENSITY = 100
+  Tank.LIVE_ENERGY_CONSUM = 3
+  Tank.MOVE_ENERGY_CONSUM = 8
+  Tank.DENSITY = 120
 
   Tank::change = ->
     @activeWeapon = (@activeWeapon + 1) % @weapons.length
@@ -58,7 +60,7 @@ define ["map", "weapon", "bullet", "game"], (Map, Weapon, Bullet, Game) ->
     @.setEnergy(@energy - spec.energy, game)
     @.impulse(x: -relVelX * spec.bullet.mass, y: -relVelY * spec.bullet.mass)
 
-  Tank::damage = (game, dmg, guilty = undefined) ->
+  Tank::hurt = (game, dmg, guilty = undefined) ->
     @.setEnergy(@energy - dmg, game, guilty)
 
   Tank::receive = (game, content) ->

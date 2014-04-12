@@ -13,25 +13,27 @@ define ["perlin"], (Perlin) ->
   Map.squares[Map.EMPTY = 0] =
     {color: "#333333"}
   Map.squares[Map.ROCK_1 = 10] =
-    {color: "#a39c89", toughness: 0.4, energy: 60}
+    {color: "#a39c89", toughness: 0.4, energy: 80, prob: 0.5}
   Map.squares[Map.ROCK_2 = 11] =
-    {color: "#a79f8c", toughness: 0.5, mass: 30}
+    {color: "#a79f8c", toughness: 0.5, mass: 30, prob: 0.4}
   Map.squares[Map.ROCK_3 = 12] =
-    {color: "#aaa18b", toughness: 0.6, energy: 40, mass: 20}
+    {color: "#aaa18b", toughness: 0.6, energy: 90, prob: 0.4}
   Map.squares[Map.ROCK_4 = 13] =
-    {color: "#aea287", toughness: 0.5, energy: 60}
+    {color: "#aea287", toughness: 0.5, energy: 60, prob: 0.3}
   Map.squares[Map.ROCK_5 = 14] =
-    {color: "#a79b7e", toughness: 0.5, energy: 40}
+    {color: "#a79b7e", toughness: 0.5, energy: 100, prob: 0.3}
   Map.squares[Map.ROCK_6 = 15] =
-    {color: "#a69b83", toughness: 0.4, mass: 10}
+    {color: "#a69b83", toughness: 0.4, mass: 10, prob: 0.6}
   Map.squares[Map.CONCRETE = 20] =
-    {color: "#a3a3a3", toughness: 0.8}
+    {color: "#a3a3a3", toughness: 0.998}
   Map.squares[Map.STEEL = 30] =
-    {color: "#6f7989", toughness: 0.9}
+    {color: "#6f7989", toughness: 0.995}
   Map.squares[Map.TITANIUM = 31] =
-    {color: "#6287b2", toughness: 0.99}
+    {color: "#6287b2", toughness: 0.999}
   Map.squares[Map.GOLD = 32] =
     {color: "#dfbe23", toughness: 0.3, energy: 300}
+  Map.squares[Map.LEAD = 33] =
+    {color: "#5b7380", toughness: 0.35, mass: 50}
   Map.squares[Map.VOID = 255] =
     {color: "#000000"}
 
@@ -53,7 +55,7 @@ define ["perlin"], (Perlin) ->
   Map.BASE_SIZE = 8
   Map.BASE_DOOR_SIZE = 2
   Map.NODE_DENSITY = 1 / 3000
-  Map.ROCK_RATIO = 0.999
+  Map.ROCK_RATIO = 0.997
   Map.DEPOSIT_COUNT = 10
   Map.DEPOSIT_RADIUS = 4
   Map.CHAMBER_SIZE = 8
@@ -103,10 +105,11 @@ define ["perlin"], (Perlin) ->
       Map.gen.preciousSquare()
 
   Map.gen.preciousSquare = ->
-    switch Math.floor(Math.random() * 3)
+    switch Math.floor(Math.random() * 4)
       when 0 then Map.STEEL
       when 1 then Map.TITANIUM
       when 2 then Map.GOLD
+      when 3 then Map.LEAD
 
   Map.gen.base = (map, base) ->
     {x, y} = base
