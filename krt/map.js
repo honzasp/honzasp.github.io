@@ -116,6 +116,7 @@
     Map.DEPOSIT_RADIUS = 4;
     Map.CHAMBER_SIZE = 8;
     Map.BUNKER_SIZE = 6;
+    Map.OCTAVES = 4;
     Map.gen = function(settings) {
       var base, baseCount, bases, height, map, node, nodeCount, web, width, x, y, _i, _j, _len, _len1, _ref;
       width = settings.mapWidth;
@@ -123,7 +124,7 @@
       baseCount = settings.playerDefs.length;
       nodeCount = Math.floor(width * height * Map.NODE_DENSITY);
       map = Map.init(width, height);
-      Map.gen.fillRock(map);
+      Map.gen.fillRock(map, settings);
       web = Map.gen.pointWeb(baseCount + nodeCount, width - 1, height - 1);
       _ref = web.slice(baseCount);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -149,15 +150,15 @@
       }
       return map;
     };
-    Map.gen.fillRock = function(map) {
+    Map.gen.fillRock = function(map, settings) {
       var perlin, x, y, _i, _j, _ref, _ref1;
       perlin = Perlin.gen(0xbeef, map.width, map.height, {
-        octaves: 4,
-        amp: 0.4
+        octaves: Map.OCTAVES,
+        amp: settings.mapAmp
       });
       for (y = _i = 0, _ref = map.height; _i < _ref; y = _i += 1) {
         for (x = _j = 0, _ref1 = map.width; _j < _ref1; x = _j += 1) {
-          if (perlin[y * map.width + x] > 0) {
+          if (perlin[y * map.width + x] > settings.mapCaveLimit) {
             Map.set(map, x, y, Map.gen.rockSquare());
           }
         }

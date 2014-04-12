@@ -10,13 +10,15 @@ define ["jquery", "game", "keycodes"], ($, Game, Keycodes) ->
     "green": "#86990a"
   KEYS = ["forward", "backward", "left", "right", "fire", "change"]
   MAX_PLAYERS = 4
-  STATE_VERSION = 2
+  STATE_VERSION = 3
 
   ($root) ->
     defaultState = ->
       _version: STATE_VERSION
       mapWidth: 200
       mapHeight: 200
+      mapNoisiness: 40
+      mapEmptiness: 50
       playerCount: 2
       fps: 30
       modes:
@@ -126,6 +128,12 @@ define ["jquery", "game", "keycodes"], ($, Game, Keycodes) ->
           <p>
             <label><span>height:</span> <input type='number' name='map-height' value=''></label>
           </p>
+          <p>
+            <label><span>noisiness:</span> <input type='number' name='map-noisiness' value=''></label>
+          </p>
+          <p>
+            <label><span>emptiness:</span> <input type='number' name='map-emptiness' value=''></label>
+          </p>
         </fieldset>
         """
 
@@ -133,6 +141,10 @@ define ["jquery", "game", "keycodes"], ($, Game, Keycodes) ->
         state.mapWidth = $(@).val() * 1; save()
       $map.find("input[name=map-height]").val(state.mapHeight).change ->
         state.mapHeight = $(@).val() * 1; save()
+      $map.find("input[name=map-noisiness]").val(state.mapNoisiness).change ->
+        state.mapNoisiness = $(@).val() * 1; save()
+      $map.find("input[name=map-emptiness]").val(state.mapEmptiness).change ->
+        state.mapEmptiness = $(@).val() * 1; save()
       $map
 
     buildFps = ->
@@ -273,6 +285,8 @@ define ["jquery", "game", "keycodes"], ($, Game, Keycodes) ->
       settings =
         mapWidth: state.mapWidth
         mapHeight: state.mapHeight
+        mapAmp: state.mapNoisiness / 100
+        mapCaveLimit: state.mapEmptiness / 50 - 1
         startLives: state.modes.lives
         fps: state.fps
         playerDefs: for i in [0...state.playerCount]

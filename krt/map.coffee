@@ -60,6 +60,7 @@ define ["perlin"], (Perlin) ->
   Map.DEPOSIT_RADIUS = 4
   Map.CHAMBER_SIZE = 8
   Map.BUNKER_SIZE = 6
+  Map.OCTAVES = 4
 
   Map.gen = (settings) ->
     width = settings.mapWidth
@@ -68,7 +69,7 @@ define ["perlin"], (Perlin) ->
     nodeCount = Math.floor(width * height * Map.NODE_DENSITY)
 
     map = Map.init(width, height)
-    Map.gen.fillRock(map)
+    Map.gen.fillRock(map, settings)
 
     web = Map.gen.pointWeb(baseCount + nodeCount, width - 1, height - 1)
 
@@ -83,11 +84,12 @@ define ["perlin"], (Perlin) ->
 
     map
 
-  Map.gen.fillRock = (map) ->
-    perlin = Perlin.gen(0xbeef, map.width, map.height, octaves: 4, amp: 0.4)
+  Map.gen.fillRock = (map, settings) ->
+    perlin = Perlin.gen(0xbeef, map.width, map.height, 
+      octaves: Map.OCTAVES, amp: settings.mapAmp)
     for y in [0...map.height] by 1
       for x in [0...map.width] by 1
-        if perlin[y*map.width + x] > 0
+        if perlin[y*map.width + x] > settings.mapCaveLimit
           Map.set(map, x, y, Map.gen.rockSquare())
     undefined
 
