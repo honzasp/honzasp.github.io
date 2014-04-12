@@ -1,9 +1,13 @@
-define ["particle"], (Particle) ->
+define [], () ->
   Bullet = (@pos, @vel, @spec, @owner = undefined) ->
     @time = @spec.time
     @isDead = false
 
-  Bullet::move = Particle::move
+  Bullet::move = (t) ->
+    @time -= t
+    @isDead ||= (@time < 0)
+    @pos.x += @vel.x * t
+    @pos.y += @vel.y * t
 
   Bullet::draw = (ctx) ->
     ctx.beginPath()

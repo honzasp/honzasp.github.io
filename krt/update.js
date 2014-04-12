@@ -75,16 +75,12 @@
       return Update.boom(game, hit.pos, bullet.spec.boom);
     };
     Update.bulletHit.map = function(game, bullet, hit) {
-      var angle, bonus, energy, gain, mass, pos, radiusSinVel, speed, toughness, vel, _ref;
+      var angle, bonus, content, energy, mass, pos, radiusSinVel, speed, toughness, vel, _ref;
       _ref = Map.squares[Map.get(game.map, hit.map.x, hit.map.y)], toughness = _ref.toughness, energy = _ref.energy, mass = _ref.mass;
       if (Math.pow(toughness, bullet.spec.damage) < Math.random()) {
         Map.set(game.map, hit.map.x, hit.map.y, Map.EMPTY);
-        gain = (energy != null) && (((mass != null) && Math.random() < 0.5) || (mass == null)) ? {
-          energy: energy * (0.5 + Math.random())
-        } : mass != null ? {
-          mass: mass * (0.5 + Math.random())
-        } : void 0;
-        if (gain != null) {
+        content = (energy != null) && (((mass != null) && Math.random() < 0.5) || (mass == null)) ? new Bonus.Energy(energy * (0.5 + Math.random())) : mass != null ? new Bonus.Mass(mass * (0.5 + Math.random())) : void 0;
+        if (content != null) {
           pos = {
             x: hit.map.x + 0.5,
             y: hit.map.y + 0.5
@@ -96,7 +92,7 @@
             y: Math.cos(angle) * speed
           };
           radiusSinVel = Bonus.RADIUS_SIN_VEL * (0.5 + Math.random());
-          bonus = new Bonus(pos, vel, gain, radiusSinVel);
+          bonus = new Bonus(pos, vel, content, radiusSinVel);
           game.bonuses.push(bonus);
         }
       }
@@ -133,12 +129,13 @@
       return void 0;
     };
     Update.boom = function(game, pos, spec) {
-      var angle, i, radius, speed, time, velX, velY, _i, _ref;
+      var angle, i, radius, radius2, speed, time, velX, velY, _i, _ref;
       for (i = _i = 0, _ref = spec.count; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
         angle = 2 * Math.PI * Math.random();
         speed = spec.speed * (Math.random() + 0.5);
         time = spec.time * (Math.random() + 0.5);
         radius = spec.radius * (Math.random() + 0.5);
+        radius2 = radius * (1 + Math.random() * 0.5);
         velX = Math.sin(angle) * speed;
         velY = Math.cos(angle) * speed;
         game.particles.push(new Particle({
@@ -153,7 +150,8 @@
           time: time,
           radius: radius,
           opacity: spec.opacity,
-          opacityVel: spec.opacity / time,
+          opacityVel: -spec.opacity / time,
+          radiusVel: (radius2 - radius) / time,
           color: spec.color
         }));
       }

@@ -22,58 +22,58 @@
     };
     Map.squares = new Array(256);
     Map.squares[Map.EMPTY = 0] = {
-      color: "#333"
+      color: "#333333"
     };
     Map.squares[Map.ROCK_1 = 10] = {
-      color: "#aaa",
+      color: "#a39c89",
       toughness: 0.4,
       energy: 60
     };
     Map.squares[Map.ROCK_2 = 11] = {
-      color: "#bbb",
+      color: "#a79f8c",
       toughness: 0.5,
       mass: 30
     };
     Map.squares[Map.ROCK_3 = 12] = {
-      color: "#ccc",
+      color: "#aaa18b",
       toughness: 0.6,
       energy: 40,
       mass: 20
     };
     Map.squares[Map.ROCK_4 = 13] = {
-      color: "#ddd",
+      color: "#aea287",
       toughness: 0.5,
       energy: 60
     };
     Map.squares[Map.ROCK_5 = 14] = {
-      color: "#eee",
+      color: "#a79b7e",
       toughness: 0.5,
       energy: 40
     };
     Map.squares[Map.ROCK_6 = 15] = {
-      color: "#999",
+      color: "#a69b83",
       toughness: 0.4,
       mass: 10
     };
     Map.squares[Map.CONCRETE = 20] = {
-      color: "#ccc",
+      color: "#a3a3a3",
       toughness: 0.8
     };
     Map.squares[Map.STEEL = 30] = {
-      color: "#669",
+      color: "#6f7989",
       toughness: 0.9
     };
     Map.squares[Map.TITANIUM = 31] = {
-      color: "#558",
+      color: "#6287b2",
       toughness: 0.99
     };
     Map.squares[Map.GOLD = 32] = {
-      color: "#ff0",
+      color: "#dfbe23",
       toughness: 0.3,
       energy: 300
     };
     Map.squares[Map.VOID = 255] = {
-      color: "#000"
+      color: "#000000"
     };
     Map.get = function(map, x, y) {
       if (!Map.contains(map, x, y)) {
@@ -115,12 +115,17 @@
       map = Map.init(width, height);
       Map.gen.fillRock(map);
       web = Map.gen.pointWeb(baseCount + nodeCount, width - 1, height - 1);
+      _ref = web.slice(baseCount);
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        node = _ref[_i];
+        Map.gen.node(map, node);
+      }
       map.bases = bases = (function() {
-        var _i, _len, _ref, _ref1, _results;
-        _ref = web.slice(0, baseCount);
+        var _j, _len1, _ref1, _ref2, _results;
+        _ref1 = web.slice(0, baseCount);
         _results = [];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          _ref1 = _ref[_i], x = _ref1.x, y = _ref1.y;
+        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+          _ref2 = _ref1[_j], x = _ref2.x, y = _ref2.y;
           _results.push({
             x: Math.floor(Math.min(width - Map.BASE_SIZE, Math.max(Map.BASE_SIZE, x))),
             y: Math.floor(Math.min(height - Map.BASE_SIZE, Math.max(Map.BASE_SIZE, y)))
@@ -128,14 +133,9 @@
         }
         return _results;
       })();
-      for (_i = 0, _len = bases.length; _i < _len; _i++) {
-        base = bases[_i];
+      for (_j = 0, _len1 = bases.length; _j < _len1; _j++) {
+        base = bases[_j];
         Map.gen.base(map, base);
-      }
-      _ref = web.slice(baseCount);
-      for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
-        node = _ref[_j];
-        Map.gen.node(map, node);
       }
       return map;
     };
@@ -226,7 +226,7 @@
         dist = Math.ceil(Map.DEPOSIT_RADIUS * (Math.random() + 0.5));
         x = Math.floor(Math.sin(angle) * dist + pos.x);
         y = Math.floor(Math.cos(angle) * dist + pos.y);
-        if (Map.get(map, x, y) !== Map.EMPTY) {
+        if (Map.contains(map, x, y) && Map.get(map, x, y) !== Map.EMPTY) {
           Map.set(map, x, y, Map.gen.preciousSquare());
         }
       }

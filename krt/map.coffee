@@ -11,29 +11,29 @@ define ["perlin"], (Perlin) ->
 
   Map.squares = new Array(256)
   Map.squares[Map.EMPTY = 0] =
-    {color: "#333"}
+    {color: "#333333"}
   Map.squares[Map.ROCK_1 = 10] =
-    {color: "#aaa", toughness: 0.4, energy: 60}
+    {color: "#a39c89", toughness: 0.4, energy: 60}
   Map.squares[Map.ROCK_2 = 11] =
-    {color: "#bbb", toughness: 0.5, mass: 30}
+    {color: "#a79f8c", toughness: 0.5, mass: 30}
   Map.squares[Map.ROCK_3 = 12] =
-    {color: "#ccc", toughness: 0.6, energy: 40, mass: 20}
+    {color: "#aaa18b", toughness: 0.6, energy: 40, mass: 20}
   Map.squares[Map.ROCK_4 = 13] =
-    {color: "#ddd", toughness: 0.5, energy: 60}
+    {color: "#aea287", toughness: 0.5, energy: 60}
   Map.squares[Map.ROCK_5 = 14] =
-    {color: "#eee", toughness: 0.5, energy: 40}
+    {color: "#a79b7e", toughness: 0.5, energy: 40}
   Map.squares[Map.ROCK_6 = 15] =
-    {color: "#999", toughness: 0.4, mass: 10}
+    {color: "#a69b83", toughness: 0.4, mass: 10}
   Map.squares[Map.CONCRETE = 20] =
-    {color: "#ccc", toughness: 0.8}
+    {color: "#a3a3a3", toughness: 0.8}
   Map.squares[Map.STEEL = 30] =
-    {color: "#669", toughness: 0.9}
+    {color: "#6f7989", toughness: 0.9}
   Map.squares[Map.TITANIUM = 31] =
-    {color: "#558", toughness: 0.99}
+    {color: "#6287b2", toughness: 0.99}
   Map.squares[Map.GOLD = 32] =
-    {color: "#ff0", toughness: 0.3, energy: 300}
+    {color: "#dfbe23", toughness: 0.3, energy: 300}
   Map.squares[Map.VOID = 255] =
-    {color: "#000"}
+    {color: "#000000"}
 
   Map.get = (map, x, y) ->
     throw new Error("position out of map") unless Map.contains(map, x, y)
@@ -70,14 +70,14 @@ define ["perlin"], (Perlin) ->
 
     web = Map.gen.pointWeb(baseCount + nodeCount, width - 1, height - 1)
 
+    for node in web[baseCount..]
+      Map.gen.node(map, node)
+
     map.bases = bases = for {x, y} in web[0...baseCount]
       x: Math.floor(Math.min(width - Map.BASE_SIZE, Math.max(Map.BASE_SIZE, x)))
       y: Math.floor(Math.min(height - Map.BASE_SIZE, Math.max(Map.BASE_SIZE, y)))
     for base in bases
       Map.gen.base(map, base)
-
-    for node in web[baseCount..]
-      Map.gen.node(map, node)
 
     map
 
@@ -142,7 +142,7 @@ define ["perlin"], (Perlin) ->
       dist = Math.ceil(Map.DEPOSIT_RADIUS * (Math.random() + 0.5))
       x = Math.floor(Math.sin(angle) * dist + pos.x)
       y = Math.floor(Math.cos(angle) * dist + pos.y)
-      if Map.get(map, x, y) != Map.EMPTY
+      if Map.contains(map, x, y) and Map.get(map, x, y) != Map.EMPTY
         Map.set(map, x, y, Map.gen.preciousSquare())
     undefined
 

@@ -5,9 +5,9 @@ define [], () ->
 
   Bonus.ENERGY_LOSS = 5
   Bonus.MASS_LOSS = 2
-  Bonus.ENERGY_COLOR = "#f0f"
+  Bonus.ENERGY_COLORS = ["#2b9ad9", "#2b8ad9", "#2b78d9", "#2b60d9", "#2b4fd9"]
   Bonus.ENERGY_HALF_OPACITY = 50
-  Bonus.MASS_COLOR = "#ff0"
+  Bonus.MASS_COLORS = ["#ddb94f", "#ddae4f", "#ddc94f", "#ddd14f"]
   Bonus.MASS_HALF_OPACITY = 20
   Bonus.RADIUS_MID = 0.4
   Bonus.RADIUS_AMP = 0.05
@@ -19,29 +19,38 @@ define [], () ->
     @pos.y += @vel.y * t
     @radiusAngle += @radiusSinVel * t
     @radius = Bonus.RADIUS_MID + Math.sin(@radiusAngle) * Bonus.RADIUS_AMP
-
-    if @content.energy?
-      @content.energy -= Bonus.ENERGY_LOSS * t
-      @isDead ||= @content.energy < 0
-    if @content.mass?
-      @content.mass -= Bonus.MASS_LOSS * t
-      @isDead ||= @content.mass < 0
+    @content.update(t)
+    @isDead ||= @content.isEmpty()
 
   Bonus::draw = (ctx) ->
     ctx.save()
 
-    if @content.energy?
-      ctx.fillStyle = Bonus.ENERGY_COLOR
-      ctx.globalAlpha = Math.pow(0.5, Bonus.ENERGY_HALF_OPACITY/@content.energy)
-    else if @content.mass?
-      ctx.fillStyle = Bonus.MASS_COLOR
-      ctx.globalAlpha = Math.pow(0.5, Bonus.MASS_HALF_OPACITY/@content.mass)
-    else
-      throw new Error("unknown @content")
+    ctx.fillStyle = @content.color
+    ctx.globalAlpha = @content.getOpacity()
 
     ctx.beginPath()
     ctx.arc(@pos.x, @pos.y, @radius, 0, 2*Math.PI)
     ctx.fill()
     ctx.restore()
+
+  Bonus.Energy = (@energy) ->
+    @color = Bonus.ENERGY_COLORS[Math.floor(Bonus.ENERGY_COLORS.length * Math.random())]
+  Bonus.Energy::update = (t) ->
+    @energy -= Bonus.ENERGY_LOSS * t
+  Bonus.Energy::isEmpty = ->
+    @energy <= 0
+  Bonus.Energy::getOpacity = ->
+    Math.pow(0.5, Bonus.ENERGY_HALF_OPACITY/@energy)
+
+  Bonus.Mass = (@mass) ->
+    @color = Bonus.MASS_COLORS[Math.floor(Bonus.MASS_COLORS.length * Math.random())]
+  Bonus.Mass::update = (t) ->
+    @mass -= Bonus.MASS_LOSS * t
+  Bonus.Mass::isEmpty = ->
+    @mass <= 0
+  Bonus.Mass::getOpacity = ->
+    Math.pow(0.5, Bonus.MASS_HALF_OPACITY/@mass)
+
+
 
   Bonus

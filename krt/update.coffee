@@ -68,18 +68,18 @@ define "exports  collisions  game  map  weapon  bullet  particle  bonus".split(/
     {toughness, energy, mass} = Map.squares[Map.get(game.map, hit.map.x, hit.map.y)]
     if Math.pow(toughness, bullet.spec.damage) < Math.random()
       Map.set(game.map, hit.map.x, hit.map.y, Map.EMPTY)
-      gain = 
+      content = 
         if energy? and ((mass? and Math.random() < 0.5) or not mass?)
-          energy: energy*(0.5 + Math.random())
+          new Bonus.Energy(energy*(0.5 + Math.random()))
         else if mass?
-          mass: mass*(0.5 + Math.random())
-      if gain?
+          new Bonus.Mass(mass*(0.5 + Math.random()))
+      if content?
         pos = { x: hit.map.x + 0.5, y: hit.map.y + 0.5 }
         angle = Math.random() * 2*Math.PI
         speed = Bonus.SPEED * (0.5 + Math.random())
         vel = { x: Math.sin(angle) * speed, y: Math.cos(angle) * speed }
         radiusSinVel = Bonus.RADIUS_SIN_VEL * (0.5 + Math.random())
-        bonus = new Bonus(pos, vel, gain, radiusSinVel)
+        bonus = new Bonus(pos, vel, content, radiusSinVel)
         game.bonuses.push(bonus)
     undefined
 
@@ -106,18 +106,20 @@ define "exports  collisions  game  map  weapon  bullet  particle  bonus".split(/
 
   Update.boom = (game, pos, spec) ->
     for i in [0...spec.count]
-      angle  = 2*Math.PI * Math.random()
-      speed  = spec.speed * (Math.random() + 0.5)
-      time   = spec.time  * (Math.random() + 0.5)
-      radius = spec.radius  * (Math.random() + 0.5)
-      velX   = Math.sin(angle) * speed
-      velY   = Math.cos(angle) * speed
+      angle   = 2*Math.PI * Math.random()
+      speed   = spec.speed * (Math.random() + 0.5)
+      time    = spec.time * (Math.random() + 0.5)
+      radius  = spec.radius * (Math.random() + 0.5)
+      radius2 = radius * (1 + Math.random() * 0.5)
+      velX    = Math.sin(angle) * speed
+      velY    = Math.cos(angle) * speed
       game.particles.push(new Particle({
         pos: {x: pos.x, y: pos.y}
         vel: {x: velX, y: velY}
         time, radius
         opacity: spec.opacity
-        opacityVel: spec.opacity / time
+        opacityVel: -spec.opacity / time
+        radiusVel: (radius2 - radius) / time
         color: spec.color
       }))
     undefined

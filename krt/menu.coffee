@@ -1,9 +1,13 @@
 define ["jquery", "game", "keycodes"], ($, Game, Keycodes) ->
   COLORS = 
-    "red": "#f00"
-    "green": "#0f0"
-    "blue": "#00f"
-    "cyan": "#0ff"
+    "yellow": "#b38a0a"
+    "orange": "#c7501e"
+    "red": "#d73936"
+    "magenta": "#cf3c83"
+    "violet": "#6f73c1"
+    "blue": "#2d8cce"
+    "cyan": "#31a098"
+    "green": "#86990a"
   KEYS = ["forward", "backward", "left", "right", "fire", "change"]
   MAX_PLAYERS = 4
   STATE_VERSION = 2
@@ -11,8 +15,8 @@ define ["jquery", "game", "keycodes"], ($, Game, Keycodes) ->
   ($root) ->
     defaultState = ->
       _version: STATE_VERSION
-      mapWidth: 100
-      mapHeight: 50
+      mapWidth: 200
+      mapHeight: 200
       playerCount: 2
       fps: 30
       modes:
@@ -273,7 +277,7 @@ define ["jquery", "game", "keycodes"], ($, Game, Keycodes) ->
         fps: state.fps
         playerDefs: for i in [0...state.playerCount]
           name: state.playerDefs[i].name
-          color: state.playerDefs[i].color
+          color: COLORS[state.playerDefs[i].color]
           keys: $.extend({}, state.playerDefs[i].keys)
         mode: switch state.modes.mode
           when "time"

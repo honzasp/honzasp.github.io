@@ -10,12 +10,12 @@ define [], () ->
       speed: 120
       time: 1
       radius: 0.1
-      color: "#f00"
+      color: "#ecb120"
       mass: 0.5
       damage: 2.5
       boom: 
         count: 8, speed: 20, time: 0.2
-        radius: 0.2, color: "#f00", opacity: 0.6
+        radius: 0.2, color: "#e9ca2d", opacity: 0.6
     energy: 0.5
     cooldown: 0.05
     angleVariance: 2*Math.PI / 50
@@ -26,22 +26,22 @@ define [], () ->
       speed: 80
       time: 2
       radius: 0.15
-      color: "#fff"
+      color: "#e97a2d"
       mass: 5
       damage: 10
       boom: 
         count: 10, speed: 40, time: 0.2
-        radius: 0.4, color: "#888", opacity: 0.6
+        radius: 0.4, color: "#f1a94e", opacity: 0.6
       fragment:
         speed: 150
         time: 0.5
         radius: 0.05
-        color: "#f0f"
+        color: "#f36b24"
         mass: 0.25
         damage: 1
         boom: 
           count: 5, speed: 30, time: 0.1
-          radius: 0.1, color: "#808", opacity: 0.6
+          radius: 0.1, color: "#ec440d", opacity: 0.6
     energy: 3.5
     cooldown: 0.5
     angleVariance: 2*Math.PI / 80
@@ -52,22 +52,22 @@ define [], () ->
       speed: 60
       time: 5
       radius: 0.2
-      color: "#f0f"
+      color: "#ed1895"
       mass: 20
       damage: 10
       boom:
-        count: 30, speed: 50, time: 0.3
-        radius: 0.8, color: "#f00", opacity: 0.6
+        count: 30, speed: 40, time: 0.4
+        radius: 0.8, color: "#d70b22", opacity: 0.6
       fragment:
         speed: 200
         time: 0.15
         radius: 0.05
-        color: "#f0f"
+        color: "#f23ca7"
         mass: 0.5
         damage: 1
         boom:
-          count: 10, speed: 30, time: 0.3
-          radius: 0.3, color: "#800", opacity: 0.6
+          count: 8, speed: 30, time: 0.3
+          radius: 0.3, color: "#e75434", opacity: 0.6
     energy: 5
     cooldown: 2
     angleVariance: 2*Math.PI / 100 

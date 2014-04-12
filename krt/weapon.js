@@ -13,7 +13,7 @@
         speed: 120,
         time: 1,
         radius: 0.1,
-        color: "#f00",
+        color: "#ecb120",
         mass: 0.5,
         damage: 2.5,
         boom: {
@@ -21,7 +21,7 @@
           speed: 20,
           time: 0.2,
           radius: 0.2,
-          color: "#f00",
+          color: "#e9ca2d",
           opacity: 0.6
         }
       },
@@ -35,7 +35,7 @@
         speed: 80,
         time: 2,
         radius: 0.15,
-        color: "#fff",
+        color: "#e97a2d",
         mass: 5,
         damage: 10,
         boom: {
@@ -43,14 +43,14 @@
           speed: 40,
           time: 0.2,
           radius: 0.4,
-          color: "#888",
+          color: "#f1a94e",
           opacity: 0.6
         },
         fragment: {
           speed: 150,
           time: 0.5,
           radius: 0.05,
-          color: "#f0f",
+          color: "#f36b24",
           mass: 0.25,
           damage: 1,
           boom: {
@@ -58,7 +58,7 @@
             speed: 30,
             time: 0.1,
             radius: 0.1,
-            color: "#808",
+            color: "#ec440d",
             opacity: 0.6
           }
         }
@@ -73,30 +73,30 @@
         speed: 60,
         time: 5,
         radius: 0.2,
-        color: "#f0f",
+        color: "#ed1895",
         mass: 20,
         damage: 10,
         boom: {
           count: 30,
-          speed: 50,
-          time: 0.3,
+          speed: 40,
+          time: 0.4,
           radius: 0.8,
-          color: "#f00",
+          color: "#d70b22",
           opacity: 0.6
         },
         fragment: {
           speed: 200,
           time: 0.15,
           radius: 0.05,
-          color: "#f0f",
+          color: "#f23ca7",
           mass: 0.5,
           damage: 1,
           boom: {
-            count: 10,
+            count: 8,
             speed: 30,
             time: 0.3,
             radius: 0.3,
-            color: "#800",
+            color: "#e75434",
             opacity: 0.6
           }
         }

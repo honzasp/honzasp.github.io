@@ -4,10 +4,10 @@ define [], () ->
     @vel = opts.vel
     @time = opts.time
     @radius = opts.radius
-    @radiusVel = opts.radiusVel || 0
+    @radiusVel = (opts.radiusVel || 0)
     @color = opts.color
-    @opacity = opts.opacity || 1
-    @opacityVel = opts.opacityVel || 0
+    @opacity = (opts.opacity || 1)
+    @opacityVel = (opts.opacityVel || 0)
     @isDead = false
 
   Particle::move = (t) ->

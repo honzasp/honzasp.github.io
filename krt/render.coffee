@@ -3,7 +3,9 @@ define ["map"], (Map) ->
 
   Render.BORDER_COLOR = "#aaa"
   Render.STAT_FONT = "12px monospace"
-  Render.STAT_COLOR = "#0f0"
+  Render.STAT_COLOR = "#ff192c"
+  Render.STAT_SHADOW_BLUR = 2
+  Render.STAT_SHADOW_COLOR = "rgba(255, 239, 171, 0.5)"
 
   Render.game = (game) ->
     switch game.playerInfos.length
@@ -84,16 +86,13 @@ define ["map"], (Map) ->
     xMax = Math.ceil(east)
     yMin = Math.floor(north)
     yMax = Math.ceil(south)
-    lastSquare = undefined
 
     drawSquare = (x, y) ->
       square = if Map.contains(game.map, x, y)
           Map.get(game.map, x, y)
         else
           Map.VOID
-     #if square != lastSquare
       ctx.fillStyle = Map.squares[square].color
-     #  lastSquare = square
       ctx.fillRect(x, y, 1, 1)
 
     x = xMin
@@ -134,9 +133,14 @@ define ["map"], (Map) ->
       "#{progress} | " +
       "#{game_state}"
 
+    ctx.save()
     ctx.font = Render.STAT_FONT
     ctx.textAlign = "left"
+    ctx.textBaseline = "bottom"
     ctx.fillStyle = Render.STAT_COLOR
-    ctx.fillText(stat, 5, win.h - 5)
+    ctx.shadowColor = Render.STAT_SHADOW_COLOR
+    ctx.shadowBlur = Render.STAT_SHADOW_BLUR
+    ctx.fillText(stat, 5, win.h)
+    ctx.restore()
 
   Render

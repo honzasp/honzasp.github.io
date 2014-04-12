@@ -5,7 +5,9 @@
     Render = {};
     Render.BORDER_COLOR = "#aaa";
     Render.STAT_FONT = "12px monospace";
-    Render.STAT_COLOR = "#0f0";
+    Render.STAT_COLOR = "#ff192c";
+    Render.STAT_SHADOW_BLUR = 2;
+    Render.STAT_SHADOW_COLOR = "rgba(255, 239, 171, 0.5)";
     Render.game = function(game) {
       var h, scale, w, _ref, _ref1, _ref2, _ref3;
       switch (game.playerInfos.length) {
@@ -144,7 +146,7 @@
       return ctx.restore();
     };
     Render.map = function(ctx, game, win, center) {
-      var drawSquare, east, lastSquare, north, south, west, x, xMax, xMin, y, yMax, yMin, _ref, _ref1;
+      var drawSquare, east, north, south, west, x, xMax, xMin, y, yMax, yMin, _ref, _ref1;
       _ref = Render.winToMap(win, center, {
         x: 0,
         y: 0
@@ -157,7 +159,6 @@
       xMax = Math.ceil(east);
       yMin = Math.floor(north);
       yMax = Math.ceil(south);
-      lastSquare = void 0;
       drawSquare = function(x, y) {
         var square;
         square = Map.contains(game.map, x, y) ? Map.get(game.map, x, y) : Map.VOID;
@@ -203,10 +204,15 @@
         }
       })();
       stat = ("E " + (Math.floor(tank.energy)) + " ") + ("M " + (Math.floor(tank.mass)) + " ") + ("-" + info.destroyed + "/") + ("+" + info.hits + " | ") + ("" + weapon.spec.name + " ") + ("" + progress + " | ") + ("" + game_state);
+      ctx.save();
       ctx.font = Render.STAT_FONT;
       ctx.textAlign = "left";
+      ctx.textBaseline = "bottom";
       ctx.fillStyle = Render.STAT_COLOR;
-      return ctx.fillText(stat, 5, win.h - 5);
+      ctx.shadowColor = Render.STAT_SHADOW_COLOR;
+      ctx.shadowBlur = Render.STAT_SHADOW_BLUR;
+      ctx.fillText(stat, 5, win.h);
+      return ctx.restore();
     };
     return Render;
   });
