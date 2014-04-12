@@ -14,6 +14,9 @@
       var i, j, _i, _j, _k, _l, _ref, _ref1, _ref2, _ref3, _ref4;
       for (i = _i = 0, _ref = game.tanks.length; _i < _ref; i = _i += 1) {
         game.tanks[i].update(game, t);
+        if (game.tanks[i].isDead) {
+          game.tanks[i] = Game.createTank(game, game.playerInfos[i]);
+        }
       }
       for (i = _j = 0, _ref1 = game.tanks.length; _j < _ref1; i = _j += 1) {
         for (j = _k = _ref2 = i + 1, _ref3 = game.tanks.length; _k < _ref3; j = _k += 1) {

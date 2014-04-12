@@ -62,7 +62,7 @@ define \
     game.callback()
 
   Game.tankDestroyed = (game, index, guilty = undefined) ->
-    game.tanks[index] = Game.createTank(game, game.playerInfos[index])
+    #game.tanks[index] = Game.createTank(game, game.playerInfos[index])
     game.playerInfos[guilty].hits += 1 if guilty?
     game.playerInfos[index].destroyed += 1
     switch game.mode.mode
@@ -75,6 +75,9 @@ define \
 
     if game.playerInfos[index].lives <= 0
       Game.finish(game)
+
+  Game.boom = (game, pos, spec) ->
+    Update.boom(game, pos, spec)
 
   Game.rebindListeners = (game) ->
     Game.unbindListeners(game) if game.events?

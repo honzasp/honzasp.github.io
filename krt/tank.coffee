@@ -1,4 +1,5 @@
-define ["map", "weapon", "bullet", "game"], (Map, Weapon, Bullet, Game) ->
+define ["map", "weapon", "bullet", "game"], \
+        (Map,   Weapon,   Bullet,   Game) ->
   Tank = (idx, x, y, angle, color) ->
     @index = idx
     @pos = {x, y}
@@ -7,6 +8,9 @@ define ["map", "weapon", "bullet", "game"], (Map, Weapon, Bullet, Game) ->
     @acc = 0
     @rot = 0
     @firing = false
+    @exploding = undefined
+    @destroyedBy = undefined
+    @isDead = false
     @.setEnergy(Tank.START_ENERGY)
     @.setMass(Tank.START_MASS)
     @weapons = [
@@ -34,6 +38,7 @@ define ["map", "weapon", "bullet", "game"], (Map, Weapon, Bullet, Game) ->
   Tank.LIVE_ENERGY_CONSUM = 3
   Tank.MOVE_ENERGY_CONSUM = 8
   Tank.DENSITY = 120
+  Tank.EXPLODING_TIME = 3
 
   Tank::change = ->
     @activeWeapon = (@activeWeapon + 1) % @weapons.length
@@ -72,7 +77,7 @@ define ["map", "weapon", "bullet", "game"], (Map, Weapon, Bullet, Game) ->
   Tank::setEnergy = (energy, game, guilty = undefined) ->
     if energy < 0
       @energy = 0
-      Game.tankDestroyed(game, @index, guilty)
+      @.destroy(game, guilty)
     else
       @energy = energy
 
@@ -80,7 +85,16 @@ define ["map", "weapon", "bullet", "game"], (Map, Weapon, Bullet, Game) ->
     @mass = mass
     @radius = Math.sqrt(@mass / Tank.DENSITY / Math.PI)
     if mass < Tank.MIN_MASS
+      @.destroy(game, guilty)
+
+  Tank::destroy = (game, guilty) ->
+    unless @exploding?
       Game.tankDestroyed(game, @index, guilty)
+      boom =
+        count: 50, speed: 40, time: 1.5
+        radius: 1.2, color: @color, opacity: 0.6
+      Game.boom(game, @pos, boom)
+      @exploding = Tank.EXPLODING_TIME
 
   Tank::impulse = (imp) ->
     @vel.x += imp.x / @mass
@@ -89,6 +103,12 @@ define ["map", "weapon", "bullet", "game"], (Map, Weapon, Bullet, Game) ->
   Tank::update = (game, t) ->
     for weapon in @weapons
       weapon.temperature -= t if weapon.temperature > 0
+
+    if @exploding?
+      @exploding -= t
+      @isDead ||= (@exploding < 0)
+      @acc = 0
+      @rot = 0
 
     @pos.x += @vel.x * t
     @pos.y += @vel.y * t
@@ -115,6 +135,8 @@ define ["map", "weapon", "bullet", "game"], (Map, Weapon, Bullet, Game) ->
 
     ctx.beginPath()
     ctx.arc(0, 0, 1.0, 0, Math.PI*2)
+    if @exploding?
+      ctx.globalAlpha = 0.2
     ctx.fillStyle = @color
     ctx.fill()
 

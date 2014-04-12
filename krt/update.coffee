@@ -12,6 +12,8 @@ define "exports  collisions  game  map  weapon  bullet  particle  bonus".split(/
   Update.tanks = (game, t) ->
     for i in [0...game.tanks.length] by 1
       game.tanks[i].update(game, t)
+      if game.tanks[i].isDead
+        game.tanks[i] = Game.createTank(game, game.playerInfos[i])
 
     for i in [0...game.tanks.length] by 1
       for j in [i+1...game.tanks.length] by 1

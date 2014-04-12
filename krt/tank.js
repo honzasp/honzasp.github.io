@@ -16,6 +16,9 @@
       this.acc = 0;
       this.rot = 0;
       this.firing = false;
+      this.exploding = void 0;
+      this.destroyedBy = void 0;
+      this.isDead = false;
       this.setEnergy(Tank.START_ENERGY);
       this.setMass(Tank.START_MASS);
       this.weapons = [new Weapon(Weapon.MachineGun), new Weapon(Weapon.MiningGun), new Weapon(Weapon.EmergencyGun), new Weapon(Weapon.Autocannon), new Weapon(Weapon.HugeCannon)];
@@ -36,6 +39,7 @@
     Tank.LIVE_ENERGY_CONSUM = 3;
     Tank.MOVE_ENERGY_CONSUM = 8;
     Tank.DENSITY = 120;
+    Tank.EXPLODING_TIME = 3;
     Tank.prototype.change = function() {
       return this.activeWeapon = (this.activeWeapon + 1) % this.weapons.length;
     };
@@ -91,7 +95,7 @@
       }
       if (energy < 0) {
         this.energy = 0;
-        return Game.tankDestroyed(game, this.index, guilty);
+        return this.destroy(game, guilty);
       } else {
         return this.energy = energy;
       }
@@ -103,7 +107,23 @@
       this.mass = mass;
       this.radius = Math.sqrt(this.mass / Tank.DENSITY / Math.PI);
       if (mass < Tank.MIN_MASS) {
-        return Game.tankDestroyed(game, this.index, guilty);
+        return this.destroy(game, guilty);
+      }
+    };
+    Tank.prototype.destroy = function(game, guilty) {
+      var boom;
+      if (this.exploding == null) {
+        Game.tankDestroyed(game, this.index, guilty);
+        boom = {
+          count: 50,
+          speed: 40,
+          time: 1.5,
+          radius: 1.2,
+          color: this.color,
+          opacity: 0.6
+        };
+        Game.boom(game, this.pos, boom);
+        return this.exploding = Tank.EXPLODING_TIME;
       }
     };
     Tank.prototype.impulse = function(imp) {
@@ -118,6 +138,12 @@
         if (weapon.temperature > 0) {
           weapon.temperature -= t;
         }
+      }
+      if (this.exploding != null) {
+        this.exploding -= t;
+        this.isDead || (this.isDead = this.exploding < 0);
+        this.acc = 0;
+        this.rot = 0;
       }
       this.pos.x += this.vel.x * t;
       this.pos.y += this.vel.y * t;
@@ -143,6 +169,9 @@
       ctx.scale(this.radius, this.radius);
       ctx.beginPath();
       ctx.arc(0, 0, 1.0, 0, Math.PI * 2);
+      if (this.exploding != null) {
+        ctx.globalAlpha = 0.2;
+      }
       ctx.fillStyle = this.color;
       ctx.fill();
       ctx.beginPath();

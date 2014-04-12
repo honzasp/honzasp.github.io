@@ -96,7 +96,6 @@
       if (guilty == null) {
         guilty = void 0;
       }
-      game.tanks[index] = Game.createTank(game, game.playerInfos[index]);
       if (guilty != null) {
         game.playerInfos[guilty].hits += 1;
       }
@@ -115,6 +114,9 @@
       if (game.playerInfos[index].lives <= 0) {
         return Game.finish(game);
       }
+    };
+    Game.boom = function(game, pos, spec) {
+      return Update.boom(game, pos, spec);
     };
     Game.rebindListeners = function(game) {
       if (game.events != null) {
