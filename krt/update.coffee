@@ -1,5 +1,5 @@
-define ["exports", "collisions", "game", "map", "weapon", "bullet", "bonus"],\
-(exports, Collisions, Game, Map, Weapon, Bullet, Bonus) ->
+define "exports  collisions  game  map  weapon  bullet  particle  bonus".split(/\s+/),\
+       (exports, Collisions, Game, Map, Weapon, Bullet, Particle, Bonus) ->
   Update = exports
 
   Update.game = (game, t) ->
@@ -62,7 +62,7 @@ define ["exports", "collisions", "game", "map", "weapon", "bullet", "bonus"],\
     else if hit.tank?
       Update.bulletHit.tank(game, bullet, hit)
     Update.bulletHit.fragments(game, bullet, hit)
-    bullet.spec.boom(game, hit.pos)
+    Update.boom(game, hit.pos, bullet.spec.boom)
 
   Update.bulletHit.map = (game, bullet, hit) ->
     {toughness, energy, mass} = Map.squares[Map.get(game.map, hit.map.x, hit.map.y)]
@@ -102,6 +102,24 @@ define ["exports", "collisions", "game", "map", "weapon", "bullet", "bonus"],\
           {x: velX, y: velY},
           fragment, bullet.owner)
         game.bullets.push(bullet)
+    undefined
+
+  Update.boom = (game, pos, spec) ->
+    for i in [0...spec.count]
+      angle  = 2*Math.PI * Math.random()
+      speed  = spec.speed * (Math.random() + 0.5)
+      time   = spec.time  * (Math.random() + 0.5)
+      radius = spec.radius  * (Math.random() + 0.5)
+      velX   = Math.sin(angle) * speed
+      velY   = Math.cos(angle) * speed
+      game.particles.push(new Particle({
+        pos: {x: pos.x, y: pos.y}
+        vel: {x: velX, y: velY}
+        time, radius
+        opacity: spec.opacity
+        opacityVel: spec.opacity / time
+        color: spec.color
+      }))
     undefined
 
   Update
