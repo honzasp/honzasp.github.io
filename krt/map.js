@@ -87,6 +87,11 @@
       }
       return map.ary[x * map.height + y] = val;
     };
+    Map.setOrNothing = function(map, x, y, val) {
+      if (Map.contains(map, x, y)) {
+        return map.ary[x * map.height + y] = val;
+      }
+    };
     Map.contains = function(map, x, y) {
       if (!(x === Math.floor(x) && y === Math.floor(y))) {
         throw new Error("only integer coordinates allowed");
@@ -95,22 +100,24 @@
     };
     Map.BASE_SIZE = 8;
     Map.BASE_DOOR_SIZE = 2;
-    Map.NODE_DENSITY = 0 / 3000;
+    Map.NODE_DENSITY = 1 / 3000;
     Map.ROCK_RATIO = 0.999;
-    Map.TUNNEL_MAX_WIDTH = 4;
-    Map.TUNNEL_DENSITY = 0.0;
-    Map.TUNNEL_SHORTEN_ATTEMPTS = 10;
+    Map.DEPOSIT_COUNT = 10;
+    Map.DEPOSIT_RADIUS = 4;
+    Map.CHAMBER_SIZE = 8;
+    Map.BUNKER_SIZE = 6;
     Map.gen = function(settings) {
-      var base, baseCount, bases, height, map, nodeCount, width, x, y, _i, _len;
+      var base, baseCount, bases, height, map, node, nodeCount, web, width, x, y, _i, _j, _len, _len1, _ref;
       width = settings.mapWidth;
       height = settings.mapHeight;
       baseCount = settings.playerDefs.length;
       nodeCount = Math.floor(width * height * Map.NODE_DENSITY);
       map = Map.init(width, height);
       Map.gen.fillRock(map);
+      web = Map.gen.pointWeb(baseCount + nodeCount, width - 1, height - 1);
       map.bases = bases = (function() {
         var _i, _len, _ref, _ref1, _results;
-        _ref = Map.gen.pointWeb(baseCount, width - 1, height - 1);
+        _ref = web.slice(0, baseCount);
         _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           _ref1 = _ref[_i], x = _ref1.x, y = _ref1.y;
@@ -124,6 +131,11 @@
       for (_i = 0, _len = bases.length; _i < _len; _i++) {
         base = bases[_i];
         Map.gen.base(map, base);
+      }
+      _ref = web.slice(baseCount);
+      for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
+        node = _ref[_j];
+        Map.gen.node(map, node);
       }
       return map;
     };
@@ -161,14 +173,17 @@
             return Map.ROCK_6;
         }
       } else {
-        switch (Math.floor((r - Map.ROCK_RATIO) / (1 - Map.ROCK_RATIO) * 3)) {
-          case 0:
-            return Map.STEEL;
-          case 1:
-            return Map.TITANIUM;
-          case 2:
-            return Map.GOLD;
-        }
+        return Map.gen.preciousSquare();
+      }
+    };
+    Map.gen.preciousSquare = function() {
+      switch (Math.floor(Math.random() * 3)) {
+        case 0:
+          return Map.STEEL;
+        case 1:
+          return Map.TITANIUM;
+        case 2:
+          return Map.GOLD;
       }
     };
     Map.gen.base = function(map, base) {
@@ -193,6 +208,91 @@
       }
       return void 0;
     };
+    Map.gen.node = function(map, pos) {
+      switch (Math.floor(Math.random() * 3)) {
+        case 0:
+          return Map.gen.deposit(map, pos);
+        case 1:
+          return Map.gen.chamber(map, pos);
+        case 2:
+          return Map.gen.bunker(map, pos);
+      }
+    };
+    Map.gen.deposit = function(map, pos) {
+      var angle, count, dist, i, x, y, _i;
+      count = Math.ceil(Map.DEPOSIT_COUNT * (Math.random() + 0.5));
+      for (i = _i = 0; 0 <= count ? _i < count : _i > count; i = 0 <= count ? ++_i : --_i) {
+        angle = Math.random() * 2 * Math.PI;
+        dist = Math.ceil(Map.DEPOSIT_RADIUS * (Math.random() + 0.5));
+        x = Math.floor(Math.sin(angle) * dist + pos.x);
+        y = Math.floor(Math.cos(angle) * dist + pos.y);
+        if (Map.get(map, x, y) !== Map.EMPTY) {
+          Map.set(map, x, y, Map.gen.preciousSquare());
+        }
+      }
+      return void 0;
+    };
+    Map.gen.chamber = function(map, pos) {
+      var h, w, x, y, _i, _j, _ref, _ref1, _ref2, _ref3;
+      w = Math.ceil(Map.CHAMBER_SIZE * (Math.random() + 0.5));
+      h = Math.ceil(Map.CHAMBER_SIZE * (Math.random() + 0.5));
+      for (x = _i = _ref = pos.x, _ref1 = pos.x + w; _i < _ref1; x = _i += 1) {
+        for (y = _j = _ref2 = pos.y, _ref3 = pos.y + h; _j < _ref3; y = _j += 1) {
+          if (Map.contains(map, x, y)) {
+            Map.set(map, x, y, Map.EMPTY);
+          }
+        }
+      }
+      return void 0;
+    };
+    Map.gen.bunker = function(map, pos) {
+      var doorPos, doorX, doorY, h, w, wall, x, y, _i, _j, _k, _l, _len, _m, _ref, _ref1, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7, _ref8;
+      w = Math.ceil(Map.BUNKER_SIZE * (Math.random() + 0.5));
+      h = Math.ceil(Map.BUNKER_SIZE * (Math.random() + 0.5));
+      wall = (function() {
+        switch (Math.floor(Math.random() * 2)) {
+          case 0:
+            return Map.CONCRETE;
+          default:
+            return Map.STEEL;
+        }
+      })();
+      for (x = _i = _ref = pos.x, _ref1 = pos.x + w; _i < _ref1; x = _i += 1) {
+        Map.setOrNothing(map, x, pos.y, wall);
+        Map.setOrNothing(map, x, pos.y + h - 1, wall);
+      }
+      for (y = _j = _ref2 = pos.y, _ref3 = pos.y + h; _j < _ref3; y = _j += 1) {
+        Map.setOrNothing(map, pos.x, y, wall);
+        Map.setOrNothing(map, pos.x + w - 1, y, wall);
+      }
+      for (x = _k = _ref4 = pos.x + 1, _ref5 = pos.x + w - 1; _k < _ref5; x = _k += 1) {
+        for (y = _l = _ref6 = pos.y + 1, _ref7 = pos.y + h - 1; _l < _ref7; y = _l += 1) {
+          Map.setOrNothing(map, x, y, Map.EMPTY);
+        }
+      }
+      doorPos = Math.random() < 0.5 ? (doorX = pos.x + Math.floor(Math.random() * (w - 2)) + 1, doorY = Math.random() < 0.5 ? pos.y : pos.y + h - 1, [
+        {
+          x: doorX,
+          y: doorY
+        }, {
+          x: doorX + 1,
+          y: doorY
+        }
+      ]) : (doorX = Math.random() < 0.5 ? pos.x : pos.x + w - 1, doorY = pos.x + Math.floor(Math.random() * (h - 2)) + 1, [
+        {
+          x: doorX,
+          y: doorY
+        }, {
+          x: doorX,
+          y: doorY + 1
+        }
+      ]);
+      for (_m = 0, _len = doorPos.length; _m < _len; _m++) {
+        _ref8 = doorPos[_m], x = _ref8.x, y = _ref8.y;
+        Map.setOrNothing(map, x, y, Map.EMPTY);
+      }
+      return void 0;
+    };
     Map.gen.pointWeb = function(count, width, height) {
       var clampX, clampY, d, dx, dy, f, i, j, points, t, ux, uy, x, y, _i, _j, _k, _l, _len, _m, _ref, _ref1, _results;
       points = (function() {
@@ -212,7 +312,7 @@
       clampY = function(y) {
         return Math.max(0, Math.min(height, y));
       };
-      for (t = _i = 0; _i < 100; t = _i += 1) {
+      for (t = _i = 0; _i < 10; t = _i += 1) {
         for (i = _j = 0; _j < count; i = _j += 1) {
           dx = points[i].x - width / 2;
           dy = points[i].y - height / 2;

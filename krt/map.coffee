@@ -43,17 +43,21 @@ define ["perlin"], (Perlin) ->
     throw new Error("position out of map") unless Map.contains(map, x, y)
     map.ary[x * map.height + y] = val
 
+  Map.setOrNothing = (map, x, y, val) ->
+    map.ary[x * map.height + y] = val if Map.contains(map, x, y)
+
   Map.contains = (map, x, y) ->
     throw new Error("only integer coordinates allowed") unless x == Math.floor(x) and y == Math.floor(y)
     x >= 0 and x < map.width and y >= 0 and y < map.height
 
   Map.BASE_SIZE = 8
   Map.BASE_DOOR_SIZE = 2
-  Map.NODE_DENSITY = 0 / 3000
+  Map.NODE_DENSITY = 1 / 3000
   Map.ROCK_RATIO = 0.999
-  Map.TUNNEL_MAX_WIDTH = 4
-  Map.TUNNEL_DENSITY = 0.0
-  Map.TUNNEL_SHORTEN_ATTEMPTS = 10
+  Map.DEPOSIT_COUNT = 10
+  Map.DEPOSIT_RADIUS = 4
+  Map.CHAMBER_SIZE = 8
+  Map.BUNKER_SIZE = 6
 
   Map.gen = (settings) ->
     width = settings.mapWidth
@@ -64,11 +68,16 @@ define ["perlin"], (Perlin) ->
     map = Map.init(width, height)
     Map.gen.fillRock(map)
 
-    map.bases = bases = for {x, y} in Map.gen.pointWeb(baseCount, width - 1, height - 1)
+    web = Map.gen.pointWeb(baseCount + nodeCount, width - 1, height - 1)
+
+    map.bases = bases = for {x, y} in web[0...baseCount]
       x: Math.floor(Math.min(width - Map.BASE_SIZE, Math.max(Map.BASE_SIZE, x)))
       y: Math.floor(Math.min(height - Map.BASE_SIZE, Math.max(Map.BASE_SIZE, y)))
     for base in bases
       Map.gen.base(map, base)
+
+    for node in web[baseCount..]
+      Map.gen.node(map, node)
 
     map
 
@@ -91,10 +100,13 @@ define ["perlin"], (Perlin) ->
         when 4 then Map.ROCK_5
         when 5 then Map.ROCK_6
     else
-      switch Math.floor((r - Map.ROCK_RATIO) / (1 - Map.ROCK_RATIO) * 3)
-        when 0 then Map.STEEL
-        when 1 then Map.TITANIUM
-        when 2 then Map.GOLD
+      Map.gen.preciousSquare()
+
+  Map.gen.preciousSquare = ->
+    switch Math.floor(Math.random() * 3)
+      when 0 then Map.STEEL
+      when 1 then Map.TITANIUM
+      when 2 then Map.GOLD
 
   Map.gen.base = (map, base) ->
     {x, y} = base
@@ -117,6 +129,66 @@ define ["perlin"], (Perlin) ->
 
     undefined
 
+  Map.gen.node = (map, pos) ->
+    switch Math.floor(Math.random() * 3)
+      when 0 then Map.gen.deposit(map, pos)
+      when 1 then Map.gen.chamber(map, pos)
+      when 2 then Map.gen.bunker(map, pos)
+
+  Map.gen.deposit = (map, pos) ->
+    count = Math.ceil(Map.DEPOSIT_COUNT * (Math.random() + 0.5))
+    for i in [0...count]
+      angle = Math.random() * 2*Math.PI
+      dist = Math.ceil(Map.DEPOSIT_RADIUS * (Math.random() + 0.5))
+      x = Math.floor(Math.sin(angle) * dist + pos.x)
+      y = Math.floor(Math.cos(angle) * dist + pos.y)
+      if Map.get(map, x, y) != Map.EMPTY
+        Map.set(map, x, y, Map.gen.preciousSquare())
+    undefined
+
+  Map.gen.chamber = (map, pos) ->
+    w = Math.ceil(Map.CHAMBER_SIZE * (Math.random() + 0.5))
+    h = Math.ceil(Map.CHAMBER_SIZE * (Math.random() + 0.5))
+    for x in [pos.x ... pos.x + w] by 1
+      for y in [pos.y ... pos.y + h] by 1
+        Map.set(map, x, y, Map.EMPTY) if Map.contains(map, x, y)
+    undefined
+
+  Map.gen.bunker = (map, pos) ->
+    w = Math.ceil(Map.BUNKER_SIZE * (Math.random() + 0.5))
+    h = Math.ceil(Map.BUNKER_SIZE * (Math.random() + 0.5))
+
+    wall = switch Math.floor(Math.random() * 2)
+      when 0 then Map.CONCRETE
+      else        Map.STEEL
+
+    for x in [pos.x ... pos.x + w] by 1
+      Map.setOrNothing(map, x, pos.y, wall) 
+      Map.setOrNothing(map, x, pos.y + h - 1, wall) 
+
+    for y in [pos.y ... pos.y + h] by 1
+      Map.setOrNothing(map, pos.x, y, wall)
+      Map.setOrNothing(map, pos.x + w - 1, y, wall)
+
+    for x in [pos.x + 1 ... pos.x + w - 1] by 1
+      for y in [pos.y + 1 ... pos.y + h - 1] by 1
+        Map.setOrNothing(map, x, y, Map.EMPTY)
+
+    doorPos =
+      if Math.random() < 0.5
+        doorX = pos.x + Math.floor(Math.random() * (w - 2)) + 1
+        doorY = if Math.random() < 0.5 then pos.y else pos.y + h - 1
+        [{x: doorX, y: doorY}, {x: doorX + 1, y: doorY}]
+      else
+        doorX = if Math.random() < 0.5 then pos.x else pos.x + w - 1
+        doorY = pos.x + Math.floor(Math.random() * (h - 2)) + 1
+        [{x: doorX, y: doorY}, {x: doorX, y: doorY + 1}]
+
+    for {x, y} in doorPos
+      Map.setOrNothing(map, x, y, Map.EMPTY)
+
+    undefined
+
   Map.gen.pointWeb = (count, width, height) ->
     points = for i in [0...count] by 1
       {x: Math.random()*width, y: Math.random()*height}
@@ -124,7 +196,7 @@ define ["perlin"], (Perlin) ->
     clampX = (x) -> Math.max(0, Math.min(width, x))
     clampY = (y) -> Math.max(0, Math.min(height, y))
 
-    for t in [0...100] by 1
+    for t in [0...10] by 1
       for i in [0...count] by 1
         dx = points[i].x - width / 2
         dy = points[i].y - height / 2
