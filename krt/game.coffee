@@ -7,14 +7,20 @@ define \
 
   Game.init = (settings, callback) ->
     map = Map.gen(settings)
-    playerInfos = Game.init.createPlayers(settings, map)
+
+    playerInfos = for def, idx in settings.playerDefs
+      index: idx, base: map.bases[idx],
+      destroyed: 0, hits: 0,
+      keys: def.keys, color: def.color, name: def.name
+
     game = 
-      dom: Game.init.prepareDom(game)
+      dom: Game.dom.init()
       map: map
       tanks: Game.createTank(game, info) for info in playerInfos
       bullets: []
       particles: []
       bonuses: []
+      time: 0
       size: {x: 800, y: 600}
       events: undefined
       tickLen: 1.0 / settings["fps"]
@@ -22,46 +28,22 @@ define \
       playerInfos: playerInfos
       callback: callback
       mode: settings.mode
-      time: 0
       useHud: settings.useHud
       useNameTags: settings.useNameTags
 
-    Game.resizeCanvas(game)
-    Game.rebindListeners(game)
+    Game.dom.resizeCanvas(game)
+    Game.dom.rebindListeners(game)
     game
 
-  Game.init.prepareDom = (game) ->
-    $oldBody = $("body").detach()
-    $body = $("<body>").appendTo($("html"))
-    $main = $("<div>").appendTo($body)
-    $canvas = $("<canvas>").appendTo($main)
-    $canvas.css
-      "display": "block"
-      "position": "fixed"
-      "top": "0px"
-      "left": "0px"
-      "margin": "0px"
-      "padding": "0px"
-    ctx = $canvas[0].getContext("2d")
-
-    { $body, $oldBody, $main, $canvas, ctx, $pauseBox: undefined }
-
-  Game.init.createPlayers = (settings, map) ->
-    for def, idx in settings.playerDefs
-      index: idx, base: map.bases[idx],
-      destroyed: 0, hits: 0,
-      keys: def.keys, color: def.color, name: def.name
+  Game.deinit = (game) ->
+    Game.stop(game)
+    Game.dom.unbindListeners(game)
+    Game.dom.restore(game)
+    game.callback()
 
   Game.createTank = (game, playerInfo) ->
     {index: idx, base: {x, y}, color} = playerInfo
     new Tank(idx, x+Map.BASE_SIZE/2, y+Map.BASE_SIZE/2, 0, color)
-
-  Game.deinit = (game) ->
-    Game.stop(game)
-    Game.unbindListeners(game)
-    game.dom.$body.remove()
-    game.dom.$oldBody.appendTo($("html"))
-    game.callback()
 
   Game.tankDestroyed = (game, index, guilty = undefined) ->
     game.playerInfos[guilty].hits += 1 if guilty?
@@ -79,16 +61,6 @@ define \
 
   Game.boom = (game, pos, spec) ->
     Update.boom(game, pos, spec)
-
-  Game.rebindListeners = (game) ->
-    Game.unbindListeners(game) if game.events?
-    game.events = Game.events(game)
-    $(window).on(game.events)
-
-  Game.unbindListeners = (game) ->
-    return unless game.events?
-    $(window).off(game.events)
-    game.events = undefined
 
   Game.events = (game) ->
     forwardOn  = (idx) -> game.tanks[idx].acc = 1
@@ -127,14 +99,7 @@ define \
       undefined
 
     resize: (evt) ->
-      Game.resizeCanvas(game)
-
-  Game.resizeCanvas = (game) ->
-    game.size.x = window.innerWidth
-    game.size.y = window.innerHeight
-    game.dom.$canvas.attr("width", game.size.x)
-    game.dom.$canvas.attr("height", game.size.y)
-    Render.game(game)
+      Game.dom.resizeCanvas(game)
 
   Game.start = (game) ->
     Game.stop(game) if game.timer?
@@ -146,62 +111,143 @@ define \
 
   Game.pause = (game) ->
     Game.stop(game)
-    Game.unbindListeners(game)
-    game.dom.$pauseBox?.remove()
-    game.dom.$pauseBox = Game.pause.createBox(game)
-
-  Game.pause.createBox = (game) ->
-    $box = $("<div class='pause-box' />").appendTo(game.dom.$main)
-    $box.css
-      "position": "absolute"
-      "top": "100px"
-      "left": "100px"
-      "background": "#fff"
-
-    $resumeBtn = $("<input type='button' name='resume' value='Resume'>").appendTo($box)
-    $quitBtn = $("<input type='button' name='quit' value='Quit'>").appendTo($box)
-    $quitBtn.attr("disabled", "disabled")
-    setTimeout((-> $quitBtn.removeAttr("disabled")), 1500)
-
-    Game.createResults(game).appendTo($box)
-
-    $resumeBtn.click -> Game.resume(game)
-    $quitBtn.click -> Game.deinit(game)
-
-    $box
+    Game.dom.unbindListeners(game)
+    Game.dom.showPauseBox(game)
 
   Game.resume = (game) ->
-    game.dom.$pauseBox?.remove()
-    game.dom.$pauseBox = undefined
-    Game.rebindListeners(game)
+    Game.dom.hidePauseBox(game)
+    Game.dom.rebindListeners(game)
     Game.start(game)
 
   Game.finish = (game) ->
     Game.stop(game)
-    $box = $("<div class='finish-box' />").appendTo(game.dom.$main)
-    $box.css
-      "position": "absolute"
-      "top": "100px"
-      "left": "100px"
-      "background": "#fff"
-
-    Game.createResults(game).appendTo($box)
-    $okBtn = $("<input type='button' name='ok' value='Ok'>").appendTo($box)
-    $okBtn.click -> Game.deinit(game)
-
-  Game.createResults = (game) ->
-    $list = $("<ul />")
-    for info in game.playerInfos
-      $("<li />")\
-        .text("#{info.index}: -#{info.destroyed}/+#{info.hits}")\
-        .appendTo($list)
-    $list
-
+    Game.dom.showFinishBox(game)
 
   Game.tick = (game) ->
     Update.game(game, game.tickLen)
     Render.game(game)
     if game.mode.mode == "time" and game.time > game.mode.time
       Game.finish(game)
+
+  Game.dom = {}
+  Game.dom.init = ->
+    $body = $("<body>").attr("id", "krt")
+    $main = $("<div class='game'>").appendTo($body)
+    $canvas = $("<canvas>").appendTo($main)
+    $canvas.css
+      "display": "block"
+      "position": "fixed"
+      "top": "0px"
+      "left": "0px"
+      "margin": "0px"
+      "padding": "0px"
+    ctx = $canvas[0].getContext("2d")
+
+    $oldBody = $("body").detach()
+    $("html").append($body)
+    { $body, $oldBody, $main, $canvas, ctx, $pauseBox: undefined }
+
+  Game.dom.restore = (game) ->
+    game.dom.$body.remove()
+    game.dom.$oldBody.appendTo($("html"))
+
+  Game.dom.resizeCanvas = (game) ->
+    game.size.x = window.innerWidth
+    game.size.y = window.innerHeight
+    game.dom.$canvas.attr("width", game.size.x)
+    game.dom.$canvas.attr("height", game.size.y)
+    Render.game(game)
+
+  Game.dom.rebindListeners = (game) ->
+    Game.dom.unbindListeners(game) if game.events?
+    game.events = Game.events(game)
+    $(window).on(game.events)
+
+  Game.dom.unbindListeners = (game) ->
+    return unless game.events?
+    $(window).off(game.events)
+    game.events = undefined
+
+  Game.dom.showPauseBox = (game) ->
+    Game.dom.hidePauseBox(game) if game.dom.$pauseBox?
+    game.dom.$pauseBox = Game.dom.createPauseBox(game)
+    game.dom.$main.append(game.dom.$pauseBox)
+
+  Game.dom.hidePauseBox = (game) ->
+    game.dom.$pauseBox.remove() if game.dom.$pauseBox?
+    game.dom.$pauseBox = undefined
+
+  Game.dom.createPauseBox = (game) ->
+    $box = $ """
+      <div class='pause-box box'>
+        <div class='results'></div>
+
+        <div class='controls'>
+          <input type='button' name='resume' value='Resume'>
+          <input type='button' name='quit' value='Quit'>
+        </div>
+      </div>
+      """
+
+    $box.find("input[name=resume]").click ->
+      Game.resume(game)
+    $box.find("input[name=quit]").attr("disabled", true).click ->
+      Game.deinit(game)
+    setTimeout((-> $box.find("input[name=quit]").attr("disabled", false)), 1500)
+
+    $box.find(".results").append(Game.dom.createResults(game))
+    $box
+
+  Game.dom.showFinishBox = (game) ->
+    Game.dom.hidePauseBox(game)
+    unless game.dom.$finishBox?
+      game.dom.$finishBox = Game.dom.createFinishBox(game)
+      game.dom.$main.append(game.dom.$finishBox)
+
+
+  Game.dom.createFinishBox = (game) ->
+    $box = $ """
+      <div class='finish-box box'>
+        <div class='results'></div>
+
+        <div class='controls'>
+          <input type='button' name='ok' value='Ok'>
+        </div>
+      </div>
+      """
+
+    $box.find("input[name=ok]").attr("disabled", true).click ->
+      Game.deinit(game)
+    setTimeout((-> $box.find("input[name=ok]").attr("disabled", false)), 1500)
+
+    $box.find(".results").append(Game.dom.createResults(game))
+    $box
+
+  Game.dom.createResults = (game) ->
+    $table = $ """
+      <table>
+        <caption>results</caption>
+        <thead><tr>
+          <th class='name'>name</th>
+          <th class='minus'>-</th>
+          <th class='plus'>+</th>
+          <th class='equals'>=</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+      """
+
+    $table.find("tbody").append(for info in game.playerInfos
+      $("<tr>").append \
+        $("<td class='name'>").text(info.name).css(color: info.color),
+        $("<td class='minus'>").text("-#{info.destroyed}"),
+        $("<td class='plus'>").text("+#{info.hits}"),
+        $("<td class='equals'>").text("#{info.hits - info.destroyed}")\
+          .addClass(if info.hits > info.destroyed then "pos" else "neg")
+    )
+
+    $table
+
+
 
   Game
