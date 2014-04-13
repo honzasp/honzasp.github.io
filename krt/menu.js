@@ -14,7 +14,7 @@
     };
     KEYS = ["forward", "backward", "left", "right", "fire", "change"];
     MAX_PLAYERS = 4;
-    STATE_VERSION = 6;
+    STATE_VERSION = 7;
     return function($root) {
       var $menu, build, buildGfx, buildMap, buildMode, buildPlayer, buildPlayerKey, buildPlayers, buildStart, defaultState, json, jsonTxt, keyName, rebuild, resetState, save, selectKey, startGame, state, valFloat, valInt;
       defaultState = function() {
@@ -24,6 +24,7 @@
           mapHeight: 200,
           mapNoisiness: 40,
           mapEmptiness: 50,
+          mapSeed: "",
           playerCount: 2,
           fps: 30,
           hud: true,
@@ -176,7 +177,7 @@
       };
       buildMap = function() {
         var $map;
-        $map = $("<fieldset class='map'>\n  <legend>map</legend>\n  <p>\n    <label><span>width:</span> \n    <input type='number' name='map-width' min='50' step='1'></label>\n  </p>\n  <p>\n    <label><span>height:</span> \n    <input type='number' name='map-height' min='50' step='1'></label>\n  </p>\n  <p>\n    <label><span>noisiness:</span>\n    <input type='number' name='map-noisiness' min='1' max='99'></label>\n  </p>\n  <p>\n    <label><span>emptiness:</span> \n    <input type='number' name='map-emptiness' min='1' max='99'></label>\n  </p>\n</fieldset>");
+        $map = $("<fieldset class='map'>\n  <legend>map</legend>\n  <p>\n    <label><span>width:</span> \n    <input type='number' name='map-width' min='50' step='1'></label>\n  </p>\n  <p>\n    <label><span>height:</span> \n    <input type='number' name='map-height' min='50' step='1'></label>\n  </p>\n  <p>\n    <label><span>noisiness:</span>\n    <input type='number' name='map-noisiness' min='1' max='99'></label>\n  </p>\n  <p>\n    <label><span>emptiness:</span> \n    <input type='number' name='map-emptiness' min='1' max='99'></label>\n  </p>\n  <p>\n    <label><span>seed:</span>\n    <input type='text' name='map-seed'></label>\n  </p>\n</fieldset>");
         $map.find("input[name=map-width]").val(state.mapWidth).change(function() {
           state.mapWidth = valInt(this, 50);
           return save();
@@ -191,6 +192,10 @@
         });
         $map.find("input[name=map-emptiness]").val(state.mapEmptiness).change(function() {
           state.mapEmptiness = valFloat(this, 1, 99);
+          return save();
+        });
+        $map.find("input[name=map-seed]").val(state.mapSeed).change(function() {
+          state.mapSeed = $(this).val();
           return save();
         });
         return $map;
@@ -332,6 +337,7 @@
           mapHeight: state.mapHeight,
           mapAmp: state.mapNoisiness / 100,
           mapCaveLimit: Math.pow((state.mapEmptiness - 50) / 50, 3),
+          mapSeed: state.mapSeed || (new Date()).toString(),
           startLives: state.modes.lives,
           fps: state.fps,
           useHud: state.hud,

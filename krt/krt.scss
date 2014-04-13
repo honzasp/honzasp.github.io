@@ -36,7 +36,7 @@
 
     &.mode, &.map, &.gfx {
       width: 288px;
-      input[type="number"] {
+      input[type="number"], input[type="text"] {
         margin-left: 10px;
         width: 90px;
       }

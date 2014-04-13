@@ -118,18 +118,19 @@
     Map.BUNKER_SIZE = 6;
     Map.OCTAVES = 4;
     Map.gen = function(settings) {
-      var base, baseCount, bases, height, map, node, nodeCount, web, width, x, y, _i, _j, _len, _len1, _ref;
+      var base, baseCount, bases, height, map, node, nodeCount, rng, web, width, x, y, _i, _j, _len, _len1, _ref;
       width = settings.mapWidth;
       height = settings.mapHeight;
       baseCount = settings.playerDefs.length;
       nodeCount = Math.floor(width * height * Map.NODE_DENSITY);
+      rng = new Map.Rng(settings.mapSeed);
       map = Map.init(width, height);
-      Map.gen.fillRock(map, settings);
-      web = Map.gen.pointWeb(baseCount + nodeCount, width - 1, height - 1);
+      Map.gen.fillRock(map, rng, settings);
+      web = Map.gen.pointWeb(rng, baseCount + nodeCount, width - 1, height - 1);
       _ref = web.slice(baseCount);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         node = _ref[_i];
-        Map.gen.node(map, node);
+        Map.gen.node(map, rng, node);
       }
       map.bases = bases = (function() {
         var _j, _len1, _ref1, _ref2, _results;
@@ -146,28 +147,28 @@
       })();
       for (_j = 0, _len1 = bases.length; _j < _len1; _j++) {
         base = bases[_j];
-        Map.gen.base(map, base);
+        Map.gen.base(map, rng, base);
       }
       return map;
     };
-    Map.gen.fillRock = function(map, settings) {
+    Map.gen.fillRock = function(map, rng, settings) {
       var perlin, x, y, _i, _j, _ref, _ref1;
-      perlin = Perlin.gen(0xbeef, map.width, map.height, {
+      perlin = Perlin.gen(rng.genInt24(), map.width, map.height, {
         octaves: Map.OCTAVES,
         amp: settings.mapAmp
       });
       for (y = _i = 0, _ref = map.height; _i < _ref; y = _i += 1) {
         for (x = _j = 0, _ref1 = map.width; _j < _ref1; x = _j += 1) {
           if (perlin[y * map.width + x] > settings.mapCaveLimit) {
-            Map.set(map, x, y, Map.gen.rockSquare());
+            Map.set(map, x, y, Map.gen.rockSquare(rng));
           }
         }
       }
       return void 0;
     };
-    Map.gen.rockSquare = function() {
+    Map.gen.rockSquare = function(rng) {
       var r;
-      r = Math.random();
+      r = rng.gen();
       if (r < Map.ROCK_RATIO) {
         switch (Math.floor(r / Map.ROCK_RATIO * 6)) {
           case 0:
@@ -184,11 +185,11 @@
             return Map.ROCK_6;
         }
       } else {
-        return Map.gen.preciousSquare();
+        return Map.gen.preciousSquare(rng);
       }
     };
-    Map.gen.preciousSquare = function() {
-      switch (Math.floor(Math.random() * 4)) {
+    Map.gen.preciousSquare = function(rng) {
+      switch (rng.genInt(4)) {
         case 0:
           return Map.STEEL;
         case 1:
@@ -199,7 +200,7 @@
           return Map.LEAD;
       }
     };
-    Map.gen.base = function(map, base) {
+    Map.gen.base = function(map, rng, base) {
       var dx, i, j, s, x, y, _i, _j, _k, _l, _ref, _ref1, _ref2;
       x = base.x, y = base.y;
       s = Map.BASE_SIZE;
@@ -221,34 +222,34 @@
       }
       return void 0;
     };
-    Map.gen.node = function(map, pos) {
-      switch (Math.floor(Math.random() * 3)) {
+    Map.gen.node = function(map, rng, pos) {
+      switch (rng.genInt(3)) {
         case 0:
-          return Map.gen.deposit(map, pos);
+          return Map.gen.deposit(map, rng, pos);
         case 1:
-          return Map.gen.chamber(map, pos);
+          return Map.gen.chamber(map, rng, pos);
         case 2:
-          return Map.gen.bunker(map, pos);
+          return Map.gen.bunker(map, rng, pos);
       }
     };
-    Map.gen.deposit = function(map, pos) {
+    Map.gen.deposit = function(map, rng, pos) {
       var angle, count, dist, i, x, y, _i;
-      count = Math.ceil(Map.DEPOSIT_COUNT * (Math.random() + 0.5));
+      count = Math.ceil(Map.DEPOSIT_COUNT * (rng.gen() + 0.5));
       for (i = _i = 0; 0 <= count ? _i < count : _i > count; i = 0 <= count ? ++_i : --_i) {
-        angle = Math.random() * 2 * Math.PI;
-        dist = Math.ceil(Map.DEPOSIT_RADIUS * (Math.random() + 0.5));
+        angle = rng.gen() * 2 * Math.PI;
+        dist = Math.ceil(Map.DEPOSIT_RADIUS * (rng.gen() + 0.5));
         x = Math.floor(Math.sin(angle) * dist + pos.x);
         y = Math.floor(Math.cos(angle) * dist + pos.y);
         if (Map.contains(map, x, y) && Map.get(map, x, y) !== Map.EMPTY) {
-          Map.set(map, x, y, Map.gen.preciousSquare());
+          Map.set(map, x, y, Map.gen.preciousSquare(rng));
         }
       }
       return void 0;
     };
-    Map.gen.chamber = function(map, pos) {
+    Map.gen.chamber = function(map, rng, pos) {
       var h, w, x, y, _i, _j, _ref, _ref1, _ref2, _ref3;
-      w = Math.ceil(Map.CHAMBER_SIZE * (Math.random() + 0.5));
-      h = Math.ceil(Map.CHAMBER_SIZE * (Math.random() + 0.5));
+      w = Math.ceil(Map.CHAMBER_SIZE * (rng.gen() + 0.5));
+      h = Math.ceil(Map.CHAMBER_SIZE * (rng.gen() + 0.5));
       for (x = _i = _ref = pos.x, _ref1 = pos.x + w; _i < _ref1; x = _i += 1) {
         for (y = _j = _ref2 = pos.y, _ref3 = pos.y + h; _j < _ref3; y = _j += 1) {
           if (Map.contains(map, x, y)) {
@@ -258,12 +259,12 @@
       }
       return void 0;
     };
-    Map.gen.bunker = function(map, pos) {
+    Map.gen.bunker = function(map, rng, pos) {
       var doorPos, doorX, doorY, h, w, wall, x, y, _i, _j, _k, _l, _len, _m, _ref, _ref1, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7, _ref8;
-      w = Math.ceil(Map.BUNKER_SIZE * (Math.random() + 0.5));
-      h = Math.ceil(Map.BUNKER_SIZE * (Math.random() + 0.5));
+      w = Math.ceil(Map.BUNKER_SIZE * (rng.gen() + 0.5));
+      h = Math.ceil(Map.BUNKER_SIZE * (rng.gen() + 0.5));
       wall = (function() {
-        switch (Math.floor(Math.random() * 2)) {
+        switch (Math.floor(rng.gen() * 2)) {
           case 0:
             return Map.CONCRETE;
           default:
@@ -283,7 +284,7 @@
           Map.setOrNothing(map, x, y, Map.EMPTY);
         }
       }
-      doorPos = Math.random() < 0.5 ? (doorX = pos.x + Math.floor(Math.random() * (w - 2)) + 1, doorY = Math.random() < 0.5 ? pos.y : pos.y + h - 1, [
+      doorPos = rng.gen() < 0.5 ? (doorX = pos.x + Math.floor(rng.gen() * (w - 2)) + 1, doorY = rng.gen() < 0.5 ? pos.y : pos.y + h - 1, [
         {
           x: doorX,
           y: doorY
@@ -291,7 +292,7 @@
           x: doorX + 1,
           y: doorY
         }
-      ]) : (doorX = Math.random() < 0.5 ? pos.x : pos.x + w - 1, doorY = pos.x + Math.floor(Math.random() * (h - 2)) + 1, [
+      ]) : (doorX = rng.gen() < 0.5 ? pos.x : pos.x + w - 1, doorY = pos.x + Math.floor(rng.gen() * (h - 2)) + 1, [
         {
           x: doorX,
           y: doorY
@@ -306,15 +307,15 @@
       }
       return void 0;
     };
-    Map.gen.pointWeb = function(count, width, height) {
+    Map.gen.pointWeb = function(rng, count, width, height) {
       var clampX, clampY, d, dx, dy, f, i, j, points, t, ux, uy, x, y, _i, _j, _k, _l, _len, _m, _ref, _ref1, _results;
       points = (function() {
         var _i, _results;
         _results = [];
         for (i = _i = 0; _i < count; i = _i += 1) {
           _results.push({
-            x: Math.random() * width,
-            y: Math.random() * height
+            x: rng.gen() * width,
+            y: rng.gen() * height
           });
         }
         return _results;
@@ -329,8 +330,8 @@
         for (i = _j = 0; _j < count; i = _j += 1) {
           dx = points[i].x - width / 2;
           dy = points[i].y - height / 2;
-          points[i].x -= dx * 0.02 + 5 * (Math.random() - 0.5);
-          points[i].y -= dy * 0.02 + 5 * (Math.random() - 0.5);
+          points[i].x -= dx * 0.02 + 5 * (rng.gen() - 0.5);
+          points[i].y -= dy * 0.02 + 5 * (rng.gen() - 0.5);
         }
         for (i = _k = 0; _k < count; i = _k += 1) {
           for (j = _l = _ref = i + 1; _l < count; j = _l += 1) {
@@ -361,6 +362,39 @@
       dx = p1.x - p2.x;
       dy = p1.y - p2.y;
       return Math.sqrt(dx * dx + dy * dy);
+    };
+    Map.Rng = function(strSeed) {
+      var a, b, c, ch, i, _i, _ref, _ref1;
+      _ref = [0xbeef, 0xdead, 0xb00], a = _ref[0], b = _ref[1], c = _ref[2];
+      for (i = _i = 0, _ref1 = strSeed.length; _i < _ref1; i = _i += 1) {
+        ch = strSeed.charCodeAt(i);
+        a = c ^ (a << 13) ^ (b << 3) ^ ch;
+        b = a ^ (b << 15) ^ (c << 2) ^ (ch >> 1);
+        c = b ^ (c << 5) ^ (a << 13) ^ ch;
+      }
+      this.a = a;
+      this.b = b;
+      return this.c = c;
+    };
+    Map.Rng.prototype.genInt24 = function() {
+      var x;
+      this.a = this.a ^ (((this.b << 13) + (this.c * 6823)) | 0);
+      this.b = this.b ^ (((this.c << 11) + (this.a * 7727)) | 0);
+      this.c = this.c ^ (((this.a << 10) + (this.b * 7549)) | 0);
+      x = ((this.a ^ 5297) + (this.b ^ 4447)) | 0;
+      return (x * ((x * x) | 0 * 3209 + 3541)) & 0xffffff;
+    };
+    Map.Rng.prototype.gen = function() {
+      return this.genInt24() / 0xffffff;
+    };
+    Map.Rng.prototype.genRange = function(from, to) {
+      return from + this.gen() * (to - from);
+    };
+    Map.Rng.prototype.genInt = function(limit) {
+      return Math.floor(this.gen() * limit);
+    };
+    Map.Rng.prototype.genIntRange = function(from, to) {
+      return this.genInt(to - from) + from;
     };
     return Map;
   });

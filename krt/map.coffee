@@ -68,33 +68,34 @@ define ["perlin"], (Perlin) ->
     baseCount = settings.playerDefs.length
     nodeCount = Math.floor(width * height * Map.NODE_DENSITY)
 
+    rng = new Map.Rng(settings.mapSeed)
     map = Map.init(width, height)
-    Map.gen.fillRock(map, settings)
+    Map.gen.fillRock(map, rng, settings)
 
-    web = Map.gen.pointWeb(baseCount + nodeCount, width - 1, height - 1)
+    web = Map.gen.pointWeb(rng, baseCount + nodeCount, width - 1, height - 1)
 
     for node in web[baseCount..]
-      Map.gen.node(map, node)
+      Map.gen.node(map, rng, node)
 
     map.bases = bases = for {x, y} in web[0...baseCount]
       x: Math.floor(Math.min(width - Map.BASE_SIZE, Math.max(Map.BASE_SIZE, x)))
       y: Math.floor(Math.min(height - Map.BASE_SIZE, Math.max(Map.BASE_SIZE, y)))
     for base in bases
-      Map.gen.base(map, base)
+      Map.gen.base(map, rng, base)
 
     map
 
-  Map.gen.fillRock = (map, settings) ->
-    perlin = Perlin.gen(0xbeef, map.width, map.height, 
+  Map.gen.fillRock = (map, rng, settings) ->
+    perlin = Perlin.gen(rng.genInt24(), map.width, map.height, 
       octaves: Map.OCTAVES, amp: settings.mapAmp)
     for y in [0...map.height] by 1
       for x in [0...map.width] by 1
         if perlin[y*map.width + x] > settings.mapCaveLimit
-          Map.set(map, x, y, Map.gen.rockSquare())
+          Map.set(map, x, y, Map.gen.rockSquare(rng))
     undefined
 
-  Map.gen.rockSquare = ->
-    r = Math.random()
+  Map.gen.rockSquare = (rng) ->
+    r = rng.gen()
     if r < Map.ROCK_RATIO
       switch Math.floor(r / Map.ROCK_RATIO * 6)
         when 0 then Map.ROCK_1
@@ -104,16 +105,16 @@ define ["perlin"], (Perlin) ->
         when 4 then Map.ROCK_5
         when 5 then Map.ROCK_6
     else
-      Map.gen.preciousSquare()
+      Map.gen.preciousSquare(rng,)
 
-  Map.gen.preciousSquare = ->
-    switch Math.floor(Math.random() * 4)
+  Map.gen.preciousSquare = (rng) ->
+    switch rng.genInt(4)
       when 0 then Map.STEEL
       when 1 then Map.TITANIUM
       when 2 then Map.GOLD
       when 3 then Map.LEAD
 
-  Map.gen.base = (map, base) ->
+  Map.gen.base = (map, rng, base) ->
     {x, y} = base
     s = Map.BASE_SIZE
 
@@ -134,36 +135,36 @@ define ["perlin"], (Perlin) ->
 
     undefined
 
-  Map.gen.node = (map, pos) ->
-    switch Math.floor(Math.random() * 3)
-      when 0 then Map.gen.deposit(map, pos)
-      when 1 then Map.gen.chamber(map, pos)
-      when 2 then Map.gen.bunker(map, pos)
+  Map.gen.node = (map, rng, pos) ->
+    switch rng.genInt(3)
+      when 0 then Map.gen.deposit(map, rng, pos)
+      when 1 then Map.gen.chamber(map, rng, pos)
+      when 2 then Map.gen.bunker(map, rng, pos)
 
-  Map.gen.deposit = (map, pos) ->
-    count = Math.ceil(Map.DEPOSIT_COUNT * (Math.random() + 0.5))
+  Map.gen.deposit = (map, rng, pos) ->
+    count = Math.ceil(Map.DEPOSIT_COUNT * (rng.gen() + 0.5))
     for i in [0...count]
-      angle = Math.random() * 2*Math.PI
-      dist = Math.ceil(Map.DEPOSIT_RADIUS * (Math.random() + 0.5))
+      angle = rng.gen() * 2*Math.PI
+      dist = Math.ceil(Map.DEPOSIT_RADIUS * (rng.gen() + 0.5))
       x = Math.floor(Math.sin(angle) * dist + pos.x)
       y = Math.floor(Math.cos(angle) * dist + pos.y)
       if Map.contains(map, x, y) and Map.get(map, x, y) != Map.EMPTY
-        Map.set(map, x, y, Map.gen.preciousSquare())
+        Map.set(map, x, y, Map.gen.preciousSquare(rng))
     undefined
 
-  Map.gen.chamber = (map, pos) ->
-    w = Math.ceil(Map.CHAMBER_SIZE * (Math.random() + 0.5))
-    h = Math.ceil(Map.CHAMBER_SIZE * (Math.random() + 0.5))
+  Map.gen.chamber = (map, rng, pos) ->
+    w = Math.ceil(Map.CHAMBER_SIZE * (rng.gen() + 0.5))
+    h = Math.ceil(Map.CHAMBER_SIZE * (rng.gen() + 0.5))
     for x in [pos.x ... pos.x + w] by 1
       for y in [pos.y ... pos.y + h] by 1
         Map.set(map, x, y, Map.EMPTY) if Map.contains(map, x, y)
     undefined
 
-  Map.gen.bunker = (map, pos) ->
-    w = Math.ceil(Map.BUNKER_SIZE * (Math.random() + 0.5))
-    h = Math.ceil(Map.BUNKER_SIZE * (Math.random() + 0.5))
+  Map.gen.bunker = (map, rng, pos) ->
+    w = Math.ceil(Map.BUNKER_SIZE * (rng.gen() + 0.5))
+    h = Math.ceil(Map.BUNKER_SIZE * (rng.gen() + 0.5))
 
-    wall = switch Math.floor(Math.random() * 2)
+    wall = switch Math.floor(rng.gen() * 2)
       when 0 then Map.CONCRETE
       else        Map.STEEL
 
@@ -180,13 +181,13 @@ define ["perlin"], (Perlin) ->
         Map.setOrNothing(map, x, y, Map.EMPTY)
 
     doorPos =
-      if Math.random() < 0.5
-        doorX = pos.x + Math.floor(Math.random() * (w - 2)) + 1
-        doorY = if Math.random() < 0.5 then pos.y else pos.y + h - 1
+      if rng.gen() < 0.5
+        doorX = pos.x + Math.floor(rng.gen() * (w - 2)) + 1
+        doorY = if rng.gen() < 0.5 then pos.y else pos.y + h - 1
         [{x: doorX, y: doorY}, {x: doorX + 1, y: doorY}]
       else
-        doorX = if Math.random() < 0.5 then pos.x else pos.x + w - 1
-        doorY = pos.x + Math.floor(Math.random() * (h - 2)) + 1
+        doorX = if rng.gen() < 0.5 then pos.x else pos.x + w - 1
+        doorY = pos.x + Math.floor(rng.gen() * (h - 2)) + 1
         [{x: doorX, y: doorY}, {x: doorX, y: doorY + 1}]
 
     for {x, y} in doorPos
@@ -194,9 +195,9 @@ define ["perlin"], (Perlin) ->
 
     undefined
 
-  Map.gen.pointWeb = (count, width, height) ->
+  Map.gen.pointWeb = (rng, count, width, height) ->
     points = for i in [0...count] by 1
-      {x: Math.random()*width, y: Math.random()*height}
+      {x: rng.gen()*width, y: rng.gen()*height}
 
     clampX = (x) -> Math.max(0, Math.min(width, x))
     clampY = (y) -> Math.max(0, Math.min(height, y))
@@ -205,8 +206,8 @@ define ["perlin"], (Perlin) ->
       for i in [0...count] by 1
         dx = points[i].x - width / 2
         dy = points[i].y - height / 2
-        points[i].x -= dx * 0.02 + 5*(Math.random() - 0.5)
-        points[i].y -= dy * 0.02 + 5*(Math.random() - 0.5)
+        points[i].x -= dx * 0.02 + 5*(rng.gen() - 0.5)
+        points[i].y -= dy * 0.02 + 5*(rng.gen() - 0.5)
 
       for i in [0...count] by 1
         for j in [i+1...count] by 1
@@ -228,5 +229,33 @@ define ["perlin"], (Perlin) ->
     dx = p1.x - p2.x
     dy = p1.y - p2.y
     Math.sqrt(dx*dx + dy*dy)
+
+  Map.Rng = (strSeed) ->
+    [a, b, c] = [0xbeef, 0xdead, 0xb00]
+    for i in [0...strSeed.length] by 1
+      ch = strSeed.charCodeAt(i)
+      a = c ^ (a << 13) ^ (b << 3) ^ ch
+      b = a ^ (b << 15) ^ (c << 2) ^ (ch >> 1)
+      c = b ^ (c << 5) ^ (a << 13) ^ ch
+    @a = a; @b = b; @c = c
+
+  Map.Rng::genInt24 = ->
+    @a = @a ^ (((@b << 13) + (@c * 6823))|0)
+    @b = @b ^ (((@c << 11) + (@a * 7727))|0)
+    @c = @c ^ (((@a << 10) + (@b * 7549))|0)
+    x = ((@a ^ 5297)+(@b ^ 4447))|0
+    ((x * ((x * x)|0 * 3209 + 3541))&0xffffff)
+
+  Map.Rng::gen = ->
+    @.genInt24() / 0xffffff
+
+  Map.Rng::genRange = (from, to) ->
+    from + @.gen() * (to - from)
+
+  Map.Rng::genInt = (limit) ->
+    Math.floor(@.gen() * limit)
+
+  Map.Rng::genIntRange = (from, to) ->
+    @.genInt(to - from) + from
 
   Map

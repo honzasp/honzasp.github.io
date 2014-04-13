@@ -10,7 +10,7 @@ define ["jquery", "game", "keycodes"], ($, Game, Keycodes) ->
     "green": "#86990a"
   KEYS = ["forward", "backward", "left", "right", "fire", "change"]
   MAX_PLAYERS = 4
-  STATE_VERSION = 6
+  STATE_VERSION = 7
 
   ($root) ->
     defaultState = ->
@@ -19,6 +19,7 @@ define ["jquery", "game", "keycodes"], ($, Game, Keycodes) ->
       mapHeight: 200
       mapNoisiness: 40
       mapEmptiness: 50
+      mapSeed: ""
       playerCount: 2
       fps: 30
       hud: true
@@ -152,6 +153,10 @@ define ["jquery", "game", "keycodes"], ($, Game, Keycodes) ->
             <label><span>emptiness:</span> 
             <input type='number' name='map-emptiness' min='1' max='99'></label>
           </p>
+          <p>
+            <label><span>seed:</span>
+            <input type='text' name='map-seed'></label>
+          </p>
         </fieldset>
         """
 
@@ -163,6 +168,8 @@ define ["jquery", "game", "keycodes"], ($, Game, Keycodes) ->
         state.mapNoisiness = valFloat(@, 1, 99); save()
       $map.find("input[name=map-emptiness]").val(state.mapEmptiness).change ->
         state.mapEmptiness = valFloat(@, 1, 99); save()
+      $map.find("input[name=map-seed]").val(state.mapSeed).change ->
+        state.mapSeed = $(@).val(); save()
       $map
 
     buildGfx = ->
@@ -320,6 +327,7 @@ define ["jquery", "game", "keycodes"], ($, Game, Keycodes) ->
         mapHeight: state.mapHeight
         mapAmp: state.mapNoisiness / 100
         mapCaveLimit: Math.pow((state.mapEmptiness - 50)/50, 3)
+        mapSeed: state.mapSeed || (new Date()).toString()
         startLives: state.modes.lives
         fps: state.fps
         useHud: state.hud
