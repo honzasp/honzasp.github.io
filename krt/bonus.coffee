@@ -22,11 +22,11 @@ define [], () ->
     @content.update(t)
     @isDead ||= @content.isEmpty()
 
-  Bonus::draw = (ctx) ->
+  Bonus::render = (ctx) ->
     ctx.save()
 
     ctx.fillStyle = @content.color
-    ctx.globalAlpha = @content.getOpacity()
+    ctx.globalAlpha *= @content.getOpacity()
 
     ctx.beginPath()
     ctx.arc(@pos.x, @pos.y, @radius, 0, 2*Math.PI)

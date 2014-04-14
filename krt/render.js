@@ -9,7 +9,7 @@
     Render.STAT_SHADOW_COLOR = "rgba(255, 239, 171, 0.5)";
     Render.STAT_MARGIN = 16;
     Render.HUD_MARGIN = 5;
-    Render.HUD_ROW = 10;
+    Render.HUD_ROW = 12;
     Render.NAME_TAG_FONT = "0.8px monospace";
     Render.NAME_TAG_MARGIN = 4;
     Render.game = function(game) {
@@ -109,7 +109,7 @@
       ctx.stroke();
       ctx.clip();
       if (tank.energy < Tank.VISION_ENERGY) {
-        ctx.globalAlpha = 1 - (Tank.VISION_ENERGY - tank.energy) / Tank.VISION_ENERGY;
+        ctx.globalAlpha *= 1 - 0.8 * (Tank.VISION_ENERGY - tank.energy) / Tank.VISION_ENERGY;
       }
       ctx.save();
       ctx.translate(win.w * 0.5, win.h * 0.5);
@@ -130,27 +130,27 @@
       _ref = game.tanks;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         tank = _ref[_i];
-        tank.draw(ctx);
+        tank.render(ctx);
       }
       _ref1 = game.bullets;
       for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
         bullet = _ref1[_j];
         if (!bullet.isDead) {
-          bullet.draw(ctx);
+          bullet.render(ctx);
         }
       }
       _ref2 = game.particles;
       for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
         particle = _ref2[_k];
         if (!particle.isDead) {
-          particle.draw(ctx);
+          particle.render(ctx);
         }
       }
       _ref3 = game.bonuses;
       for (_l = 0, _len3 = _ref3.length; _l < _len3; _l++) {
         bonus = _ref3[_l];
         if (!bonus.isDead) {
-          bonus.draw(ctx);
+          bonus.render(ctx);
         }
       }
       return ctx.restore();
@@ -175,7 +175,7 @@
       return void 0;
     };
     Render.map = function(ctx, game, win, center) {
-      var drawSquare, east, north, south, west, x, xMax, xMin, y, yMax, yMin, _ref, _ref1;
+      var east, north, renderSquare, south, west, x, y, _i, _j, _ref, _ref1, _ref2, _ref3, _ref4, _ref5;
       _ref = Render.winToMap(win, center, {
         x: 0,
         y: 0
@@ -184,24 +184,16 @@
         x: win.w,
         y: win.h
       }), east = _ref1.x, south = _ref1.y;
-      xMin = Math.floor(west);
-      xMax = Math.ceil(east);
-      yMin = Math.floor(north);
-      yMax = Math.ceil(south);
-      drawSquare = function(x, y) {
+      renderSquare = function(x, y) {
         var square;
         square = Map.contains(game.map, x, y) ? Map.get(game.map, x, y) : Map.VOID;
         ctx.fillStyle = Map.squares[square].color;
         return ctx.fillRect(x, y, 1, 1);
       };
-      x = xMin;
-      while (x <= xMax) {
-        y = yMin;
-        while (y <= yMax) {
-          drawSquare(x, y);
-          y += 1;
+      for (x = _i = _ref2 = Math.floor(west), _ref3 = Math.floor(east); _i <= _ref3; x = _i += 1) {
+        for (y = _j = _ref4 = Math.floor(north), _ref5 = Math.floor(south); _j <= _ref5; y = _j += 1) {
+          renderSquare(x, y);
         }
-        x += 1;
       }
       return void 0;
     };

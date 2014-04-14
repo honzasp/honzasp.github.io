@@ -36,8 +36,9 @@ define ["map", "weapon", "bullet", "game"], \
   Tank.MIN_FIRE_ENERGY = 10
   Tank.VISION_ENERGY = 400
   Tank.MIN_MASS = 50
-  Tank.LIVE_ENERGY_CONSUM = 3
-  Tank.MOVE_ENERGY_CONSUM = 8
+  Tank.LIVE_ENERGY_CONSUM = 1
+  Tank.MOVE_ENERGY_CONSUM = 6
+  Tank.ENERGY_LOSS = 0.002
   Tank.DENSITY = 120
   Tank.EXPLODING_TIME = 3
 
@@ -124,11 +125,11 @@ define ["map", "weapon", "bullet", "game"], \
     else
       @angle += @rot * Tank.ANGULAR_SPEED * t
 
-    @.setEnergy(@energy - Tank.LIVE_ENERGY_CONSUM * t, game)
-    if @acc != 0 or @rot != 0
-      @.setEnergy(@energy - Tank.MOVE_ENERGY_CONSUM * t, game)
+    energyDrain = Tank.LIVE_ENERGY_CONSUM + @energy*Tank.ENERGY_LOSS + \
+      (if @acc != 0 or @rot != 0 then Tank.MOVE_ENERGY_CONSUM else 0)
+    @.setEnergy(@energy - energyDrain * t, game)
 
-  Tank::draw = (ctx) ->
+  Tank::render = (ctx) ->
     ctx.save()
     ctx.translate(@pos.x, @pos.y)
     ctx.rotate(-@angle)
@@ -137,7 +138,7 @@ define ["map", "weapon", "bullet", "game"], \
     ctx.beginPath()
     ctx.arc(0, 0, 1.0, 0, Math.PI*2)
     if @exploding?
-      ctx.globalAlpha = 0.2
+      ctx.globalAlpha *= 0.2
     ctx.fillStyle = @color
     ctx.fill()
 

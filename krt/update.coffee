@@ -27,12 +27,12 @@ define "exports  collisions  game  map  weapon  bullet  particle  bonus".split(/
   Update.bullets = (game, t) ->
     Update.updateLive(game, game.bullets, (bullet) ->
       Collisions.bullet(bullet, game, t)
-      bullet.move(t)
+      bullet.update(t)
     )
 
   Update.particles = (game, t) ->
     Update.updateLive(game, game.particles, (particle) ->
-      particle.move(t)
+      particle.update(t)
     )
 
   Update.bonuses = (game, t) ->

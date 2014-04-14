@@ -8,10 +8,10 @@ define [], () ->
 
   Perlin.gen = (seed, width, height, opts) ->
     octaves = for i in [0...opts.octaves]
-      w = Math.floor(width * Math.pow(0.5, i))
-      h = Math.floor(height * Math.pow(0.5, i))
+      w = Math.ceil(width * Math.pow(0.5, i)) + 1
+      h = Math.ceil(height * Math.pow(0.5, i)) + 1
       Perlin.genOctave(seed + i, w, h)
-    Perlin.composeOctaves(octaves, opts)
+    Perlin.composeOctaves(octaves, width, height, opts)
 
   Perlin.genOctave = (seed, width, height) ->
     array = Perlin.floatArray(width * height)
@@ -21,6 +21,10 @@ define [], () ->
     for x in [0...width] by 1
       add(x, 0, Perlin.noise(seed, x, 0))
       add(x, height-1, Perlin.noise(seed, x, height-1))
+
+    for y in [1...height-1] by 1
+      add(0, y, Perlin.noise(seed, 0, y))
+      add(width-1, y, Perlin.noise(seed, width-1, y))
 
     for y in [1...height-1] by 1
       for x in [1...width-1] by 1
@@ -43,8 +47,7 @@ define [], () ->
     a = ((x << 15) ^ y) ^ ((y << 12) ^ x)
     (((a * (((a * a)|0 * 2963)|0 + 4231)|0 + 4493)|0) & 0xfffffff) / 0x7ffffff - 1.0
 
-  Perlin.composeOctaves = (octaves, opts) ->
-    {width, height} = octaves[0]
+  Perlin.composeOctaves = (octaves, width, height, opts) ->
     result = Perlin.floatArray(width * height)
     ampScale = (opts.amp - 1) / (Math.pow(opts.amp, octaves.length+1) - opts.amp)
 
@@ -68,6 +71,8 @@ define [], () ->
     interpolate = (a, b, d) ->
       a*(1-d) + b*d
     get = (x, y) ->
+      throw new Error("index out of bounds") \
+        unless x >= 0 and x < octave.width and y >= 0 and y < octave.height
       octave.array[y*octave.width + x]
 
     interpolate(

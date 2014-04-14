@@ -28,10 +28,10 @@
       this.content.update(t);
       return this.isDead || (this.isDead = this.content.isEmpty());
     };
-    Bonus.prototype.draw = function(ctx) {
+    Bonus.prototype.render = function(ctx) {
       ctx.save();
       ctx.fillStyle = this.content.color;
-      ctx.globalAlpha = this.content.getOpacity();
+      ctx.globalAlpha *= this.content.getOpacity();
       ctx.beginPath();
       ctx.arc(this.pos.x, this.pos.y, this.radius, 0, 2 * Math.PI);
       ctx.fill();

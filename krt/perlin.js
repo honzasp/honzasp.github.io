@@ -19,16 +19,16 @@
         var _i, _ref, _results;
         _results = [];
         for (i = _i = 0, _ref = opts.octaves; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
-          w = Math.floor(width * Math.pow(0.5, i));
-          h = Math.floor(height * Math.pow(0.5, i));
+          w = Math.ceil(width * Math.pow(0.5, i)) + 1;
+          h = Math.ceil(height * Math.pow(0.5, i)) + 1;
           _results.push(Perlin.genOctave(seed + i, w, h));
         }
         return _results;
       })();
-      return Perlin.composeOctaves(octaves, opts);
+      return Perlin.composeOctaves(octaves, width, height, opts);
     };
     Perlin.genOctave = function(seed, width, height) {
-      var add, array, v, x, y, _i, _j, _k, _ref, _ref1;
+      var add, array, v, x, y, _i, _j, _k, _l, _ref, _ref1, _ref2;
       array = Perlin.floatArray(width * height);
       add = function(x, y, v) {
         return array[width * y + x] += v;
@@ -38,7 +38,11 @@
         add(x, height - 1, Perlin.noise(seed, x, height - 1));
       }
       for (y = _j = 1, _ref = height - 1; _j < _ref; y = _j += 1) {
-        for (x = _k = 1, _ref1 = width - 1; _k < _ref1; x = _k += 1) {
+        add(0, y, Perlin.noise(seed, 0, y));
+        add(width - 1, y, Perlin.noise(seed, width - 1, y));
+      }
+      for (y = _k = 1, _ref1 = height - 1; _k < _ref1; y = _k += 1) {
+        for (x = _l = 1, _ref2 = width - 1; _l < _ref2; x = _l += 1) {
           v = Perlin.noise(seed, x, y);
           add(x, y, v / 3);
           add(x - 1, y, v / 10);
@@ -64,12 +68,11 @@
       a = ((x << 15) ^ y) ^ ((y << 12) ^ x);
       return (((a * (((a * a) | 0 * 2963) | 0 + 4231) | 0 + 4493) | 0) & 0xfffffff) / 0x7ffffff - 1.0;
     };
-    Perlin.composeOctaves = function(octaves, opts) {
-      var amp, ampScale, height, i, octaveScale, result, v, width, x, y, _i, _j, _k, _ref, _ref1;
-      _ref = octaves[0], width = _ref.width, height = _ref.height;
+    Perlin.composeOctaves = function(octaves, width, height, opts) {
+      var amp, ampScale, i, octaveScale, result, v, x, y, _i, _j, _k, _ref;
       result = Perlin.floatArray(width * height);
       ampScale = (opts.amp - 1) / (Math.pow(opts.amp, octaves.length + 1) - opts.amp);
-      for (i = _i = 0, _ref1 = octaves.length; _i < _ref1; i = _i += 1) {
+      for (i = _i = 0, _ref = octaves.length; _i < _ref; i = _i += 1) {
         octaveScale = Math.pow(0.5, i);
         amp = Math.pow(opts.amp, octaves.length - i);
         for (y = _j = 0; _j < height; y = _j += 1) {
@@ -91,6 +94,9 @@
         return a * (1 - d) + b * d;
       };
       get = function(x, y) {
+        if (!(x >= 0 && x < octave.width && y >= 0 && y < octave.height)) {
+          throw new Error("index out of bounds");
+        }
         return octave.array[y * octave.width + x];
       };
       return interpolate(interpolate(get(xInt, yInt), get(xInt, yInt + 1), yFrac), interpolate(get(xInt + 1, yInt), get(xInt + 1, yInt + 1), yFrac), xFrac);

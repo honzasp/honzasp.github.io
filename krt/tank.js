@@ -37,8 +37,9 @@
     Tank.MIN_FIRE_ENERGY = 10;
     Tank.VISION_ENERGY = 400;
     Tank.MIN_MASS = 50;
-    Tank.LIVE_ENERGY_CONSUM = 3;
-    Tank.MOVE_ENERGY_CONSUM = 8;
+    Tank.LIVE_ENERGY_CONSUM = 1;
+    Tank.MOVE_ENERGY_CONSUM = 6;
+    Tank.ENERGY_LOSS = 0.002;
     Tank.DENSITY = 120;
     Tank.EXPLODING_TIME = 3;
     Tank.prototype.change = function() {
@@ -132,7 +133,7 @@
       return this.vel.y += imp.y / this.mass;
     };
     Tank.prototype.update = function(game, t) {
-      var forceX, forceY, weapon, _i, _len, _ref;
+      var energyDrain, forceX, forceY, weapon, _i, _len, _ref;
       _ref = this.weapons;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         weapon = _ref[_i];
@@ -158,12 +159,10 @@
       } else {
         this.angle += this.rot * Tank.ANGULAR_SPEED * t;
       }
-      this.setEnergy(this.energy - Tank.LIVE_ENERGY_CONSUM * t, game);
-      if (this.acc !== 0 || this.rot !== 0) {
-        return this.setEnergy(this.energy - Tank.MOVE_ENERGY_CONSUM * t, game);
-      }
+      energyDrain = Tank.LIVE_ENERGY_CONSUM + this.energy * Tank.ENERGY_LOSS + (this.acc !== 0 || this.rot !== 0 ? Tank.MOVE_ENERGY_CONSUM : 0);
+      return this.setEnergy(this.energy - energyDrain * t, game);
     };
-    Tank.prototype.draw = function(ctx) {
+    Tank.prototype.render = function(ctx) {
       ctx.save();
       ctx.translate(this.pos.x, this.pos.y);
       ctx.rotate(-this.angle);
@@ -171,7 +170,7 @@
       ctx.beginPath();
       ctx.arc(0, 0, 1.0, 0, Math.PI * 2);
       if (this.exploding != null) {
-        ctx.globalAlpha = 0.2;
+        ctx.globalAlpha *= 0.2;
       }
       ctx.fillStyle = this.color;
       ctx.fill();

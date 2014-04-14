@@ -10,7 +10,7 @@ define [], () ->
     @opacityVel = (opts.opacityVel || 0)
     @isDead = false
 
-  Particle::move = (t) ->
+  Particle::update = (t) ->
     @time -= t
     @isDead ||= (@time < 0)
     @pos.x += @vel.x * t
@@ -18,12 +18,12 @@ define [], () ->
     @opacity += @opacityVel * t
     @radius += @radiusVel * t
 
-  Particle::draw = (ctx) ->
+  Particle::render = (ctx) ->
     ctx.save()
     ctx.beginPath()
     ctx.arc(@pos.x, @pos.y, @radius, 0, 2*Math.PI)
     ctx.fillStyle = @color
-    ctx.globalAlpha = @opacity
+    ctx.globalAlpha *= @opacity
     ctx.fill()
     ctx.restore()
 

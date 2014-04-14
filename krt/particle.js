@@ -13,7 +13,7 @@
       this.opacityVel = opts.opacityVel || 0;
       return this.isDead = false;
     };
-    Particle.prototype.move = function(t) {
+    Particle.prototype.update = function(t) {
       this.time -= t;
       this.isDead || (this.isDead = this.time < 0);
       this.pos.x += this.vel.x * t;
@@ -21,12 +21,12 @@
       this.opacity += this.opacityVel * t;
       return this.radius += this.radiusVel * t;
     };
-    Particle.prototype.draw = function(ctx) {
+    Particle.prototype.render = function(ctx) {
       ctx.save();
       ctx.beginPath();
       ctx.arc(this.pos.x, this.pos.y, this.radius, 0, 2 * Math.PI);
       ctx.fillStyle = this.color;
-      ctx.globalAlpha = this.opacity;
+      ctx.globalAlpha *= this.opacity;
       ctx.fill();
       return ctx.restore();
     };

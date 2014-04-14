@@ -31,12 +31,12 @@
     Update.bullets = function(game, t) {
       return Update.updateLive(game, game.bullets, function(bullet) {
         Collisions.bullet(bullet, game, t);
-        return bullet.move(t);
+        return bullet.update(t);
       });
     };
     Update.particles = function(game, t) {
       return Update.updateLive(game, game.particles, function(particle) {
-        return particle.move(t);
+        return particle.update(t);
       });
     };
     Update.bonuses = function(game, t) {

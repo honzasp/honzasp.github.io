@@ -7,7 +7,7 @@ define ["map", "tank"], (Map, Tank) ->
   Render.STAT_SHADOW_COLOR = "rgba(255, 239, 171, 0.5)"
   Render.STAT_MARGIN = 16
   Render.HUD_MARGIN = 5
-  Render.HUD_ROW = 10
+  Render.HUD_ROW = 12
   Render.NAME_TAG_FONT = "0.8px monospace"
   Render.NAME_TAG_MARGIN = 4
 
@@ -58,7 +58,7 @@ define ["map", "tank"], (Map, Tank) ->
     ctx.clip()
 
     if tank.energy < Tank.VISION_ENERGY
-      ctx.globalAlpha = 1 - (Tank.VISION_ENERGY - tank.energy) / Tank.VISION_ENERGY
+      ctx.globalAlpha *= 1 - 0.8*(Tank.VISION_ENERGY-tank.energy)/Tank.VISION_ENERGY
 
     ctx.save()
     ctx.translate(win.w * 0.5, win.h * 0.5)
@@ -76,13 +76,13 @@ define ["map", "tank"], (Map, Tank) ->
     ctx.save()
 
     for tank in game.tanks
-      tank.draw(ctx)
+      tank.render(ctx)
     for bullet in game.bullets
-      bullet.draw(ctx) unless bullet.isDead
+      bullet.render(ctx) unless bullet.isDead
     for particle in game.particles
-      particle.draw(ctx) unless particle.isDead
+      particle.render(ctx) unless particle.isDead
     for bonus in game.bonuses
-      bonus.draw(ctx) unless bonus.isDead
+      bonus.render(ctx) unless bonus.isDead
 
     ctx.restore()
 
@@ -106,12 +106,7 @@ define ["map", "tank"], (Map, Tank) ->
     { x: west, y: north } = Render.winToMap(win, center, {x: 0, y: 0})
     { x: east, y: south } = Render.winToMap(win, center, {x: win.w, y: win.h})
 
-    xMin = Math.floor(west)
-    xMax = Math.ceil(east)
-    yMin = Math.floor(north)
-    yMax = Math.ceil(south)
-
-    drawSquare = (x, y) ->
+    renderSquare = (x, y) ->
       square = if Map.contains(game.map, x, y)
           Map.get(game.map, x, y)
         else
@@ -119,13 +114,10 @@ define ["map", "tank"], (Map, Tank) ->
       ctx.fillStyle = Map.squares[square].color
       ctx.fillRect(x, y, 1, 1)
 
-    x = xMin
-    while x <= xMax
-      y = yMin
-      while y <= yMax
-        drawSquare(x, y)
-        y += 1
-      x += 1
+    for x in [Math.floor(west) .. Math.floor(east)] by 1
+      for y in [Math.floor(north) .. Math.floor(south)] by 1
+        renderSquare(x, y)
+
     undefined
 
   Render.mapToWin = (win, center, m) ->

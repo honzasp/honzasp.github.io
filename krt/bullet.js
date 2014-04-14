@@ -10,13 +10,13 @@
       this.time = this.spec.time;
       return this.isDead = false;
     };
-    Bullet.prototype.move = function(t) {
+    Bullet.prototype.update = function(t) {
       this.time -= t;
       this.isDead || (this.isDead = this.time < 0);
       this.pos.x += this.vel.x * t;
       return this.pos.y += this.vel.y * t;
     };
-    Bullet.prototype.draw = function(ctx) {
+    Bullet.prototype.render = function(ctx) {
       ctx.beginPath();
       ctx.arc(this.pos.x, this.pos.y, this.spec.radius, 0, 2 * Math.PI);
       ctx.fillStyle = this.spec.color;

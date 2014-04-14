@@ -102,7 +102,7 @@
         margin: 3px 18px;
         &>li {
           float: left;
-          width: 80px;
+          width: 90px;
           text-align: center;
           label>span {
             display: block;
@@ -112,7 +112,8 @@
           input[name|="key"] {
             display: block;
             margin: 4px auto;
-            width: 60px;
+            padding: 2px 0;
+            width: 80px;
           }
         }
         &:after {
