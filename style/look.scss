@@ -1,17 +1,3 @@
----
-colors: 
-  yellow: "#CEB11C"
-  orange: "#CE721C"
-  light_blue: "#1C87CE"
-  red: "#CE281C"
-  sea_green: "#2E8B57"
-  cyan: "#1CCEAE"
-  green: "#4eaa2f"
-  purple: "#6827c4"
-  navy:  "#251CCE"
-  gray: "#666666"
----
-
 body {
   font-family: sans-serif;
 }
@@ -27,53 +13,55 @@ button {
   margin: 0.4em;
 }
 
-@mixin colored_html($basic) {
-  body {
-    color: darken($basic, 20%);
-    background-color: lighten($basic, 20%);
+@mixin color-style($name, $color) {
+  html.#{$name} {
+    body {
+      color: darken($color, 20%);
+      background-color: lighten($color, 20%);
+    }
+
+    #page {
+      background-color: lighten($color, 40%);
+    }
+
+    #header #site_name {
+      color: darken($color, 5%);
+    }
+
+    #menu {
+      background-color: lighten($color, 25%);
+    }
+
+    #footer {
+      background-color: lighten($color, 25%);
+    }
+
+    a {
+      color: darken($color, 10%);
+
+      &:hover, &:focus {
+        color: darken($color, 5%);
+      }
+    }
   }
 
-  #page {
-    background-color: lighten($basic, 40%);
-  }
+  #menu a.#{$name} {
+    color: darken($color, 15%);
+    background-color: lighten($color, 40%);
 
-  #header #site_name {
-    color: darken($basic, 5%);
-  }
-
-  #menu {
-    background-color: lighten($basic, 25%);
-  }
-
-  #footer {
-    background-color: lighten($basic, 25%);
-  }
-
-  a {
-    color: darken($basic, 10%);
-
-    &:hover, &:focus {
-      color: darken($basic, 5%);
+    &:active, &:focus {
+      background-color: lighten($color, 20%);
     }
   }
 }
 
-@mixin colored_menu_item($basic) {
-  color: darken($basic, 15%);
-  background-color: lighten($basic, 40%);
-
-  &:active, &:focus {
-    background-color: lighten($basic, 20%);
-  }
-}
-
-
-{% for color in page.colors %}
-  {% assign color_name = color[0] %}
-  {% assign color_value = color[1] %}
-
-  /* {{ color_name }} {{ color_value }} */
-
-  html.{{color_name}} { @include colored_html({{color_value}}); }
-  #menu a.{{color_name}} { @include colored_menu_item({{color_value}}); }
-{% endfor %}
+@include color-style("yellow", #ceb11c);
+@include color-style("orange", #ce721c);
+@include color-style("light-blue", #1c87ce);
+@include color-style("red", #ce281c);
+@include color-style("sea-green", #2e8b57);
+@include color-style("cyan", #1cceae);
+@include color-style("green", #4eaa2f);
+@include color-style("purple", #6827c4);
+@include color-style("navy",  #251cce);
+@include color-style("gray", #666666);

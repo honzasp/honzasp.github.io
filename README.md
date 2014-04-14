@@ -1,9 +1,6 @@
-wqa.ic.cz
+wqa.wz.cz
 =========
 
-This is a git repository of my personal sandbox web page
-[wqa.ic.cz](http://wqa.ic.cz). Everything is open-source (GNU GPL).
-
-The name of the repository is misleading, because the former location was
-http://wqa.wz.cz, but the hosting doesn't seem to be working any more.
-
+This is the git repository of [honzasp.github.io](http://honzasp.github.io). It
+was first hosted on http://wqa.wz.cz/, then on http://wqa.ic.cz/ and now it
+resides on GitHub, because it is cool.

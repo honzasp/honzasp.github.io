@@ -1,0 +1,155 @@
+#header {
+  width: 600px;
+  margin-left: auto;
+  margin-right: auto; }
+
+#krt .menu {
+  width: 600px;
+  margin: 0 auto;
+  color: #333; }
+  #krt .menu input, #krt .menu select {
+    font-family: inherit;
+    font-size: 0.8em;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box; }
+  #krt .menu fieldset {
+    border: 1px solid #bbb; }
+    #krt .menu fieldset legend {
+      margin-left: 8px;
+      padding: 2px 5px;
+      background-color: #ccc;
+      font-weight: bold; }
+    #krt .menu fieldset p {
+      margin: 3px 12px;
+      padding: 0;
+      min-height: 28px; }
+    #krt .menu fieldset.mode, #krt .menu fieldset.map, #krt .menu fieldset.gfx {
+      width: 288px; }
+      #krt .menu fieldset.mode input[type="number"], #krt .menu fieldset.mode input[type="text"], #krt .menu fieldset.map input[type="number"], #krt .menu fieldset.map input[type="text"], #krt .menu fieldset.gfx input[type="number"], #krt .menu fieldset.gfx input[type="text"] {
+        margin-left: 10px;
+        width: 90px; }
+      #krt .menu fieldset.mode input[type="checkbox"], #krt .menu fieldset.map input[type="checkbox"], #krt .menu fieldset.gfx input[type="checkbox"] {
+        margin-left: 10px;
+        width: 20px; }
+      #krt .menu fieldset.mode label > span, #krt .menu fieldset.map label > span, #krt .menu fieldset.gfx label > span {
+        width: 150px;
+        display: inline-block; }
+      #krt .menu fieldset.mode label, #krt .menu fieldset.map label, #krt .menu fieldset.gfx label {
+        display: inline-block; }
+    #krt .menu fieldset.mode {
+      float: left; }
+      #krt .menu fieldset.mode input[name="mode"] {
+        display: inline-block;
+        width: 20px; }
+      #krt .menu fieldset.mode label {
+        width: 150px; }
+      #krt .menu fieldset.mode label > span {
+        width: 110px; }
+    #krt .menu fieldset.map, #krt .menu fieldset.gfx {
+      margin-left: 309px; }
+    #krt .menu fieldset.players input[type="button"] {
+      padding: 2px 10px; }
+    #krt .menu fieldset.players select {
+      padding: 2px 6px; }
+    #krt .menu fieldset.players ul.players-list > li {
+      margin-top: 12px;
+      border-left-width: 10px;
+      border-left-style: solid;
+      border-left-color: #ddd; }
+      #krt .menu fieldset.players ul.players-list > li label > span {
+        display: inline-block;
+        width: 60px; }
+      #krt .menu fieldset.players ul.players-list > li input[name|="name"] {
+        width: 180px; }
+      #krt .menu fieldset.players ul.players-list > li select[name|="color"] {
+        width: 100px; }
+    #krt .menu fieldset.players ul.keys {
+      margin: 3px 18px; }
+      #krt .menu fieldset.players ul.keys > li {
+        float: left;
+        width: 90px;
+        text-align: center; }
+        #krt .menu fieldset.players ul.keys > li label > span {
+          display: block;
+          margin: 3px auto;
+          font-size: 0.8em; }
+        #krt .menu fieldset.players ul.keys > li input[name|="key"] {
+          display: block;
+          margin: 4px auto;
+          padding: 2px 0;
+          width: 80px; }
+      #krt .menu fieldset.players ul.keys:after {
+        content: ".";
+        clear: both;
+        height: 0;
+        display: block;
+        visibility: hidden; }
+    #krt .menu fieldset.start {
+      border-style: none;
+      margin: 3px auto; }
+      #krt .menu fieldset.start input[name="start-button"] {
+        display: block;
+        width: 150px;
+        height: 35px;
+        font-size: 1.3em;
+        margin: 5px 50px 0px 80px;
+        float: left; }
+      #krt .menu fieldset.start input[name="reset-button"] {
+        display: block;
+        margin-top: 10px;
+        width: 100px;
+        height: 25px;
+        font-size: 0.8em;
+        float: left; }
+  #krt .menu .dialog {
+    position: fixed;
+    width: 100%;
+    top: 0px;
+    left: 0px; }
+    #krt .menu .dialog .select-key {
+      background-color: #eee;
+      width: 200px;
+      height: 120px;
+      margin: 200px auto;
+      opacity: 0.8; }
+      #krt .menu .dialog .select-key p {
+        text-align: center;
+        margin: 20px; }
+
+#krt .game .box {
+  position: fixed;
+  left: 0;
+  right: 0;
+  width: 300px;
+  padding: 30px;
+  margin: 100px auto;
+  font-family: monospace;
+  font-size: 14px;
+  background-color: #ffffff;
+  opacity: 0.9; }
+  #krt .game .box .controls input[type="button"] {
+    padding: 3px 10px; }
+  #krt .game .box .results table {
+    margin-bottom: 10px;
+    width: 300px;
+    background-color: #eeeeee;
+    border-collapse: collapse; }
+    #krt .game .box .results table caption {
+      font-weight: bold;
+      margin: 5px 30px; }
+    #krt .game .box .results table th {
+      font-weight: bold;
+      background-color: #dddddd; }
+    #krt .game .box .results table th, #krt .game .box .results table td {
+      padding: 2px 12px 2px 8px; }
+      #krt .game .box .results table th.minus, #krt .game .box .results table th.plus, #krt .game .box .results table th.equals, #krt .game .box .results table td.minus, #krt .game .box .results table td.plus, #krt .game .box .results table td.equals {
+        width: 30px;
+        text-align: right;
+        background-color: #dddddd; }
+      #krt .game .box .results table th.pos, #krt .game .box .results table td.pos {
+        color: #52b721;
+        background-color: #b8dea5; }
+      #krt .game .box .results table th.neg, #krt .game .box .results table td.neg {
+        color: #e12837;
+        background-color: #dea4a9; }
