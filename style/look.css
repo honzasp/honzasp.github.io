@@ -13,8 +13,6 @@ html.yellow body {
   background-color: #ead566; }
 html.yellow #page {
   background-color: #f6edc0; }
-html.yellow #header #site_name {
-  color: #b89e19; }
 html.yellow #menu {
   background-color: #eddb7c; }
 html.yellow #footer {
@@ -35,8 +33,6 @@ html.orange body {
   background-color: #eaa666; }
 html.orange #page {
   background-color: #f6dac0; }
-html.orange #header #site_name {
-  color: #b86619; }
 html.orange #menu {
   background-color: #edb37c; }
 html.orange #footer {
@@ -57,8 +53,6 @@ html.light-blue body {
   background-color: #66b5ea; }
 html.light-blue #page {
   background-color: #c0e1f6; }
-html.light-blue #header #site_name {
-  color: #1978b8; }
 html.light-blue #menu {
   background-color: #7cc0ed; }
 html.light-blue #footer {
@@ -79,8 +73,6 @@ html.red body {
   background-color: #ea6f66; }
 html.red #page {
   background-color: #f6c3c0; }
-html.red #header #site_name {
-  color: #b82419; }
 html.red #menu {
   background-color: #ed847c; }
 html.red #footer {
@@ -101,8 +93,6 @@ html.sea-green body {
   background-color: #57c889; }
 html.sea-green #page {
   background-color: #a4e1bf; }
-html.sea-green #header #site_name {
-  color: #28784b; }
 html.sea-green #menu {
   background-color: #6bce96; }
 html.sea-green #footer {
@@ -123,8 +113,6 @@ html.cyan body {
   background-color: #66ead2; }
 html.cyan #page {
   background-color: #c0f6ed; }
-html.cyan #header #site_name {
-  color: #19b89b; }
 html.cyan #menu {
   background-color: #7cedd9; }
 html.cyan #footer {
@@ -145,8 +133,6 @@ html.green body {
   background-color: #85d669; }
 html.green #page {
   background-color: #c6ecb9; }
-html.green #header #site_name {
-  color: #459629; }
 html.green #menu {
   background-color: #95db7d; }
 html.green #footer {
@@ -167,8 +153,6 @@ html.purple body {
   background-color: #9f6fe2; }
 html.purple #page {
   background-color: #d7c4f3; }
-html.purple #header #site_name {
-  color: #5d23af; }
 html.purple #menu {
   background-color: #ad84e7; }
 html.purple #footer {
@@ -189,8 +173,6 @@ html.navy body {
   background-color: #6d66ea; }
 html.navy #page {
   background-color: #c2c0f6; }
-html.navy #header #site_name {
-  color: #2119b8; }
 html.navy #menu {
   background-color: #827ced; }
 html.navy #footer {
@@ -211,8 +193,6 @@ html.gray body {
   background-color: #999999; }
 html.gray #page {
   background-color: #cccccc; }
-html.gray #header #site_name {
-  color: #595959; }
 html.gray #menu {
   background-color: #a6a6a6; }
 html.gray #footer {
