@@ -82,16 +82,23 @@
           }
         }
       }
-      return result;
+      return {
+        array: result,
+        width: width,
+        height: height
+      };
     };
     Perlin.interpolateOctave = function(octave, x, y) {
-      var get, interpolate, xFrac, xInt, yFrac, yInt;
+      var f, get, interpolate, xFrac, xInt, yFrac, yInt;
       xInt = Math.floor(x);
       yInt = Math.floor(y);
       xFrac = x - xInt;
       yFrac = y - yInt;
+      f = function(t) {
+        return 6 * Math.pow(t, 5) - 15 * Math.pow(t, 4) + 10 * Math.pow(t, 3);
+      };
       interpolate = function(a, b, d) {
-        return a * (1 - d) + b * d;
+        return a * (1 - f(d)) + b * f(d);
       };
       get = function(x, y) {
         if (!(x >= 0 && x < octave.width && y >= 0 && y < octave.height)) {

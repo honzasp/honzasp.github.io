@@ -60,7 +60,7 @@ define [], () ->
           v = Perlin.interpolateOctave(octaves[i], x*octaveScale, y*octaveScale)
           result[y*width + x] += v * amp * ampScale
 
-    result
+    {array: result, width, height}
 
   Perlin.interpolateOctave = (octave, x, y) ->
     xInt = Math.floor(x)
@@ -68,8 +68,8 @@ define [], () ->
     xFrac = x - xInt
     yFrac = y - yInt
 
-    interpolate = (a, b, d) ->
-      a*(1-d) + b*d
+    f = (t) -> 6*Math.pow(t,5) - 15*Math.pow(t,4) + 10*Math.pow(t,3)
+    interpolate = (a, b, d) -> a*(1-f(d)) + b*f(d)
     get = (x, y) ->
       throw new Error("index out of bounds") \
         unless x >= 0 and x < octave.width and y >= 0 and y < octave.height

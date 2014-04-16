@@ -16,7 +16,7 @@
       var h, scale, w, _ref, _ref1, _ref2, _ref3;
       switch (game.playerInfos.length) {
         case 1:
-          _ref = [game.size.x, game.size.y, 18], w = _ref[0], h = _ref[1], scale = _ref[2];
+          _ref = [game.size.x, game.size.y, 17], w = _ref[0], h = _ref[1], scale = _ref[2];
           return Render.window(game, game.tanks[0], {
             x: 0,
             y: 0,

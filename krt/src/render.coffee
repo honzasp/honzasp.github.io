@@ -14,7 +14,7 @@ define ["map", "tank"], (Map, Tank) ->
   Render.game = (game) ->
     switch game.playerInfos.length
       when 1
-        [w, h, scale] = [game.size.x, game.size.y, 18]
+        [w, h, scale] = [game.size.x, game.size.y, 17]
         Render.window(game, game.tanks[0],
           {x: 0, y: 0, w, h, scale})
       when 2
