@@ -28,7 +28,8 @@
       },
       energy: 0.5,
       cooldown: 0.05,
-      angleVariance: 2 * Math.PI / 70
+      angleVariance: 2 * Math.PI / 70,
+      sound: "shoot_machine_gun"
     };
     Weapon.MiningGun = {
       name: "mining gun",
@@ -46,7 +47,8 @@
           time: 0.5,
           radius: 0.7,
           color: "#af4fca",
-          opacity: 0.5
+          opacity: 0.5,
+          sound: "boom_mining_gun"
         },
         fragment: {
           speed: 50,
@@ -68,7 +70,8 @@
       },
       energy: 8,
       cooldown: 0.6,
-      angleVariance: 2 * Math.PI / 70
+      angleVariance: 2 * Math.PI / 70,
+      sound: "shoot_mining_gun"
     };
     Weapon.EmergencyGun = {
       name: "emergency gun",
@@ -91,7 +94,8 @@
       },
       energy: 0.1,
       cooldown: 0.1,
-      angleVariance: 2 * Math.PI / 50
+      angleVariance: 2 * Math.PI / 50,
+      sound: "shoot_emergency_gun"
     };
     Weapon.Autocannon = {
       name: "autocannon",
@@ -109,7 +113,8 @@
           time: 0.2,
           radius: 0.4,
           color: "#f1a94e",
-          opacity: 0.6
+          opacity: 0.6,
+          sound: "boom_autocannon"
         },
         fragment: {
           speed: 150,
@@ -131,7 +136,8 @@
       },
       energy: 3.5,
       cooldown: 0.5,
-      angleVariance: 2 * Math.PI / 80
+      angleVariance: 2 * Math.PI / 80,
+      sound: "shoot_autocannon"
     };
     Weapon.HugeCannon = {
       name: "huge cannon",
@@ -149,7 +155,8 @@
           time: 0.4,
           radius: 0.8,
           color: "#d70b22",
-          opacity: 0.6
+          opacity: 0.6,
+          sound: "boom_huge_cannon"
         },
         fragment: {
           speed: 200,
@@ -171,7 +178,8 @@
       },
       energy: 10,
       cooldown: 2,
-      angleVariance: 2 * Math.PI / 100
+      angleVariance: 2 * Math.PI / 100,
+      sound: "shoot_huge_cannon"
     };
     return Weapon;
   });

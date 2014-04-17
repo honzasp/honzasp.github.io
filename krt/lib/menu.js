@@ -14,9 +14,9 @@
     };
     KEYS = ["forward", "backward", "left", "right", "fire", "change"];
     MAX_PLAYERS = 4;
-    STATE_VERSION = 7;
+    STATE_VERSION = 8;
     return function($root) {
-      var $menu, build, buildGfx, buildMap, buildMode, buildPlayer, buildPlayerKey, buildPlayers, buildStart, defaultState, json, jsonTxt, keyName, rebuild, resetState, save, selectKey, startGame, state, valFloat, valInt;
+      var $menu, buildGfx, buildMap, buildMode, buildPlayer, buildPlayerKey, buildPlayers, buildSound, buildStart, defaultState, json, jsonTxt, keyName, rebuild, resetState, save, selectKey, startGame, state, valFloat, valInt;
       defaultState = function() {
         return {
           _version: STATE_VERSION,
@@ -29,6 +29,7 @@
           fps: 30,
           hud: true,
           nameTags: true,
+          soundEnabled: false,
           modes: {
             mode: "time",
             time: 120,
@@ -144,9 +145,6 @@
         }
         return $menu = build();
       };
-      build = function() {
-        return $("<div class='menu' />").append(buildMode()).append(buildMap()).append(buildGfx()).append(buildPlayers()).append(buildStart()).appendTo($root);
-      };
       buildMode = function() {
         var $mode;
         $mode = $("<fieldset class='mode'>\n  <legend>mode</legend>\n  <p>\n    <label><input type='radio' name='mode' value='time'> <span>time:</span></label>\n    <input type='number' name='time' min='1' step='1' class='mode-depends mode-time'>\n  </p>\n  <p>\n    <label><input type='radio' name='mode' value='lives'> <span>lives:</span></label>\n    <input type='number' name='lives' min='1' step='1' class='mode-depends mode-lives'>\n  </p>\n  <p>\n    <label><input type='radio' name='mode' value='hits'> <span>hits:</span></label>\n    <input type='number' name='hits' min='1' step='1' class='mode-depends mode-hits'>\n  </p>\n</fieldset>");
@@ -216,6 +214,15 @@
           return save();
         });
         return $gfx;
+      };
+      buildSound = function() {
+        var $sound;
+        $sound = $("<fieldset class='sound'>\n  <legend>sound</legend>\n  <p>\n    <label><span>sound enabled:</span>\n    <input type='checkbox' name='sound-enabled'></label>\n  </p>\n</fieldset>");
+        $sound.find("input[name=sound-enabled]").attr("checked", state.soundEnabled).change(function() {
+          state.soundEnabled = $(this).is(":checked");
+          return save();
+        });
+        return $sound;
       };
       buildPlayer = function(idx) {
         var $player, colorName, key;
@@ -303,7 +310,7 @@
       buildStart = function() {
         var $start;
         $start = $("<fieldset class='start'>\n  <input type='button' name='start-button' value='start'>\n  <input type='button' name='reset-button' value='reset settings'>\n</fieldset>");
-        $start.find("input[name=start-button]").click(function(evt) {
+        $start.find("input[name=start-button]").click(function() {
           return startGame();
         });
         $start.find("input[name=reset-button]").click(function() {
@@ -331,7 +338,10 @@
         return $dialog.appendTo($menu);
       };
       startGame = function() {
-        var game, i, settings;
+        var i, settings;
+        if ($menu.hasClass("game-playing")) {
+          return;
+        }
         settings = {
           mapWidth: state.mapWidth,
           mapHeight: state.mapHeight,
@@ -342,6 +352,7 @@
           fps: state.fps,
           useHud: state.hud,
           useNameTags: state.nameTags,
+          enableAudio: state.soundEnabled,
           playerDefs: (function() {
             var _i, _ref, _results;
             _results = [];
@@ -374,10 +385,23 @@
             }
           })()
         };
-        game = Game.init(settings, function() {});
-        return Game.start(game);
+        $menu.trigger("game-started.krt");
+        return Game.init(settings, (function(game) {
+          return Game.start(game);
+        }), (function() {
+          return $menu.trigger("game-finished.krt");
+        }));
       };
-      return $menu = build();
+      $menu = $("<div class='menu' />").append(buildMode()).append(buildMap()).append(buildGfx()).append(buildSound()).append(buildPlayers()).append(buildStart()).appendTo($root);
+      $menu.on("game-started.krt", function() {
+        $menu.addClass("game-running");
+        return $menu.find("input[name=start-button]").attr("disabled", true);
+      });
+      $menu.on("game-finished.krt", function() {
+        $menu.removeClass("game-running");
+        return $menu.find("input[name=start-button]").attr("disabled", false);
+      });
+      return $menu;
     };
   });
 

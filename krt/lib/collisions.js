@@ -295,8 +295,7 @@
         dy = tank.pos.y - bonus.pos.y;
         l = Math.sqrt(dx * dx + dy * dy);
         if (l < bonus.radius + tank.radius) {
-          tank.receive(game, bonus.content);
-          bonus.isDead = true;
+          Update.bonusHit(game, bonus, tank);
           break;
         }
       }

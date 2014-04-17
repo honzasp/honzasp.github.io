@@ -66,6 +66,7 @@ define ["map", "weapon", "bullet", "game"], \
     @.setMass(@mass - spec.bullet.mass, game)
     @.setEnergy(@energy - spec.energy, game)
     @.impulse(x: -relVelX * spec.bullet.mass, y: -relVelY * spec.bullet.mass)
+    Game.sound(game, spec.sound)
 
   Tank::hurt = (game, dmg, guilty = undefined) ->
     @.setEnergy(@energy - dmg, game, guilty)
@@ -95,6 +96,7 @@ define ["map", "weapon", "bullet", "game"], \
       boom =
         count: 50, speed: 40, time: 1.5
         radius: 1.2, color: @color, opacity: 0.6
+        sound: "boom_tank"
       Game.boom(game, @pos, boom)
       @exploding = Tank.EXPLODING_TIME
 
@@ -125,8 +127,9 @@ define ["map", "weapon", "bullet", "game"], \
     else
       @angle += @rot * Tank.ANGULAR_SPEED * t
 
-    energyDrain = Tank.LIVE_ENERGY_CONSUM + @energy*Tank.ENERGY_LOSS + \
-      (if @acc != 0 or @rot != 0 then Tank.MOVE_ENERGY_CONSUM else 0)
+    energyDrain = Tank.LIVE_ENERGY_CONSUM + @energy*Tank.ENERGY_LOSS
+    if @acc != 0 or @rot != 0
+      energyDrain += Tank.MOVE_ENERGY_CONSUM
     @.setEnergy(@energy - energyDrain * t, game)
 
   Tank::render = (ctx) ->

@@ -20,6 +20,7 @@
     Bonus.RADIUS_AMP = 0.05;
     Bonus.SPEED = 0.3;
     Bonus.RADIUS_SIN_VEL = 2 * Math.PI * 1.3;
+    Bonus.SOUND_GAIN = 0.6;
     Bonus.prototype.update = function(t) {
       this.pos.x += this.vel.x * t;
       this.pos.y += this.vel.y * t;
@@ -39,7 +40,8 @@
     };
     Bonus.Energy = function(energy) {
       this.energy = energy;
-      return this.color = Bonus.ENERGY_COLORS[Math.floor(Bonus.ENERGY_COLORS.length * Math.random())];
+      this.color = Bonus.ENERGY_COLORS[Math.floor(Bonus.ENERGY_COLORS.length * Math.random())];
+      return this.getSound = "get_energy";
     };
     Bonus.Energy.prototype.update = function(t) {
       return this.energy -= Bonus.ENERGY_LOSS * t;
@@ -52,7 +54,8 @@
     };
     Bonus.Mass = function(mass) {
       this.mass = mass;
-      return this.color = Bonus.MASS_COLORS[Math.floor(Bonus.MASS_COLORS.length * Math.random())];
+      this.color = Bonus.MASS_COLORS[Math.floor(Bonus.MASS_COLORS.length * Math.random())];
+      return this.getSound = "get_mass";
     };
     Bonus.Mass.prototype.update = function(t) {
       return this.mass -= Bonus.MASS_LOSS * t;

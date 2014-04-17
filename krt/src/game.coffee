@@ -1,39 +1,52 @@
 define \
-["exports", "jquery", "map", "render", "tank", "bullet", "particle", "collisions", "update"], \
-(exports, $, Map, Render, Tank, Bullet, Particle, Collisions, Update) ->
+["exports", "jquery", "map", "render", "tank", "bullet",
+ "particle", "collisions", "update", "audio"], \
+(exports, $, Map, Render, Tank, Bullet,
+ Particle, Collisions, Update, Audio) ->
 
   Game = exports
   Game.MAX_GARBAGE_RATIO = 0.5
 
-  Game.init = (settings, callback) ->
-    map = Map.gen(settings)
+  Game.init = (settings, onReady, onFinish) ->
+    map = audio = undefined
+    mapReady = audioReady = false
 
-    playerInfos = for def, idx in settings.playerDefs
-      index: idx, base: map.bases[idx],
-      destroyed: 0, hits: 0,
-      keys: def.keys, color: def.color, name: def.name
+    ready = ->
+      return unless mapReady and audioReady
 
-    game = 
-      dom: Game.dom.init()
-      map: map
-      tanks: Game.createTank(game, info) for info in playerInfos
-      bullets: []
-      particles: []
-      bonuses: []
-      time: 0
-      size: {x: 800, y: 600}
-      events: undefined
-      tickLen: 1.0 / settings["fps"]
-      timer: undefined
-      playerInfos: playerInfos
-      callback: callback
-      mode: settings.mode
-      useHud: settings.useHud
-      useNameTags: settings.useNameTags
+      playerInfos = for def, idx in settings.playerDefs
+        index: idx, base: map.bases[idx],
+        destroyed: 0, hits: 0,
+        keys: def.keys, color: def.color, name: def.name
 
-    Game.dom.resizeCanvas(game)
-    Game.dom.rebindListeners(game)
-    game
+      game = 
+        dom: Game.dom.init()
+        audio: audio
+        map: map
+        tanks: Game.createTank(game, info) for info in playerInfos
+        bullets: []
+        particles: []
+        bonuses: []
+        time: 0
+        size: {x: 800, y: 600}
+        events: undefined
+        tickLen: 1.0 / settings["fps"]
+        timer: undefined
+        playerInfos: playerInfos
+        callback: onFinish
+        mode: settings.mode
+        useHud: settings.useHud
+        useNameTags: settings.useNameTags
+        onFinish: onFinish
+
+      Game.dom.resizeCanvas(game)
+      Game.dom.rebindListeners(game)
+      onReady(game)
+
+    Map.gen settings, (map_) -> map = map_; mapReady = true; ready()
+    Audio.init settings, (audio_) -> audio = audio_; audioReady = true; ready()
+
+    undefined
 
   Game.deinit = (game) ->
     Game.stop(game)
@@ -61,6 +74,10 @@ define \
 
   Game.boom = (game, pos, spec) ->
     Update.boom(game, pos, spec)
+
+  Game.sound = (game, soundName, gain = 1.0) ->
+    if game.audio?
+      Audio.play(game.audio, soundName, gain)
 
   Game.events = (game) ->
     forwardOn  = (idx) -> game.tanks[idx].acc = 1
@@ -247,7 +264,5 @@ define \
     )
 
     $table
-
-
 
   Game

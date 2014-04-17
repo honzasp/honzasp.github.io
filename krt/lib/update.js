@@ -78,8 +78,11 @@
       return Update.boom(game, hit.pos, bullet.spec.boom);
     };
     Update.bulletHit.map = function(game, bullet, hit) {
-      var angle, bonus, content, energy, mass, pos, prob, radiusSinVel, speed, toughness, vel, _ref;
-      _ref = Map.squares[Map.get(game.map, hit.map.x, hit.map.y)], toughness = _ref.toughness, energy = _ref.energy, mass = _ref.mass, prob = _ref.prob;
+      var angle, bonus, content, energy, mass, pos, prob, radiusSinVel, shotSound, speed, toughness, vel, _ref;
+      _ref = Map.squares[Map.get(game.map, hit.map.x, hit.map.y)], toughness = _ref.toughness, energy = _ref.energy, mass = _ref.mass, prob = _ref.prob, shotSound = _ref.shotSound;
+      if (shotSound != null) {
+        Game.sound(game, shotSound, Map.SHOT_SOUND_GAIN);
+      }
       if (Math.pow(toughness, bullet.spec.damage) < Math.random()) {
         Map.set(game.map, hit.map.x, hit.map.y, Map.EMPTY);
         content = (prob == null) || prob > Math.random() ? (energy != null) && (((mass != null) && Math.random() < 0.5) || (mass == null)) ? new Bonus.Energy(energy * (0.5 + Math.random())) : mass != null ? new Bonus.Mass(mass * (0.5 + Math.random())) : void 0 : void 0;
@@ -102,6 +105,7 @@
       return void 0;
     };
     Update.bulletHit.tank = function(game, bullet, hit) {
+      Game.sound(game, "hit_tank");
       hit.tank.impulse({
         x: bullet.vel.x * bullet.spec.mass,
         y: bullet.vel.y * bullet.spec.mass
@@ -131,8 +135,16 @@
       }
       return void 0;
     };
+    Update.bonusHit = function(game, bonus, tank) {
+      tank.receive(game, bonus.content);
+      bonus.isDead = true;
+      return Game.sound(game, bonus.content.getSound, Bonus.SOUND_GAIN);
+    };
     Update.boom = function(game, pos, spec) {
       var angle, i, radius, radius2, speed, time, velX, velY, _i, _ref;
+      if (spec.sound != null) {
+        Game.sound(game, spec.sound);
+      }
       for (i = _i = 0, _ref = spec.count; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
         angle = 2 * Math.PI * Math.random();
         speed = spec.speed * (Math.random() + 0.5);

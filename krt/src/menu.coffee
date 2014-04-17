@@ -10,7 +10,7 @@ define ["jquery", "game", "keycodes"], ($, Game, Keycodes) ->
     "green": "#86990a"
   KEYS = ["forward", "backward", "left", "right", "fire", "change"]
   MAX_PLAYERS = 4
-  STATE_VERSION = 7
+  STATE_VERSION = 8
 
   ($root) ->
     defaultState = ->
@@ -24,6 +24,7 @@ define ["jquery", "game", "keycodes"], ($, Game, Keycodes) ->
       fps: 30
       hud: true
       nameTags: true
+      soundEnabled: false
       modes:
         mode: "time"
         time: 120
@@ -84,15 +85,6 @@ define ["jquery", "game", "keycodes"], ($, Game, Keycodes) ->
     rebuild = ->
       $menu.remove() if $menu?
       $menu = build()
-
-    build = ->
-      $("<div class='menu' />")\
-        .append(buildMode())\
-        .append(buildMap())\
-        .append(buildGfx())\
-        .append(buildPlayers())\
-        .append(buildStart())\
-        .appendTo($root)
 
     buildMode = ->
       $mode = $ """
@@ -199,6 +191,21 @@ define ["jquery", "game", "keycodes"], ($, Game, Keycodes) ->
         state.nameTags = $(@).is(":checked"); save()
       $gfx
 
+    buildSound = ->
+      $sound = $ """
+        <fieldset class='sound'>
+          <legend>sound</legend>
+          <p>
+            <label><span>sound enabled:</span>
+            <input type='checkbox' name='sound-enabled'></label>
+          </p>
+        </fieldset>
+        """
+
+      $sound.find("input[name=sound-enabled]").attr("checked", state.soundEnabled).change ->
+        state.soundEnabled = $(@).is(":checked"); save()
+      $sound
+
     buildPlayer = (idx) ->
       $player = $ """
         <li class='player-#{idx}'>
@@ -291,7 +298,7 @@ define ["jquery", "game", "keycodes"], ($, Game, Keycodes) ->
           <input type='button' name='reset-button' value='reset settings'>
         </fieldset>
         """
-      $start.find("input[name=start-button]").click (evt) ->
+      $start.find("input[name=start-button]").click ->
         startGame()
       $start.find("input[name=reset-button]").click ->
         resetState()
@@ -322,6 +329,8 @@ define ["jquery", "game", "keycodes"], ($, Game, Keycodes) ->
       $dialog.appendTo($menu)
 
     startGame = ->
+      return if $menu.hasClass("game-playing")
+
       settings =
         mapWidth: state.mapWidth
         mapHeight: state.mapHeight
@@ -332,6 +341,7 @@ define ["jquery", "game", "keycodes"], ($, Game, Keycodes) ->
         fps: state.fps
         useHud: state.hud
         useNameTags: state.nameTags
+        enableAudio: state.soundEnabled
         playerDefs: for i in [0...state.playerCount]
           name: state.playerDefs[i].name
           color: COLORS[state.playerDefs[i].color]
@@ -345,7 +355,28 @@ define ["jquery", "game", "keycodes"], ($, Game, Keycodes) ->
             { mode: "hits", hits: state.modes.hits }
 
 
-      game = Game.init(settings, ->)
-      Game.start(game)
+      $menu.trigger("game-started.krt")
+      Game.init(settings,
+        ((game) -> Game.start(game)),
+        (-> $menu.trigger("game-finished.krt"))
+      )
 
-    $menu = build()
+    $menu = $("<div class='menu' />")\
+      .append(buildMode())\
+      .append(buildMap())\
+      .append(buildGfx())\
+      .append(buildSound())\
+      .append(buildPlayers())\
+      .append(buildStart())\
+      .appendTo($root)
+
+    $menu.on "game-started.krt", ->
+      $menu.addClass("game-running")
+      $menu.find("input[name=start-button]").attr("disabled", true)
+
+    $menu.on "game-finished.krt", ->
+      $menu.removeClass("game-running")
+      $menu.find("input[name=start-button]").attr("disabled", false)
+
+    $menu
+

@@ -67,9 +67,12 @@ define "exports  collisions  game  map  weapon  bullet  particle  bonus".split(/
     Update.boom(game, hit.pos, bullet.spec.boom)
 
   Update.bulletHit.map = (game, bullet, hit) ->
-    {toughness, energy, mass, prob} = Map.squares[Map.get(game.map, hit.map.x, hit.map.y)]
+    {toughness, energy, mass, prob, shotSound} = Map.squares[Map.get(game.map, hit.map.x, hit.map.y)]
+    Game.sound(game, shotSound, Map.SHOT_SOUND_GAIN) if shotSound?
+
     if Math.pow(toughness, bullet.spec.damage) < Math.random()
       Map.set(game.map, hit.map.x, hit.map.y, Map.EMPTY)
+
       content = 
         if !prob? or prob > Math.random()
           if energy? and ((mass? and Math.random() < 0.5) or not mass?)
@@ -87,6 +90,7 @@ define "exports  collisions  game  map  weapon  bullet  particle  bonus".split(/
     undefined
 
   Update.bulletHit.tank = (game, bullet, hit) ->
+    Game.sound(game, "hit_tank")
     hit.tank.impulse(x: bullet.vel.x * bullet.spec.mass, y: bullet.vel.y * bullet.spec.mass)
     hit.tank.hurt(game, bullet.spec.hurt, bullet.owner)
     undefined
@@ -107,7 +111,14 @@ define "exports  collisions  game  map  weapon  bullet  particle  bonus".split(/
         game.bullets.push(bullet)
     undefined
 
+  Update.bonusHit = (game, bonus, tank) ->
+    tank.receive(game, bonus.content)
+    bonus.isDead = true
+    Game.sound(game, bonus.content.getSound, Bonus.SOUND_GAIN)
+
   Update.boom = (game, pos, spec) ->
+    Game.sound(game, spec.sound) if spec.sound?
+
     for i in [0...spec.count]
       angle   = 2*Math.PI * Math.random()
       speed   = spec.speed * (Math.random() + 0.5)

@@ -72,10 +72,11 @@
       weapon.temperature = spec.cooldown;
       this.setMass(this.mass - spec.bullet.mass, game);
       this.setEnergy(this.energy - spec.energy, game);
-      return this.impulse({
+      this.impulse({
         x: -relVelX * spec.bullet.mass,
         y: -relVelY * spec.bullet.mass
       });
+      return Game.sound(game, spec.sound);
     };
     Tank.prototype.hurt = function(game, dmg, guilty) {
       if (guilty == null) {
@@ -122,7 +123,8 @@
           time: 1.5,
           radius: 1.2,
           color: this.color,
-          opacity: 0.6
+          opacity: 0.6,
+          sound: "boom_tank"
         };
         Game.boom(game, this.pos, boom);
         return this.exploding = Tank.EXPLODING_TIME;
@@ -159,7 +161,10 @@
       } else {
         this.angle += this.rot * Tank.ANGULAR_SPEED * t;
       }
-      energyDrain = Tank.LIVE_ENERGY_CONSUM + this.energy * Tank.ENERGY_LOSS + (this.acc !== 0 || this.rot !== 0 ? Tank.MOVE_ENERGY_CONSUM : 0);
+      energyDrain = Tank.LIVE_ENERGY_CONSUM + this.energy * Tank.ENERGY_LOSS;
+      if (this.acc !== 0 || this.rot !== 0) {
+        energyDrain += Tank.MOVE_ENERGY_CONSUM;
+      }
       return this.setEnergy(this.energy - energyDrain * t, game);
     };
     Tank.prototype.render = function(ctx) {
