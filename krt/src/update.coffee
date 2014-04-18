@@ -1,5 +1,5 @@
-define "exports  collisions  game  map  weapon  bullet  particle  bonus".split(/\s+/),\
-       (exports, Collisions, Game, Map, Weapon, Bullet, Particle, Bonus) ->
+define "exports  collisions  game  map  weapon  bullet  particle  bonus  audio".split(/\s+/),\
+       (exports, Collisions, Game, Map, Weapon, Bullet, Particle, Bonus, Audio) ->
   Update = exports
 
   Update.game = (game, t) ->
@@ -68,7 +68,7 @@ define "exports  collisions  game  map  weapon  bullet  particle  bonus".split(/
 
   Update.bulletHit.map = (game, bullet, hit) ->
     {toughness, energy, mass, prob, shotSound} = Map.squares[Map.get(game.map, hit.map.x, hit.map.y)]
-    Game.sound(game, shotSound, Map.SHOT_SOUND_GAIN) if shotSound?
+    Audio.sound(game, shotSound, Map.SHOT_SOUND_GAIN) if shotSound?
 
     if Math.pow(toughness, bullet.spec.damage) < Math.random()
       Map.set(game.map, hit.map.x, hit.map.y, Map.EMPTY)
@@ -90,7 +90,7 @@ define "exports  collisions  game  map  weapon  bullet  particle  bonus".split(/
     undefined
 
   Update.bulletHit.tank = (game, bullet, hit) ->
-    Game.sound(game, "hit_tank")
+    Audio.sound(game, "hit_tank")
     hit.tank.impulse(x: bullet.vel.x * bullet.spec.mass, y: bullet.vel.y * bullet.spec.mass)
     hit.tank.hurt(game, bullet.spec.hurt, bullet.owner)
     undefined
@@ -114,10 +114,10 @@ define "exports  collisions  game  map  weapon  bullet  particle  bonus".split(/
   Update.bonusHit = (game, bonus, tank) ->
     tank.receive(game, bonus.content)
     bonus.isDead = true
-    Game.sound(game, bonus.content.getSound, Bonus.SOUND_GAIN)
+    Audio.sound(game, bonus.content.getSound, Bonus.SOUND_GAIN)
 
   Update.boom = (game, pos, spec) ->
-    Game.sound(game, spec.sound) if spec.sound?
+    Audio.sound(game, spec.sound) if spec.sound?
 
     for i in [0...spec.count]
       angle   = 2*Math.PI * Math.random()

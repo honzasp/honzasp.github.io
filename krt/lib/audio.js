@@ -33,7 +33,7 @@
         buffers = {};
         callbackCalled = false;
         ready = function() {
-          var soundFiles, soundName, _ref;
+          var audio, soundFiles, soundName, soundsGainNode, _ref;
           if (callbackCalled) {
             return;
           }
@@ -44,11 +44,16 @@
               return;
             }
           }
-          callbackCalled = true;
-          return callback({
+          soundsGainNode = ctx.createGainNode();
+          soundsGainNode.gain.value = settings.soundsGain;
+          soundsGainNode.connect(ctx.destination);
+          audio = {
             ctx: ctx,
-            buffers: buffers
-          });
+            buffers: buffers,
+            soundsGainNode: soundsGainNode
+          };
+          callbackCalled = true;
+          return callback(audio);
         };
         error = function(err) {
           console.log("error initializing audio", err);
@@ -99,27 +104,59 @@
       req.onerror = onError;
       return req.send();
     };
-    Audio.soundSource = function(audio, soundName) {
+    Audio.deinit = function(game) {
+      if (game.audio == null) {
+        return;
+      }
+      return game.audio.soundsGainNode.disconnect();
+    };
+    Audio.currentTime = function(game) {
+      return game.audio.ctx.currentTime;
+    };
+    Audio.sound = function(game, soundName, gain) {
+      var gainNode, sourceNode;
+      if (gain == null) {
+        gain = 1;
+      }
+      if (game.audio == null) {
+        return;
+      }
+      sourceNode = Audio.createSoundSource(game, soundName);
+      gainNode = Audio.addGain(game, sourceNode);
+      gainNode.gain.value = gain;
+      gainNode.connect(game.audio.soundsGainNode);
+      return sourceNode.start(0);
+    };
+    Audio.createHum = function(game, soundName) {
+      var gainNode, sourceNode;
+      if (game.audio == null) {
+        return;
+      }
+      sourceNode = Audio.createSoundSource(game, soundName);
+      sourceNode.loop = true;
+      gainNode = Audio.addGain(game, sourceNode);
+      gainNode.gain.value = 0;
+      gainNode.connect(game.audio.soundsGainNode);
+      sourceNode.start(Math.random() * sourceNode.duration);
+      return {
+        sourceNode: sourceNode,
+        gainNode: gainNode,
+        active: void 0
+      };
+    };
+    Audio.createSoundSource = function(game, soundName) {
       var buffer, buffers, sourceNode;
-      buffers = audio.buffers[soundName];
+      buffers = game.audio.buffers[soundName];
       buffer = buffers[Math.floor(Math.random() * buffers.length)];
-      sourceNode = audio.ctx.createBufferSource();
+      sourceNode = game.audio.ctx.createBufferSource();
       sourceNode.buffer = buffer;
       return sourceNode;
     };
-    Audio.addGain = function(audio, node) {
+    Audio.addGain = function(game, node) {
       var gainNode;
-      gainNode = audio.ctx.createGainNode();
+      gainNode = game.audio.ctx.createGainNode();
       node.connect(gainNode);
       return gainNode;
-    };
-    Audio.play = function(audio, soundName, gain) {
-      var gainNode, sourceNode;
-      sourceNode = Audio.soundSource(audio, soundName);
-      gainNode = Audio.addGain(audio, sourceNode);
-      gainNode.gain.value = gain;
-      gainNode.connect(audio.ctx.destination);
-      return sourceNode.start(0);
     };
     return Audio;
   });

@@ -1,6 +1,6 @@
-define ["map", "weapon", "bullet", "game"], \
-        (Map,   Weapon,   Bullet,   Game) ->
-  Tank = (idx, x, y, angle, color) ->
+define ["map", "weapon", "bullet", "game", "audio"], \
+        (Map,   Weapon,   Bullet,   Game,   Audio) ->
+  Tank = (idx, x, y, angle, color, hum) ->
     @index = idx
     @pos = {x, y}
     @angle = angle
@@ -11,8 +11,6 @@ define ["map", "weapon", "bullet", "game"], \
     @exploding = undefined
     @destroyedBy = undefined
     @isDead = false
-    @.setEnergy(Tank.START_ENERGY)
-    @.setMass(Tank.START_MASS)
     @weapons = [
       new Weapon(Weapon.MachineGun)
       new Weapon(Weapon.MiningGun)
@@ -22,7 +20,10 @@ define ["map", "weapon", "bullet", "game"], \
     ]
     @activeWeapon = 0
     @color = color
-
+    @hum = hum
+    @.setEnergy(Tank.START_ENERGY)
+    @.setMass(Tank.START_MASS)
+    @
 
   Tank.WALL_DISTANCE = 0.01
   Tank.FORCE = 1500
@@ -33,14 +34,20 @@ define ["map", "weapon", "bullet", "game"], \
   Tank.BULLET_DIST = 1.2
   Tank.START_ENERGY = 1000
   Tank.START_MASS = 100
+  Tank.DENSITY = 120
   Tank.MIN_FIRE_ENERGY = 10
   Tank.VISION_ENERGY = 400
   Tank.MIN_MASS = 50
-  Tank.LIVE_ENERGY_CONSUM = 1
-  Tank.MOVE_ENERGY_CONSUM = 6
-  Tank.ENERGY_LOSS = 0.002
-  Tank.DENSITY = 120
   Tank.EXPLODING_TIME = 3
+
+  Tank.ENERGY_DRAIN = (tank) ->
+    if tank.acc != 0 or tank.rot != 0
+      7 + tank.energy * 0.002
+    else
+      1 + tank.energy * 0.002
+
+  Tank.HUM_GAIN = (speed) -> 0.4*(1.1 - Math.pow(0.9, speed/5))
+  Tank.HUM_PLAYBACK = (speed) -> 0.5 + Math.pow(1.1, speed/10)
 
   Tank::change = ->
     @activeWeapon = (@activeWeapon + 1) % @weapons.length
@@ -66,7 +73,7 @@ define ["map", "weapon", "bullet", "game"], \
     @.setMass(@mass - spec.bullet.mass, game)
     @.setEnergy(@energy - spec.energy, game)
     @.impulse(x: -relVelX * spec.bullet.mass, y: -relVelY * spec.bullet.mass)
-    Game.sound(game, spec.sound)
+    Audio.sound(game, spec.sound)
 
   Tank::hurt = (game, dmg, guilty = undefined) ->
     @.setEnergy(@energy - dmg, game, guilty)
@@ -127,10 +134,13 @@ define ["map", "weapon", "bullet", "game"], \
     else
       @angle += @rot * Tank.ANGULAR_SPEED * t
 
-    energyDrain = Tank.LIVE_ENERGY_CONSUM + @energy*Tank.ENERGY_LOSS
-    if @acc != 0 or @rot != 0
-      energyDrain += Tank.MOVE_ENERGY_CONSUM
-    @.setEnergy(@energy - energyDrain * t, game)
+    if @hum?
+      time = Audio.currentTime(game)
+      speed = Math.sqrt(@vel.x * @vel.x + @vel.y * @vel.y)
+      @hum.gainNode.gain.value = Tank.HUM_GAIN(speed)
+      @hum.sourceNode.playbackRate.value = Tank.HUM_PLAYBACK(speed)
+
+    @.setEnergy(@energy - Tank.ENERGY_DRAIN(@) * t, game)
 
   Tank::render = (ctx) ->
     ctx.save()

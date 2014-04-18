@@ -23,7 +23,7 @@ define \
         dom: Game.dom.init()
         audio: audio
         map: map
-        tanks: Game.createTank(game, info) for info in playerInfos
+        tanks: []
         bullets: []
         particles: []
         bonuses: []
@@ -39,6 +39,9 @@ define \
         useNameTags: settings.useNameTags
         onFinish: onFinish
 
+      for info in playerInfos
+        game.tanks[info.index] = Game.createTank(game, info)
+
       Game.dom.resizeCanvas(game)
       Game.dom.rebindListeners(game)
       onReady(game)
@@ -52,11 +55,13 @@ define \
     Game.stop(game)
     Game.dom.unbindListeners(game)
     Game.dom.restore(game)
+    Audio.deinit(game)
     game.callback()
 
   Game.createTank = (game, playerInfo) ->
     {index: idx, base: {x, y}, color} = playerInfo
-    new Tank(idx, x+Map.BASE_SIZE/2, y+Map.BASE_SIZE/2, 0, color)
+    hum = Audio.createHum(game, "hum_tank")
+    new Tank(idx, x+Map.BASE_SIZE/2, y+Map.BASE_SIZE/2, 0, color, hum)
 
   Game.tankDestroyed = (game, index, guilty = undefined) ->
     game.playerInfos[guilty].hits += 1 if guilty?
@@ -74,10 +79,6 @@ define \
 
   Game.boom = (game, pos, spec) ->
     Update.boom(game, pos, spec)
-
-  Game.sound = (game, soundName, gain = 1.0) ->
-    if game.audio?
-      Audio.play(game.audio, soundName, gain)
 
   Game.events = (game) ->
     forwardOn  = (idx) -> game.tanks[idx].acc = 1

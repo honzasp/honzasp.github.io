@@ -36,8 +36,14 @@ define ["require"], (require) ->
         for soundName, soundFiles of Audio.SOUNDS
           return unless buffers[soundName].length >= soundFiles.length
 
+        soundsGainNode = ctx.createGainNode()
+        soundsGainNode.gain.value = settings.soundsGain
+        soundsGainNode.connect(ctx.destination)
+
+        audio = { ctx, buffers, soundsGainNode }
+
         callbackCalled = true
-        callback({ ctx, buffers })
+        callback(audio)
 
       error = (err) ->
         console.log("error initializing audio", err)
@@ -71,23 +77,41 @@ define ["require"], (require) ->
     req.onerror = onError
     req.send()
 
-  Audio.soundSource = (audio, soundName) ->
-    buffers = audio.buffers[soundName]
+  Audio.deinit = (game) ->
+    return unless game.audio?
+    game.audio.soundsGainNode.disconnect()
+
+  Audio.currentTime = (game) ->
+    game.audio.ctx.currentTime
+
+  Audio.sound = (game, soundName, gain = 1) ->
+    return unless game.audio?
+    sourceNode = Audio.createSoundSource(game, soundName)
+    gainNode = Audio.addGain(game, sourceNode)
+    gainNode.gain.value = gain
+    gainNode.connect(game.audio.soundsGainNode)
+    sourceNode.start(0)
+
+  Audio.createHum = (game, soundName) ->
+    return unless game.audio?
+    sourceNode = Audio.createSoundSource(game, soundName)
+    sourceNode.loop = true
+    gainNode = Audio.addGain(game, sourceNode)
+    gainNode.gain.value = 0
+    gainNode.connect(game.audio.soundsGainNode)
+    sourceNode.start(Math.random() * sourceNode.duration)
+    { sourceNode, gainNode, active: undefined }
+
+  Audio.createSoundSource = (game, soundName) ->
+    buffers = game.audio.buffers[soundName]
     buffer = buffers[Math.floor(Math.random() * buffers.length)]
-    sourceNode = audio.ctx.createBufferSource()
+    sourceNode = game.audio.ctx.createBufferSource()
     sourceNode.buffer = buffer
     sourceNode
 
-  Audio.addGain = (audio, node) ->
-    gainNode = audio.ctx.createGainNode()
+  Audio.addGain = (game, node) ->
+    gainNode = game.audio.ctx.createGainNode()
     node.connect(gainNode)
     gainNode
-
-  Audio.play = (audio, soundName, gain) ->
-    sourceNode = Audio.soundSource(audio, soundName)
-    gainNode = Audio.addGain(audio, sourceNode)
-    gainNode.gain.value = gain
-    gainNode.connect(audio.ctx.destination)
-    sourceNode.start(0)
 
   Audio

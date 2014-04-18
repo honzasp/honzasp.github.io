@@ -9,7 +9,7 @@
       map = audio = void 0;
       mapReady = audioReady = false;
       ready = function() {
-        var def, game, idx, info, playerInfos;
+        var def, game, idx, info, playerInfos, _i, _len;
         if (!(mapReady && audioReady)) {
           return;
         }
@@ -35,15 +35,7 @@
           dom: Game.dom.init(),
           audio: audio,
           map: map,
-          tanks: (function() {
-            var _i, _len, _results;
-            _results = [];
-            for (_i = 0, _len = playerInfos.length; _i < _len; _i++) {
-              info = playerInfos[_i];
-              _results.push(Game.createTank(game, info));
-            }
-            return _results;
-          })(),
+          tanks: [],
           bullets: [],
           particles: [],
           bonuses: [],
@@ -62,6 +54,10 @@
           useNameTags: settings.useNameTags,
           onFinish: onFinish
         };
+        for (_i = 0, _len = playerInfos.length; _i < _len; _i++) {
+          info = playerInfos[_i];
+          game.tanks[info.index] = Game.createTank(game, info);
+        }
         Game.dom.resizeCanvas(game);
         Game.dom.rebindListeners(game);
         return onReady(game);
@@ -82,12 +78,14 @@
       Game.stop(game);
       Game.dom.unbindListeners(game);
       Game.dom.restore(game);
+      Audio.deinit(game);
       return game.callback();
     };
     Game.createTank = function(game, playerInfo) {
-      var color, idx, x, y, _ref;
+      var color, hum, idx, x, y, _ref;
       idx = playerInfo.index, (_ref = playerInfo.base, x = _ref.x, y = _ref.y), color = playerInfo.color;
-      return new Tank(idx, x + Map.BASE_SIZE / 2, y + Map.BASE_SIZE / 2, 0, color);
+      hum = Audio.createHum(game, "hum_tank");
+      return new Tank(idx, x + Map.BASE_SIZE / 2, y + Map.BASE_SIZE / 2, 0, color, hum);
     };
     Game.tankDestroyed = function(game, index, guilty) {
       if (guilty == null) {
@@ -114,14 +112,6 @@
     };
     Game.boom = function(game, pos, spec) {
       return Update.boom(game, pos, spec);
-    };
-    Game.sound = function(game, soundName, gain) {
-      if (gain == null) {
-        gain = 1.0;
-      }
-      if (game.audio != null) {
-        return Audio.play(game.audio, soundName, gain);
-      }
     };
     Game.events = function(game) {
       var backwardOff, backwardOn, changeOn, fireOff, fireOn, forwardOff, forwardOn, leftOff, leftOn, rightOff, rightOn;

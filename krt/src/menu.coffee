@@ -10,7 +10,7 @@ define ["jquery", "game", "keycodes"], ($, Game, Keycodes) ->
     "green": "#86990a"
   KEYS = ["forward", "backward", "left", "right", "fire", "change"]
   MAX_PLAYERS = 4
-  STATE_VERSION = 8
+  STATE_VERSION = 9
 
   ($root) ->
     defaultState = ->
@@ -24,31 +24,24 @@ define ["jquery", "game", "keycodes"], ($, Game, Keycodes) ->
       fps: 30
       hud: true
       nameTags: true
-      soundEnabled: false
+      audioEnabled: false
+      soundsVolume: 100
       modes:
         mode: "time"
         time: 120
         lives: 10
         hits: 10
       playerDefs: [
-        {
-          name: "Oin"
-          color: "red"
+        { name: "Oin", color: "red", \
           keys: { forward: 87, backward: 83, left: 65, right: 68, fire: 81, change: 69 } 
         }
-        {
-          name: "Gloin"
-          color: "blue"
+        { name: "Gloin", color: "blue", \
           keys: { forward: 38, backward: 40, left: 37, right: 39, fire: 17, change: 16 } 
         }
-        {
-          name: "Bifur"
-          color: "green"
+        { name: "Bifur", color: "green", \
           keys: { forward: 73, backward: 75, left: 74, right: 76, fire: 85, change: 79 } 
         }
-        {
-          name: "Bombur"
-          color: "cyan"
+        { name: "Bombur", color: "cyan", \
           keys: { forward: 104, backward: 101, left: 100, right: 102, fire: 103, change: 105 }
         }
       ]
@@ -191,20 +184,26 @@ define ["jquery", "game", "keycodes"], ($, Game, Keycodes) ->
         state.nameTags = $(@).is(":checked"); save()
       $gfx
 
-    buildSound = ->
-      $sound = $ """
-        <fieldset class='sound'>
-          <legend>sound</legend>
+    buildAudio = ->
+      $audio = $ """
+        <fieldset class='audio'>
+          <legend>audio</legend>
           <p>
-            <label><span>sound enabled:</span>
-            <input type='checkbox' name='sound-enabled'></label>
+            <label><span>audio enabled:</span>
+            <input type='checkbox' name='audio-enabled'></label>
+          </p>
+          <p>
+            <label><span>sounds volume:</span>
+            <input type='number' name='sounds-volume'></label>
           </p>
         </fieldset>
         """
 
-      $sound.find("input[name=sound-enabled]").attr("checked", state.soundEnabled).change ->
-        state.soundEnabled = $(@).is(":checked"); save()
-      $sound
+      $audio.find("input[name=audio-enabled]").attr("checked", state.audioEnabled).change ->
+        state.audioEnabled = $(@).is(":checked"); save()
+      $audio.find("input[name=sounds-volume]").val(state.soundsVolume).change ->
+        state.soundsVolume = valFloat(@, 0, 100); save()
+      $audio
 
     buildPlayer = (idx) ->
       $player = $ """
@@ -341,7 +340,8 @@ define ["jquery", "game", "keycodes"], ($, Game, Keycodes) ->
         fps: state.fps
         useHud: state.hud
         useNameTags: state.nameTags
-        enableAudio: state.soundEnabled
+        enableAudio: state.audioEnabled
+        soundsGain: state.soundsVolume / 100
         playerDefs: for i in [0...state.playerCount]
           name: state.playerDefs[i].name
           color: COLORS[state.playerDefs[i].color]
@@ -365,7 +365,7 @@ define ["jquery", "game", "keycodes"], ($, Game, Keycodes) ->
       .append(buildMode())\
       .append(buildMap())\
       .append(buildGfx())\
-      .append(buildSound())\
+      .append(buildAudio())\
       .append(buildPlayers())\
       .append(buildStart())\
       .appendTo($root)

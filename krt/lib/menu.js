@@ -14,9 +14,9 @@
     };
     KEYS = ["forward", "backward", "left", "right", "fire", "change"];
     MAX_PLAYERS = 4;
-    STATE_VERSION = 8;
+    STATE_VERSION = 9;
     return function($root) {
-      var $menu, buildGfx, buildMap, buildMode, buildPlayer, buildPlayerKey, buildPlayers, buildSound, buildStart, defaultState, json, jsonTxt, keyName, rebuild, resetState, save, selectKey, startGame, state, valFloat, valInt;
+      var $menu, buildAudio, buildGfx, buildMap, buildMode, buildPlayer, buildPlayerKey, buildPlayers, buildStart, defaultState, json, jsonTxt, keyName, rebuild, resetState, save, selectKey, startGame, state, valFloat, valInt;
       defaultState = function() {
         return {
           _version: STATE_VERSION,
@@ -29,7 +29,8 @@
           fps: 30,
           hud: true,
           nameTags: true,
-          soundEnabled: false,
+          audioEnabled: false,
+          soundsVolume: 100,
           modes: {
             mode: "time",
             time: 120,
@@ -215,14 +216,18 @@
         });
         return $gfx;
       };
-      buildSound = function() {
-        var $sound;
-        $sound = $("<fieldset class='sound'>\n  <legend>sound</legend>\n  <p>\n    <label><span>sound enabled:</span>\n    <input type='checkbox' name='sound-enabled'></label>\n  </p>\n</fieldset>");
-        $sound.find("input[name=sound-enabled]").attr("checked", state.soundEnabled).change(function() {
-          state.soundEnabled = $(this).is(":checked");
+      buildAudio = function() {
+        var $audio;
+        $audio = $("<fieldset class='audio'>\n  <legend>audio</legend>\n  <p>\n    <label><span>audio enabled:</span>\n    <input type='checkbox' name='audio-enabled'></label>\n  </p>\n  <p>\n    <label><span>sounds volume:</span>\n    <input type='number' name='sounds-volume'></label>\n  </p>\n</fieldset>");
+        $audio.find("input[name=audio-enabled]").attr("checked", state.audioEnabled).change(function() {
+          state.audioEnabled = $(this).is(":checked");
           return save();
         });
-        return $sound;
+        $audio.find("input[name=sounds-volume]").val(state.soundsVolume).change(function() {
+          state.soundsVolume = valFloat(this, 0, 100);
+          return save();
+        });
+        return $audio;
       };
       buildPlayer = function(idx) {
         var $player, colorName, key;
@@ -352,7 +357,8 @@
           fps: state.fps,
           useHud: state.hud,
           useNameTags: state.nameTags,
-          enableAudio: state.soundEnabled,
+          enableAudio: state.audioEnabled,
+          soundsGain: state.soundsVolume / 100,
           playerDefs: (function() {
             var _i, _ref, _results;
             _results = [];
@@ -392,7 +398,7 @@
           return $menu.trigger("game-finished.krt");
         }));
       };
-      $menu = $("<div class='menu' />").append(buildMode()).append(buildMap()).append(buildGfx()).append(buildSound()).append(buildPlayers()).append(buildStart()).appendTo($root);
+      $menu = $("<div class='menu' />").append(buildMode()).append(buildMap()).append(buildGfx()).append(buildAudio()).append(buildPlayers()).append(buildStart()).appendTo($root);
       $menu.on("game-started.krt", function() {
         $menu.addClass("game-running");
         return $menu.find("input[name=start-button]").attr("disabled", true);
