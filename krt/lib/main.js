@@ -8,7 +8,7 @@
   });
 
   require(["jquery", "menu"], function($, Menu) {
-    return Menu($("#krt"));
+    return Menu.init($("#krt"));
   });
 
 }).call(this);

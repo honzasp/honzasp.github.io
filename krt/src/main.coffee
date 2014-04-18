@@ -4,4 +4,4 @@ require.config
     jquery: "../vendor/jquery"
 
 require ["jquery", "menu"], ($, Menu) ->
-  Menu($("#krt"))
+  Menu.init($("#krt"))
