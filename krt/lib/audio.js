@@ -140,8 +140,7 @@
       sourceNode.start(Math.random() * sourceNode.duration);
       return {
         sourceNode: sourceNode,
-        gainNode: gainNode,
-        active: void 0
+        gainNode: gainNode
       };
     };
     Audio.createSoundSource = function(game, soundName) {

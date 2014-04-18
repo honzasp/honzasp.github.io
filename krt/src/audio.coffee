@@ -100,7 +100,7 @@ define ["require"], (require) ->
     gainNode.gain.value = 0
     gainNode.connect(game.audio.soundsGainNode)
     sourceNode.start(Math.random() * sourceNode.duration)
-    { sourceNode, gainNode, active: undefined }
+    { sourceNode, gainNode }
 
   Audio.createSoundSource = (game, soundName) ->
     buffers = game.audio.buffers[soundName]
