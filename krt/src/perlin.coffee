@@ -68,8 +68,8 @@ define [], () ->
     xFrac = x - xInt
     yFrac = y - yInt
 
-    f = (t) -> 6*Math.pow(t,5) - 15*Math.pow(t,4) + 10*Math.pow(t,3)
-    interpolate = (a, b, d) -> a*(1-f(d)) + b*f(d)
+    f = (t) -> ((6*t - 15)*t + 10) * t*t*t
+    interpolate = (a, b, d) -> fd = f(d); a*(1-fd) + b*fd
     get = (x, y) ->
       throw new Error("index out of bounds") \
         unless x >= 0 and x < octave.width and y >= 0 and y < octave.height

@@ -95,10 +95,12 @@
       xFrac = x - xInt;
       yFrac = y - yInt;
       f = function(t) {
-        return 6 * Math.pow(t, 5) - 15 * Math.pow(t, 4) + 10 * Math.pow(t, 3);
+        return ((6 * t - 15) * t + 10) * t * t * t;
       };
       interpolate = function(a, b, d) {
-        return a * (1 - f(d)) + b * f(d);
+        var fd;
+        fd = f(d);
+        return a * (1 - fd) + b * fd;
       };
       get = function(x, y) {
         if (!(x >= 0 && x < octave.width && y >= 0 && y < octave.height)) {
