@@ -46,7 +46,7 @@ define \
       Game.dom.rebindListeners(game)
       onReady(game)
 
-    MapGen.gen(settings, (map_) -> map = map_; mapReady = true; ready())
+    MapGen.workerGen(settings, (map_) -> map = map_; mapReady = true; ready())
     Audio.init(settings, (audio_) -> audio = audio_; audioReady = true; ready())
 
     undefined

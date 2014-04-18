@@ -1,4 +1,4 @@
-define ["map", "perlin"], (Map, Perlin) ->
+define ["require", "map", "perlin"], (require, Map, Perlin) ->
   MapGen = {}
 
   MapGen.BASE_SIZE = 8
@@ -14,8 +14,42 @@ define ["map", "perlin"], (Map, Perlin) ->
   MapGen.TYPE_OCTAVES = 4
   MapGen.TYPE_AMP = 0.7
   MapGen.TYPE_SCALE = 8
+  MapGen.WORKER_TIMEOUT = (width, height) ->
+    2 + width * height / (200*200)
 
-  MapGen.gen = (settings, callback) ->
+  MapGen.workerGen = (settings, callback) ->
+    hasFinished = false
+    finish = (map) ->
+      unless hasFinished
+        hasFinished = true
+        callback(map)
+
+    fallback = ->
+      console.log("Falling back to synchronous version of map generation")
+      setTimeout((-> finish(MapGen.gen(settings))), 0)
+
+    if window.Worker?
+      worker = new Worker(require.toUrl("./map_gen_worker.js"))
+      worker.postMessage(settings)
+      worker.onmessage = (evt) ->
+        worker.terminate()
+        finish(evt.data)
+      worker.onerror = (evt) ->
+        if evt.filename?
+          console.log("Error in worker: #{evt.filename}:#{evt.lineno}: #{evt.message}")
+        else
+          console.log("Error in worker")
+        worker.terminate()
+        fallback()
+      setTimeout((->
+        unless hasFinished
+          console.log("Worker timed out")
+          fallback()
+        ), MapGen.WORKER_TIMEOUT(settings.mapWidth, settings.mapHeight) * 1000)
+    else
+      fallback()
+
+  MapGen.gen = (settings) ->
     width = settings.mapWidth
     height = settings.mapHeight
     baseCount = settings.playerDefs.length
@@ -34,7 +68,7 @@ define ["map", "perlin"], (Map, Perlin) ->
     for base in bases
       MapGen.base(map, rng, base)
 
-    callback(map)
+    map
 
   MapGen.fillRock = (map, rng, settings) ->
     fillNoise = Perlin.gen(rng.genInt24(), map.width, map.height, 

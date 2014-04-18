@@ -118,9 +118,14 @@
     };
     for (t = _i = 0, _ref = Map.ROCK_FAMILY_COUNT; _i < _ref; t = _i += 1) {
       for (i = _j = 0, _ref1 = Map.ROCK_FAMILY_SIZE; _j < _ref1; i = _j += 1) {
-        Map.squares[Map["ROCK_" + t + "_" + i] = Map.rockId(t, i)] = $.extend({
-          color: Map.ROCK_COLORS[t][i]
-        }, Map.ROCK_STATS[i]);
+        Map.squares[Map["ROCK_" + t + "_" + i] = Map.rockId(t, i)] = {
+          color: Map.ROCK_COLORS[t][i],
+          toughness: Map.ROCK_STATS[i].toughness,
+          energy: Map.ROCK_STATS[i].energy,
+          mass: Map.ROCK_STATS[i].mass,
+          prob: Map.ROCK_STATS[i].prob,
+          shotSound: Map.ROCK_STATS[i].shotSound
+        };
       }
     }
     return Map;

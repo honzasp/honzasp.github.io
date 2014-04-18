@@ -62,7 +62,7 @@
         Game.dom.rebindListeners(game);
         return onReady(game);
       };
-      MapGen.gen(settings, function(map_) {
+      MapGen.workerGen(settings, function(map_) {
         map = map_;
         mapReady = true;
         return ready();

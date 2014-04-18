@@ -1,4 +1,4 @@
-define ["menu"], (Menu) ->
+define ["jquery", "menu"], ($, Menu) ->
   Config = {}
 
   Config.buildConfig = (menu) ->

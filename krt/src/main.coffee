@@ -4,4 +4,5 @@ require.config
     jquery: "../vendor/jquery"
 
 require ["jquery", "menu"], ($, Menu) ->
+  $.noConflict(true)
   Menu.init($("#krt"))

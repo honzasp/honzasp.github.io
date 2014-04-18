@@ -66,6 +66,11 @@ define [], () ->
   for t in [0...Map.ROCK_FAMILY_COUNT] by 1
     for i in [0...Map.ROCK_FAMILY_SIZE] by 1
       Map.squares[Map["ROCK_#{t}_#{i}"] = Map.rockId(t, i)] =
-        $.extend({color: Map.ROCK_COLORS[t][i]}, Map.ROCK_STATS[i])
+        color: Map.ROCK_COLORS[t][i]
+        toughness: Map.ROCK_STATS[i].toughness
+        energy: Map.ROCK_STATS[i].energy
+        mass: Map.ROCK_STATS[i].mass
+        prob: Map.ROCK_STATS[i].prob
+        shotSound: Map.ROCK_STATS[i].shotSound
 
   Map

@@ -8,6 +8,7 @@
   });
 
   require(["jquery", "menu"], function($, Menu) {
+    $.noConflict(true);
     return Menu.init($("#krt"));
   });
 

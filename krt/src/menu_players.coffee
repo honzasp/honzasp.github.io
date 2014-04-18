@@ -1,4 +1,4 @@
-define ["menu"], (Menu) ->
+define ["jquery", "menu"], ($, Menu) ->
   Players = {}
 
   Players.buildPlayer = (menu, idx) ->
