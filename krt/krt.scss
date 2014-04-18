@@ -9,6 +9,11 @@
   margin: 0 auto;
   color: #333;
 
+  * {
+    margin: 0;
+    padding: 0;
+  }
+
   input, select {
     font-family: inherit;
     font-size: 0.8em;
@@ -17,8 +22,64 @@
     box-sizing: border-box;
   }
 
+  input[type="number"], input[type="text"] {
+    padding: 1px;
+  }
+
+  input[type="button"] {
+    padding: 2px 10px;
+  }
+
+  select {
+    padding: 2px 6px;
+  }
+
+  p {
+    margin: 9px 12px;
+    padding: 0;
+  }
+
+  .config {
+    .left, .right {
+      width: 290px;
+    }
+
+    .left {
+      float: left;
+    }
+
+    .right {
+      margin-left: 309px;
+      &:after {
+        content: ".";
+        display: block;
+        visibility: hidden;
+        height: 0;
+        width: 0;
+        clear: both;
+      }
+    }
+
+    input[type="number"], input[type="text"] {
+      margin-left: 10px;
+      width: 100px;
+    }
+    input[type="checkbox"] {
+      margin-left: 10px;
+      width: 20px;
+    }
+    label>span {
+      width: 150px;
+      display: inline-block;
+    }
+    label {
+      display: inline-block;
+    }
+  }
+
   fieldset {
     border: 1px solid #bbb;
+    width: 100%;
 
     legend {
       margin-left: 8px;
@@ -26,124 +87,96 @@
       background-color: #ccc;
       font-weight: bold;
     }
+  }
 
-    p {
-      margin: 3px 12px;
-      padding: 0;
-      min-height: 28px;
+  fieldset.mode {
+    float: left;
+    input[name="mode"] {
+      display: inline-block;
+      width: 20px;
+    }
+    label {
+      width: 150px;
+    }
+    label>span {
+      width: 110px;
+    }
+  }
+
+  fieldset.players {
+    .controls input[type="button"] {
+      margin-top: 5px;
+      margin-bottom: 5px;
+      &[name="add-player"] { margin-left: 12px; }
+      &[name="remove-player"] { margin-left: 15px; }
     }
 
-    &.mode, &.map, &.gfx {
-      width: 288px;
-      input[type="number"], input[type="text"] {
-        margin-left: 10px;
-        width: 90px;
-      }
-      input[type="checkbox"] {
-        margin-left: 10px;
-        width: 20px;
-      }
+    ul.players-list>li {
+      margin-top: 12px;
+      border-left-width: 10px;
+      border-left-style: solid;
+      border-left-color: #ddd;
+
       label>span {
-        width: 150px;
         display: inline-block;
-      }
-      label {
-        display: inline-block;
-      }
-    }
-    &.mode {
-      float: left;
-      input[name="mode"] {
-        display: inline-block;
-        width: 20px;
-      }
-      label {
-        width: 150px;
-      }
-      label>span {
-        width: 110px;
-      }
-    }
-    &.map, &.gfx {
-      margin-left: 310px - 1px;
-    }
-
-    &.players {
-      input[type="button"] {
-        padding: 2px 10px;
+        width: 60px;
       }
 
-      select {
-        padding: 2px 6px;
+      input[name|="name"] {
+        width: 180px;
       }
-
-      ul.players-list>li {
-        margin-top: 12px;
-        border-left-width: 10px;
-        border-left-style: solid;
-        border-left-color: #ddd;
-
-        label>span {
-          display: inline-block;
-          width: 60px;
-        }
-
-        input[name|="name"] {
-          width: 180px;
-        }
-        select[name|="color"] {
-          width: 100px;
-        }
-      }
-
-      ul.keys {
-        margin: 3px 18px;
-        &>li {
-          float: left;
-          width: 90px;
-          text-align: center;
-          label>span {
-            display: block;
-            margin: 3px auto;
-            font-size: 0.8em;
-          }
-          input[name|="key"] {
-            display: block;
-            margin: 4px auto;
-            padding: 2px 0;
-            width: 80px;
-          }
-        }
-        &:after {
-          content: ".";
-          clear: both;
-          height: 0;
-          display: block;
-          visibility: hidden;
-        }
-      }
-    }
-
-    &.start {
-      border-style: none;
-      margin: 3px auto;
-
-      input[name="start-button"] {
-        display: block;
-        width: 150px;
-        height: 35px;
-        font-size: 1.3em;
-        margin: 5px 50px 0px 80px;
-        float: left;
-      }
-      input[name="reset-button"] {
-        display: block;
-        margin-top: 10px;
+      select[name|="color"] {
         width: 100px;
-        height: 25px;
-        font-size: 0.8em;
-        float: left;
       }
+    }
+
+    ul.keys {
+      margin: 3px 18px;
+      &>li {
+        float: left;
+        width: 90px;
+        text-align: center;
+        label>span {
+          display: block;
+          margin: 3px auto;
+          font-size: 0.8em;
+        }
+        input[name|="key"] {
+          display: block;
+          margin: 4px auto;
+          padding: 2px 0;
+          width: 80px;
+        }
+      }
+      &:after {
+        content: ".";
+        clear: both;
+        height: 0;
+        display: block;
+        visibility: hidden;
+      }
+    }
+  }
+
+  fieldset.start {
+    border-style: none;
+    margin: 3px auto;
+
+    input[name="start-button"] {
+      display: block;
+      width: 150px;
+      height: 35px;
+      font-size: 1.3em;
+      margin: 5px 50px 0px 80px;
+      float: left;
+    }
+    input[name="reset-button"] {
+      display: block;
+      margin-top: 10px;
+      width: 100px;
+      height: 25px;
+      font-size: 0.8em;
+      float: left;
     }
   }
 
@@ -169,6 +202,11 @@
 }
 
 #krt .game {
+  * {
+    margin: 0;
+    padding: 0;
+  }
+
   .box {
     position: fixed;
     left: 0;
