@@ -82,7 +82,7 @@
     };
     Config.buildAudio = function(menu) {
       var $audio;
-      $audio = $("<fieldset class='audio'>\n  <legend>audio</legend>\n  <p>\n    <label><span>audio enabled:</span>\n    <input type='checkbox' name='audio-enabled'></label>\n  </p>\n  <p>\n    <label><span>sounds volume:</span>\n    <input type='number' name='sounds-volume'></label>\n  </p>\n</fieldset>");
+      $audio = $("<fieldset class='audio'>\n  <legend>audio</legend>\n  <p>\n    <label><span>audio enabled:</span>\n    <input type='checkbox' name='audio-enabled'></label>\n  </p>\n  <p>\n    <label><span>sounds volume:</span>\n    <input type='number' min='0' max='100' name='sounds-volume'></label>\n  </p>\n</fieldset>");
       $audio.find("input[name=audio-enabled]").attr("checked", menu.state.audioEnabled).change(function() {
         menu.state.audioEnabled = $(this).is(":checked");
         Menu.save(menu);

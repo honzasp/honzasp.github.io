@@ -136,7 +136,7 @@ define ["menu"], (Menu) ->
         </p>
         <p>
           <label><span>sounds volume:</span>
-          <input type='number' name='sounds-volume'></label>
+          <input type='number' min='0' max='100' name='sounds-volume'></label>
         </p>
       </fieldset>
       """
