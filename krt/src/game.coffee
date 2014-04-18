@@ -1,7 +1,7 @@
 define \
-["exports", "jquery", "map", "render", "tank", "bullet",
+["exports", "jquery", "map", "map_gen", "render", "tank", "bullet",
  "particle", "collisions", "update", "audio"], \
-(exports, $, Map, Render, Tank, Bullet,
+(exports, $, Map, MapGen, Render, Tank, Bullet,
  Particle, Collisions, Update, Audio) ->
 
   Game = exports
@@ -46,8 +46,8 @@ define \
       Game.dom.rebindListeners(game)
       onReady(game)
 
-    Map.gen settings, (map_) -> map = map_; mapReady = true; ready()
-    Audio.init settings, (audio_) -> audio = audio_; audioReady = true; ready()
+    MapGen.gen(settings, (map_) -> map = map_; mapReady = true; ready())
+    Audio.init(settings, (audio_) -> audio = audio_; audioReady = true; ready())
 
     undefined
 
@@ -61,7 +61,7 @@ define \
   Game.createTank = (game, playerInfo) ->
     {index: idx, base: {x, y}, color} = playerInfo
     hum = Audio.createHum(game, "hum_tank")
-    new Tank(idx, x+Map.BASE_SIZE/2, y+Map.BASE_SIZE/2, 0, color, hum)
+    new Tank(idx, x+MapGen.BASE_SIZE/2, y+MapGen.BASE_SIZE/2, 0, color, hum)
 
   Game.tankDestroyed = (game, index, guilty = undefined) ->
     game.playerInfos[guilty].hits += 1 if guilty?
