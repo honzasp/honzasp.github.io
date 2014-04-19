@@ -8,9 +8,10 @@
     Loading.BITS_FPS = 10;
     Loading.BITS_LENGTH = 80;
     Loading.BITS_SYMS = "0123456789qwertyuiopasdfghjklzxcvbnm,./;'[]<>?:\"{}`~!@#$%^&*()-=\\_+|";
+    Loading.SOURCE_URL = "https://github.com/honzasp/honzasp.github.io/tree/master/krt/";
     Loading.init = function($root) {
       var $main, loading;
-      $main = $("<div class='loading'>\n  <p>Your browser is busy preparing the game for you. It has to download\n  some files and generate the map. The algorithm requires a little noise,\n  which takes some time to compute.</p>\n  <div class='spinner'></div>\n  <div class='bits'></div>\n</div>");
+      $main = $("<div class='loading'>\n  <div class='info'>\n    <p>Your browser is busy preparing the game for you. It has to download\n    some files and generate the map. The algorithm requires a little noise\n    and takes some time to compute.</p>\n    <p>You can <a href=\"" + Loading.SOURCE_URL + "\" target=\"_blank\">have a\n    look</a> at the source code that is running on your computer right\n    now. It might be more interesting than the actual game!</p>\n  </div>\n  <div class='spinner'></div>\n  <div class='bits'></div>\n</div>");
       $main.appendTo($root);
       loading = {
         $main: $main,

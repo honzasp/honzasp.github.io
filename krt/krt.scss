@@ -259,16 +259,20 @@
 }
 
 #krt .loading {
-  font-family: monospace;
-  p {
+  .info {
     color: #555;
     width: 200px;
     font-size: 14px;
-    margin: 40px auto 0px;
+    margin: 30px auto 0px;
     text-align: justify;
+
+    p {
+      margin-top: 10px;
+    }
   }
 
   .spinner {
+    font-family: monospace;
     font-size: 100px;
     font-weight: bold;
     color: #444;
@@ -289,8 +293,11 @@
     }
 
     &:after {
-      content: "_";
+      content: ".";
       clear: both;
+      height: 0;
+      visibility: hidden;
+      display: block;
     }
   }
 }

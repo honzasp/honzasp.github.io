@@ -8,12 +8,19 @@ define ["jquery"], ($) ->
   Loading.BITS_SYMS = 
     "0123456789qwertyuiopasdfghjklzxcvbnm,./;'[]<>?:\"{}`~!@#$%^&*()-=\\_+|"
 
+  Loading.SOURCE_URL = "https://github.com/honzasp/honzasp.github.io/tree/master/krt/"
+
   Loading.init = ($root) ->
     $main = $ """
       <div class='loading'>
-        <p>Your browser is busy preparing the game for you. It has to download
-        some files and generate the map. The algorithm requires a little noise,
-        which takes some time to compute.</p>
+        <div class='info'>
+          <p>Your browser is busy preparing the game for you. It has to download
+          some files and generate the map. The algorithm requires a little noise
+          and takes some time to compute.</p>
+          <p>You can <a href="#{Loading.SOURCE_URL}" target="_blank">have a
+          look</a> at the source code that is running on your computer right
+          now. It might be more interesting than the actual game!</p>
+        </div>
         <div class='spinner'></div>
         <div class='bits'></div>
       </div>
