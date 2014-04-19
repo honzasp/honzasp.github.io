@@ -1,8 +1,10 @@
-define ["exports", "jquery", "game", "keycodes", "menu_players", "menu_config", "loading"],\
-(exports, $, Game, Keycodes, MenuPlayers, MenuConfig, Loading) ->
+define ["exports", "jquery", "game", "keycodes", "menu_players", "menu_config", "menu_credits", "menu_loading"],\
+(exports, $, Game, Keycodes, MenuPlayers, MenuConfig, MenuCredits, MenuLoading) ->
   Menu = exports
   Menu.Players = MenuPlayers
   Menu.Config = MenuConfig
+  Menu.Credits = MenuCredits
+  Menu.Loading = MenuLoading
 
   Menu.COLORS = 
     "yellow": "#b38a0a"
@@ -131,12 +133,15 @@ define ["exports", "jquery", "game", "keycodes", "menu_players", "menu_config", 
       <fieldset class='start'>
         <input type='button' name='start-button' value='start'>
         <input type='button' name='reset-button' value='reset settings'>
+        <input type='button' name='credits-button' value='credits'>
       </fieldset>
       """
     $start.find("input[name=start-button]").click ->
       Menu.startGame(menu)
     $start.find("input[name=reset-button]").click ->
       Menu.resetState(menu)
+    $start.find("input[name=credits-button]").click ->
+      Menu.Credits.showCredits(menu)
     $start
 
   Menu.startGame = (menu) ->
@@ -169,12 +174,12 @@ define ["exports", "jquery", "game", "keycodes", "menu_players", "menu_config", 
 
 
     menu.$main.hide()
-    loading = Loading.init(menu.$root)
+    loading = Menu.Loading.init(menu.$root)
 
     Game.init(settings,
       ((game) -> 
         menu.game = game
-        Loading.deinit(loading)
+        Menu.Loading.deinit(loading)
         Game.start(game)),
       (->
         menu.game = undefined

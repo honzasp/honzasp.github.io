@@ -115,11 +115,12 @@
       width: 150px;
       height: 35px;
       font-size: 1.3em;
-      margin: 5px 50px 0px 80px;
+      margin: 5px 0px 0px 80px;
       float: left; }
-    #krt .menu fieldset.start input[name="reset-button"] {
+    #krt .menu fieldset.start input[name="reset-button"], #krt .menu fieldset.start input[name="credits-button"] {
       display: block;
       margin-top: 10px;
+      margin-left: 50px;
       width: 100px;
       height: 25px;
       font-size: 0.8em;
@@ -209,3 +210,30 @@
     height: 0;
     visibility: hidden;
     display: block; }
+
+#krt .credits {
+  width: 400px;
+  margin: 20px auto;
+  background-color: #fff;
+  color: #000;
+  padding: 50px;
+  position: absolute;
+  top: -30px;
+  left: 0;
+  right: 0; }
+  #krt .credits a {
+    color: #000; }
+    #krt .credits a:hover {
+      color: #333; }
+  #krt .credits p, #krt .credits ul {
+    padding: 0;
+    margin: 0;
+    margin-bottom: 15px;
+    text-align: center; }
+  #krt .credits li {
+    margin-bottom: 8px; }
+  #krt .credits .controls input[name="return"] {
+    width: 80px; }
+
+#krt {
+  position: relative; }
