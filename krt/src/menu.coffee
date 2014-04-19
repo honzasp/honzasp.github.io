@@ -1,5 +1,5 @@
-define ["exports", "jquery", "game", "keycodes", "menu_players", "menu_config"],\
-(exports, $, Game, Keycodes, MenuPlayers, MenuConfig) ->
+define ["exports", "jquery", "game", "keycodes", "menu_players", "menu_config", "loading"],\
+(exports, $, Game, Keycodes, MenuPlayers, MenuConfig, Loading) ->
   Menu = exports
   Menu.Players = MenuPlayers
   Menu.Config = MenuConfig
@@ -82,11 +82,6 @@ define ["exports", "jquery", "game", "keycodes", "menu_players", "menu_config"],
       Menu.Players.buildPlayers(menu)
       Menu.buildStart(menu)
     ]
-
-    menu.$main.on "game-loading.krt", ->
-      menu.$main.find("input[name=start-button]").attr("disabled", true)
-    menu.$main.on "game-finished.krt", ->
-      menu.$main.find("input[name=start-button]").attr("disabled", false)
 
     menu.$main.appendTo(menu.$root)
 
@@ -173,14 +168,17 @@ define ["exports", "jquery", "game", "keycodes", "menu_players", "menu_config"],
           { mode: "hits", hits: state.modes.hits }
 
 
-    menu.$main.trigger("game-loading.krt")
+    menu.$main.hide()
+    loading = Loading.init(menu.$root)
+
     Game.init(settings,
       ((game) -> 
         menu.game = game
+        Loading.deinit(loading)
         Game.start(game)),
       (->
         menu.game = undefined
-        menu.$main.trigger("game-finished.krt"))
+        menu.$main.show())
     )
 
   Menu
