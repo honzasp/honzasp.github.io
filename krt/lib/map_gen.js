@@ -268,51 +268,29 @@
       return void 0;
     };
     MapGen.pointWeb = function(rng, count, width, height) {
-      var clampX, clampY, d, dx, dy, f, i, j, points, t, ux, uy, x, y, _i, _j, _k, _l, _len, _m, _ref, _ref1, _results;
-      points = (function() {
-        var _i, _results;
-        _results = [];
-        for (i = _i = 0; _i < count; i = _i += 1) {
-          _results.push({
-            x: rng.gen() * width,
-            y: rng.gen() * height
-          });
+      var a, b, halton, i, shiftA, shiftB, x, y, _i, _ref, _results;
+      halton = function(index, base) {
+        var f, i, res;
+        res = 0;
+        i = index;
+        f = 1 / base;
+        while (i > 0) {
+          res = res + f * (i % base);
+          i = Math.floor(i / base);
+          f = f / base;
         }
-        return _results;
-      })();
-      clampX = function(x) {
-        return Math.max(0, Math.min(width, x));
+        return res;
       };
-      clampY = function(y) {
-        return Math.max(0, Math.min(height, y));
-      };
-      for (t = _i = 0; _i < 10; t = _i += 1) {
-        for (i = _j = 0; _j < count; i = _j += 1) {
-          dx = points[i].x - width / 2;
-          dy = points[i].y - height / 2;
-          points[i].x -= dx * 0.01 + 5 * (rng.gen() - 0.5);
-          points[i].y -= dy * 0.01 + 5 * (rng.gen() - 0.5);
-        }
-        for (i = _k = 0; _k < count; i = _k += 1) {
-          for (j = _l = _ref = i + 1; _l < count; j = _l += 1) {
-            d = MapGen.dist(points[i], points[j]);
-            ux = dx / d;
-            uy = dy / d;
-            f = 30 / d;
-            points[i].x = clampX(points[i].x + ux * f);
-            points[i].y = clampY(points[i].y + uy * f);
-            points[j].x = clampX(points[j].x - ux * f);
-            points[j].y = clampY(points[j].y - uy * f);
-          }
-        }
-        void 0;
-      }
+      shiftA = Math.floor(rng.gen() * 100);
+      shiftB = Math.floor(rng.gen() * 100);
       _results = [];
-      for (_m = 0, _len = points.length; _m < _len; _m++) {
-        _ref1 = points[_m], x = _ref1.x, y = _ref1.y;
+      for (i = _i = 0; _i < count; i = _i += 1) {
+        a = halton(shiftA + i, 2);
+        b = halton(shiftB + i, 3);
+        _ref = rng.gen() > 0.5 ? [a, b] : [b, a], x = _ref[0], y = _ref[1];
         _results.push({
-          x: Math.floor(x),
-          y: Math.floor(y)
+          x: Math.floor(x * width),
+          y: Math.floor(y * height)
         });
       }
       return _results;

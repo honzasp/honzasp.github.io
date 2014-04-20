@@ -196,34 +196,26 @@ define ["require", "map", "perlin"], (require, Map, Perlin) ->
     undefined
 
   MapGen.pointWeb = (rng, count, width, height) ->
-    points = for i in [0...count] by 1
-      {x: rng.gen()*width, y: rng.gen()*height}
+    halton = (index, base) ->
+      res = 0
+      i = index
+      f = 1 / base
+      while i > 0
+        res = res + f * (i % base)
+        i = Math.floor(i / base)
+        f = f / base
+      res
 
-    clampX = (x) -> Math.max(0, Math.min(width, x))
-    clampY = (y) -> Math.max(0, Math.min(height, y))
-
-    for t in [0...10] by 1
-      for i in [0...count] by 1
-        dx = points[i].x - width / 2
-        dy = points[i].y - height / 2
-        points[i].x -= dx * 0.01 + 5*(rng.gen() - 0.5)
-        points[i].y -= dy * 0.01 + 5*(rng.gen() - 0.5)
-
-      for i in [0...count] by 1
-        for j in [i+1...count] by 1
-          d = MapGen.dist(points[i], points[j])
-          ux = dx / d
-          uy = dy / d
-          f = 30 / d
-          points[i].x = clampX(points[i].x + ux * f)
-          points[i].y = clampY(points[i].y + uy * f)
-          points[j].x = clampX(points[j].x - ux * f)
-          points[j].y = clampY(points[j].y - uy * f)
-
-      undefined
-
-    for {x, y} in points
-      x: Math.floor(x), y: Math.floor(y)
+    shiftA = Math.floor(rng.gen() * 100)
+    shiftB = Math.floor(rng.gen() * 100)
+    for i in [0...count] by 1
+      a = halton(shiftA + i, 2)
+      b = halton(shiftB + i, 3)
+      [x, y] = if rng.gen() > 0.5
+        [a, b]
+      else
+        [b, a]
+      {x: Math.floor(x * width), y: Math.floor(y * height)}
 
   MapGen.dist = (p1, p2) ->
     dx = p1.x - p2.x
