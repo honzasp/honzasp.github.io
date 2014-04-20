@@ -102,7 +102,7 @@
       center = {
         x: tank.pos.x,
         y: tank.pos.y,
-        angle: tank.angle + Math.PI
+        angle: game.rotateViewport ? tank.angle + Math.PI : 0
       };
       ctx = game.dom.ctx;
       ctx.save();
@@ -185,7 +185,7 @@
       return void 0;
     };
     Render.map = function(ctx, game, win, center) {
-      var east, north, radius, renderSquare, south, west, x, y, _i, _j, _ref, _ref1, _ref2, _ref3, _ref4, _ref5;
+      var east, north, radius, renderSquare, south, west, x, y, _i, _j, _ref, _ref1, _ref2, _ref3;
       if (game.rotateViewport) {
         radius = 0.5 * Math.sqrt(win.w * win.w + win.h * win.h);
         west = center.x - radius / win.scale;
@@ -193,14 +193,10 @@
         north = center.y - radius / win.scale;
         south = center.y + radius / win.scale;
       } else {
-        _ref = Render.winToMap(win, center, {
-          x: 0,
-          y: 0
-        }), west = _ref.x, north = _ref.y;
-        _ref1 = Render.winToMap(win, center, {
-          x: win.w,
-          y: win.h
-        }), east = _ref1.x, south = _ref1.y;
+        west = center.x - 0.5 * win.w / win.scale;
+        east = center.x + 0.5 * win.w / win.scale;
+        north = center.y - 0.5 * win.h / win.scale;
+        south = center.y + 0.5 * win.h / win.scale;
       }
       renderSquare = function(x, y) {
         var square;
@@ -208,24 +204,12 @@
         ctx.fillStyle = Map.squares[square].color;
         return ctx.fillRect(x, y, 1, 1);
       };
-      for (x = _i = _ref2 = Math.floor(west), _ref3 = Math.floor(east); _i <= _ref3; x = _i += 1) {
-        for (y = _j = _ref4 = Math.floor(north), _ref5 = Math.floor(south); _j <= _ref5; y = _j += 1) {
+      for (x = _i = _ref = Math.floor(west), _ref1 = Math.floor(east); _i <= _ref1; x = _i += 1) {
+        for (y = _j = _ref2 = Math.floor(north), _ref3 = Math.floor(south); _j <= _ref3; y = _j += 1) {
           renderSquare(x, y);
         }
       }
       return void 0;
-    };
-    Render.mapToWin = function(win, center, m) {
-      return {
-        x: win.scale * (m.x - center.x) + win.w * 0.5,
-        y: win.scale * (m.y - center.y) + win.h * 0.5
-      };
-    };
-    Render.winToMap = function(win, center, w) {
-      return {
-        x: center.x + (w.x - win.w * 0.5) / win.scale,
-        y: center.y + (w.y - win.h * 0.5) / win.scale
-      };
     };
     Render.stats = function(ctx, game, tank, win) {
       var coreStat, gameStat, info, startY, weapon, weaponStat;

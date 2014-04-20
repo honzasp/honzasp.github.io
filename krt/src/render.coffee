@@ -45,7 +45,9 @@ define ["map", "tank"], (Map, Tank) ->
         throw new Error("Unknown layout for #{game.playerInfos.length} players")
 
   Render.window = (game, tank, win) ->
-    center = {x: tank.pos.x, y: tank.pos.y, angle: tank.angle + Math.PI }
+    center = 
+      x: tank.pos.x, y: tank.pos.y
+      angle: if game.rotateViewport then tank.angle + Math.PI else 0
     ctx = game.dom.ctx
 
     ctx.save()
@@ -114,8 +116,10 @@ define ["map", "tank"], (Map, Tank) ->
       north = center.y - radius / win.scale
       south = center.y + radius / win.scale
     else
-      { x: west, y: north } = Render.winToMap(win, center, {x: 0, y: 0})
-      { x: east, y: south } = Render.winToMap(win, center, {x: win.w, y: win.h})
+      west = center.x - 0.5 * win.w / win.scale
+      east = center.x + 0.5 * win.w / win.scale
+      north = center.y - 0.5 * win.h / win.scale
+      south = center.y + 0.5 * win.h / win.scale
 
     renderSquare = (x, y) ->
       square = if Map.contains(game.map, x, y)
@@ -130,14 +134,6 @@ define ["map", "tank"], (Map, Tank) ->
         renderSquare(x, y)
 
     undefined
-
-  Render.mapToWin = (win, center, m) ->
-    x: win.scale * (m.x - center.x) + win.w * 0.5
-    y: win.scale * (m.y - center.y) + win.h * 0.5
-
-  Render.winToMap = (win, center, w) ->
-    x: center.x + (w.x - win.w * 0.5) / win.scale
-    y: center.y + (w.y - win.h * 0.5) / win.scale
 
   Render.stats = (ctx, game, tank, win) ->
     info = game.playerInfos[tank.index]
