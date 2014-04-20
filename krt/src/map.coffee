@@ -63,14 +63,29 @@ define [], () ->
   Map.ROCK_FAMILY_SIZE = 6
   Map.rockId = (type, i) -> 10 + 10*type + i
 
-  for t in [0...Map.ROCK_FAMILY_COUNT] by 1
-    for i in [0...Map.ROCK_FAMILY_SIZE] by 1
-      Map.squares[Map["ROCK_#{t}_#{i}"] = Map.rockId(t, i)] =
-        color: Map.ROCK_COLORS[t][i]
-        toughness: Map.ROCK_STATS[i].toughness
-        energy: Map.ROCK_STATS[i].energy
-        mass: Map.ROCK_STATS[i].mass
-        prob: Map.ROCK_STATS[i].prob
-        shotSound: Map.ROCK_STATS[i].shotSound
+  genRocks = ->
+    for t in [0...Map.ROCK_FAMILY_COUNT] by 1
+      for i in [0...Map.ROCK_FAMILY_SIZE] by 1
+        Map.squares[Map["ROCK_#{t}_#{i}"] = Map.rockId(t, i)] =
+          color: Map.ROCK_COLORS[t][i]
+          toughness: Map.ROCK_STATS[i].toughness
+          energy: Map.ROCK_STATS[i].energy
+          mass: Map.ROCK_STATS[i].mass
+          prob: Map.ROCK_STATS[i].prob
+          shotSound: Map.ROCK_STATS[i].shotSound
+    undefined
+  genRocks()
+
+  optimizeSquares = ->
+    for s in [0...256] by 1
+      if Map.squares[s]?
+        Map.squares[s].color ||= undefined
+        Map.squares[s].toughness ||= undefined
+        Map.squares[s].prob ||= undefined
+        Map.squares[s].energy ||= undefined
+        Map.squares[s].mass ||= undefined
+        Map.squares[s].shotSound ||= undefined
+    undefined
+  optimizeSquares()
 
   Map
