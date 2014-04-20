@@ -1,5 +1,5 @@
-define "exports  collisions  game  map  weapon  bullet  particle  bonus  audio".split(/\s+/),\
-       (exports, Collisions, Game, Map, Weapon, Bullet, Particle, Bonus, Audio) ->
+define "exports  collisions  game  map  weapon  tank  bullet  particle  bonus  audio".split(/\s+/),\
+       (exports, Collisions, Game, Map, Weapon, Tank, Bullet, Particle, Bonus, Audio) ->
   Update = exports
 
   Update.game = (game, t) ->
@@ -17,16 +17,16 @@ define "exports  collisions  game  map  weapon  bullet  particle  bonus  audio".
 
     for i in [0...game.tanks.length] by 1
       for j in [i+1...game.tanks.length] by 1
-        Collisions.tankTank(game.tanks[i], game.tanks[j])
+        Collisions.tankTank(game, game.tanks[i], game.tanks[j])
 
     for i in [0...game.tanks.length] by 1
-      Collisions.tankMap(game.tanks[i], game.map)
+      Collisions.tankMap(game, game.tanks[i])
 
     undefined
 
   Update.bullets = (game, t) ->
     Update.updateLive(game, game.bullets, (bullet) ->
-      Collisions.bullet(bullet, game, t)
+      Collisions.bullet(game, bullet, t)
       bullet.update(t)
     )
 
@@ -37,7 +37,7 @@ define "exports  collisions  game  map  weapon  bullet  particle  bonus  audio".
 
   Update.bonuses = (game, t) ->
     Update.updateLive(game, game.bonuses, (bonus) ->
-      Collisions.bonus(bonus, game, t)
+      Collisions.bonus(game, bonus)
       bonus.update(t)
     )
 
@@ -90,7 +90,7 @@ define "exports  collisions  game  map  weapon  bullet  particle  bonus  audio".
     undefined
 
   Update.bulletHit.tank = (game, bullet, hit) ->
-    Audio.sound(game, "hit_tank")
+    Audio.sound(game, "hit_tank", Tank.DAMAGE_SOUND_GAIN(bullet.spec.hurt))
     hit.tank.impulse(x: bullet.vel.x * bullet.spec.mass, y: bullet.vel.y * bullet.spec.mass)
     hit.tank.hurt(game, bullet.spec.hurt, bullet.owner)
     undefined
@@ -115,6 +115,12 @@ define "exports  collisions  game  map  weapon  bullet  particle  bonus  audio".
     tank.receive(game, bonus.content)
     bonus.isDead = true
     Audio.sound(game, bonus.content.getSound, Bonus.SOUND_GAIN)
+
+  Update.tankTankHit = (game, tank1, tank2, impulse) ->
+    Audio.sound(game, "hit_tank", Tank.HIT_SOUND_GAIN(impulse))
+
+  Update.tankMapHit = (game, tank, impulse) ->
+    Audio.sound(game, "hit_tank", Tank.HIT_SOUND_GAIN(impulse))
 
   Update.boom = (game, pos, spec) ->
     Audio.sound(game, spec.sound) if spec.sound?

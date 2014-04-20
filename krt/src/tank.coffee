@@ -30,7 +30,7 @@ define ["map", "weapon", "bullet", "game", "audio"], \
   Tank.FRICTION = 100
   Tank.ANGULAR_SPEED = 1.5*Math.PI
   Tank.FIRING_ANGULAR_SPEED = 0.5*Math.PI
-  Tank.BUMP_FACTOR = 0.3
+  Tank.BUMP_FACTOR = 0.5
   Tank.BULLET_DIST = 1.2
   Tank.START_ENERGY = 1000
   Tank.START_MASS = 100
@@ -45,9 +45,10 @@ define ["map", "weapon", "bullet", "game", "audio"], \
       7 + tank.energy * 0.002
     else
       1 + tank.energy * 0.002
-
   Tank.HUM_GAIN = (speed) -> 0.4*(1.1 - Math.pow(0.9, speed/5))
   Tank.HUM_PLAYBACK = (speed) -> 0.5 + Math.pow(1.1, speed/10)
+  Tank.HIT_SOUND_GAIN = (impulse) -> 0.8*(1 - Math.pow(0.97, impulse/12))
+  Tank.DAMAGE_SOUND_GAIN = (dmg) -> 0.9*(1 - Math.pow(0.65, dmg/20))
 
   Tank::change = ->
     @activeWeapon = (@activeWeapon + 1) % @weapons.length
@@ -73,7 +74,7 @@ define ["map", "weapon", "bullet", "game", "audio"], \
     @.setMass(@mass - spec.bullet.mass, game)
     @.setEnergy(@energy - spec.energy, game)
     @.impulse(x: -relVelX * spec.bullet.mass, y: -relVelY * spec.bullet.mass)
-    Audio.sound(game, spec.sound)
+    Audio.sound(game, spec.sound, Weapon.FIRE_SOUND_GAIN)
 
   Tank::hurt = (game, dmg, guilty = undefined) ->
     @.setEnergy(@energy - dmg, game, guilty)

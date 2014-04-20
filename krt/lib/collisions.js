@@ -3,8 +3,8 @@
   define(["exports", "map", "tank", "bullet", "particle", "weapon", "bonus", "update"], function(exports, Map, Tank, Bullet, Particle, Weapon, Bonus, Update) {
     var Collisions, lineMap, lineTank, solveQuad;
     Collisions = exports;
-    Collisions.tankMap = function(tank, map) {
-      var corner, edgeE, edgeN, edgeS, edgeW, isFull, pos, r, vel, x, y, _i, _j, _ref, _ref1, _ref2, _ref3;
+    Collisions.tankMap = function(game, tank) {
+      var corner, edgeE, edgeN, edgeS, edgeW, imp, isFull, map, pos, r, vel, x, y, _i, _j, _ref, _ref1, _ref2, _ref3;
       pos = {
         x: tank.pos.x,
         y: tank.pos.y
@@ -14,28 +14,34 @@
         y: tank.vel.y
       };
       r = tank.radius;
+      map = game.map;
+      imp = 0;
       edgeW = function(x, y) {
         if (y < pos.y && pos.y < y + 1 && pos.x < x && pos.x + r > x) {
           pos.x = x - r - Tank.WALL_DISTANCE;
-          return vel.x *= -Tank.BUMP_FACTOR;
+          vel.x *= -Tank.BUMP_FACTOR;
+          return imp += Math.abs(vel.x) * (1 + Tank.BUMP_FACTOR) * tank.mass;
         }
       };
       edgeE = function(x, y) {
         if (y < pos.y && pos.y < y + 1 && pos.x > x && pos.x - r < x) {
           pos.x = x + r + Tank.WALL_DISTANCE;
-          return vel.x *= -Tank.BUMP_FACTOR;
+          vel.x *= -Tank.BUMP_FACTOR;
+          return imp += Math.abs(vel.x) * (1 + Tank.BUMP_FACTOR) * tank.mass;
         }
       };
       edgeN = function(x, y) {
         if (x < pos.x && pos.x < x + 1 && pos.y < y && pos.y + r > y) {
           pos.y = y - r - Tank.WALL_DISTANCE;
-          return vel.y *= -Tank.BUMP_FACTOR;
+          vel.y *= -Tank.BUMP_FACTOR;
+          return imp += Math.abs(vel.y) * (1 + Tank.BUMP_FACTOR) * tank.mass;
         }
       };
       edgeS = function(x, y) {
         if (x < pos.x && pos.x < x + 1 && pos.y > y && pos.y - r < y) {
           pos.y = y + r + Tank.WALL_DISTANCE;
-          return vel.y *= -Tank.BUMP_FACTOR;
+          vel.y *= -Tank.BUMP_FACTOR;
+          return imp += Math.abs(vel.y) * (1 + Tank.BUMP_FACTOR) * tank.mass;
         }
       };
       corner = function(x, y, isNorth, isWest) {
@@ -47,6 +53,7 @@
         if (d.x * d.x + d.y * d.y < r * r) {
           vel.x *= -Tank.BUMP_FACTOR;
           vel.y *= -Tank.BUMP_FACTOR;
+          imp += (Math.abs(vel.x) + Math.abs(vel.y)) * (1 + Tank.BUMP_FACTOR) * tank.mass;
           if (isNorth) {
             if (isWest) {
               pos.x += d.x - Math.sqrt(r * r - d.y * d.y);
@@ -84,10 +91,13 @@
         }
       }
       tank.pos = pos;
-      return tank.vel = vel;
+      tank.vel = vel;
+      if (imp !== 0) {
+        return Update.tankMapHit(game, tank, imp);
+      }
     };
-    Collisions.tankTank = function(tank1, tank2) {
-      var d, l, mom1, mom2, momP1, momP2, r1, r2, u;
+    Collisions.tankTank = function(game, tank1, tank2) {
+      var d, l, mom1, mom2, momD1, momD2, r1, r2, u;
       d = {
         x: tank1.pos.x - tank2.pos.x,
         y: tank1.pos.y - tank2.pos.y
@@ -116,16 +126,17 @@
           x: tank2.vel.x * tank2.mass,
           y: tank2.vel.y * tank2.mass
         };
-        momP1 = mom1.x * u.y - mom1.y * u.x;
-        momP2 = mom2.x * u.y - mom2.y * u.x;
+        momD1 = mom1.x * u.x + mom1.y * u.y;
+        momD2 = mom2.x * u.x + mom2.y * u.y;
         tank1.vel = {
-          x: (momP1 * u.y + mom2.x - momP2 * u.y) / tank1.mass,
-          y: (momP1 * (-u.x) + mom2.y - momP2 * (-u.x)) / tank1.mass
+          x: (mom1.x + u.x * (momD2 - momD1)) / tank1.mass,
+          y: (mom1.y + u.y * (momD2 - momD1)) / tank1.mass
         };
-        return tank2.vel = {
-          x: (momP2 * u.y + mom1.x - momP1 * u.y) / tank2.mass,
-          y: (momP2 * (-u.x) + mom1.y - momP1 * (-u.x)) / tank2.mass
+        tank2.vel = {
+          x: (mom2.x + u.x * (momD1 - momD2)) / tank2.mass,
+          y: (mom2.y + u.y * (momD1 - momD2)) / tank2.mass
         };
+        return Update.tankTankHit(game, tank1, tank2, Math.abs(momD1) + Math.abs(momD2));
       }
     };
     lineMap = function(start, end, map) {
@@ -255,7 +266,7 @@
         return [];
       }
     };
-    Collisions.bullet = function(bullet, game, t) {
+    Collisions.bullet = function(game, bullet, t) {
       var end, map, nearestHit, start, tank, tankHit, tanks, _i, _len;
       tanks = game.tanks, map = game.map;
       start = {
@@ -286,7 +297,7 @@
       }
       return void 0;
     };
-    Collisions.bonus = function(bonus, game, t) {
+    Collisions.bonus = function(game, bonus) {
       var dx, dy, l, tank, _i, _len, _ref;
       _ref = game.tanks;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {

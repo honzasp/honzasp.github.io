@@ -32,7 +32,7 @@
     Tank.FRICTION = 100;
     Tank.ANGULAR_SPEED = 1.5 * Math.PI;
     Tank.FIRING_ANGULAR_SPEED = 0.5 * Math.PI;
-    Tank.BUMP_FACTOR = 0.3;
+    Tank.BUMP_FACTOR = 0.5;
     Tank.BULLET_DIST = 1.2;
     Tank.START_ENERGY = 1000;
     Tank.START_MASS = 100;
@@ -53,6 +53,12 @@
     };
     Tank.HUM_PLAYBACK = function(speed) {
       return 0.5 + Math.pow(1.1, speed / 10);
+    };
+    Tank.HIT_SOUND_GAIN = function(impulse) {
+      return 0.8 * (1 - Math.pow(0.97, impulse / 12));
+    };
+    Tank.DAMAGE_SOUND_GAIN = function(dmg) {
+      return 0.9 * (1 - Math.pow(0.65, dmg / 20));
     };
     Tank.prototype.change = function() {
       return this.activeWeapon = (this.activeWeapon + 1) % this.weapons.length;
@@ -88,7 +94,7 @@
         x: -relVelX * spec.bullet.mass,
         y: -relVelY * spec.bullet.mass
       });
-      return Audio.sound(game, spec.sound);
+      return Audio.sound(game, spec.sound, Weapon.FIRE_SOUND_GAIN);
     };
     Tank.prototype.hurt = function(game, dmg, guilty) {
       if (guilty == null) {

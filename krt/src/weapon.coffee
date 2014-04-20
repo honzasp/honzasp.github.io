@@ -3,6 +3,7 @@ define [], () ->
     @temperature = 0
 
   Weapon.FRAGMENT_RADIUS = 0.02
+  Weapon.FIRE_SOUND_GAIN = 0.9
 
   Weapon.MachineGun = 
     name: "machine gun"

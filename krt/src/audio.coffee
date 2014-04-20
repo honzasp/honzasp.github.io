@@ -21,6 +21,7 @@ define ["require"], (require) ->
     "shoot_mining_gun": ["shoot_mining_gun_1.wav"]
   }
   Audio.LOAD_TIMEOUT = 20
+  Audio.MIN_GAIN = 0.05
 
   Audio.supported = ->
     window.AudioContext? or window.webkitAudioContext?
@@ -86,6 +87,7 @@ define ["require"], (require) ->
 
   Audio.sound = (game, soundName, gain = 1) ->
     return unless game.audio?
+    return if gain < Audio.MIN_GAIN
     sourceNode = Audio.createSoundSource(game, soundName)
     gainNode = Audio.addGain(game, sourceNode)
     gainNode.gain.value = gain

@@ -1,8 +1,8 @@
 define \
 ["exports", "jquery", "map", "map_gen", "render", "tank", "bullet",
- "particle", "collisions", "update", "audio"], \
+ "particle", "update", "audio"], \
 (exports, $, Map, MapGen, Render, Tank, Bullet,
- Particle, Collisions, Update, Audio) ->
+ Particle, Update, Audio) ->
 
   Game = exports
   Game.MAX_GARBAGE_RATIO = 0.5

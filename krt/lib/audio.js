@@ -23,6 +23,7 @@
       "shoot_mining_gun": ["shoot_mining_gun_1.wav"]
     };
     Audio.LOAD_TIMEOUT = 20;
+    Audio.MIN_GAIN = 0.05;
     Audio.supported = function() {
       return (window.AudioContext != null) || (window.webkitAudioContext != null);
     };
@@ -119,6 +120,9 @@
         gain = 1;
       }
       if (game.audio == null) {
+        return;
+      }
+      if (gain < Audio.MIN_GAIN) {
         return;
       }
       sourceNode = Audio.createSoundSource(game, soundName);
