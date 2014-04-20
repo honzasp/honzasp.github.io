@@ -19,7 +19,7 @@
     };
     Menu.KEYS = ["forward", "backward", "left", "right", "fire", "change"];
     Menu.MAX_PLAYERS = 4;
-    Menu.STATE_VERSION = 9;
+    Menu.STATE_VERSION = 10;
     Menu.DEFAULT_STATE = function() {
       return {
         _version: Menu.STATE_VERSION,
@@ -31,6 +31,7 @@
         playerCount: 2,
         fps: 30,
         hud: true,
+        rotateViewport: false,
         nameTags: true,
         audioEnabled: false,
         soundsVolume: 100,
@@ -216,6 +217,7 @@
         fps: state.fps,
         useHud: state.hud,
         useNameTags: state.nameTags,
+        rotateViewport: state.rotateViewport,
         enableAudio: state.audioEnabled,
         soundsGain: state.soundsVolume / 100,
         playerDefs: (function() {

@@ -45,7 +45,7 @@ define ["map", "tank"], (Map, Tank) ->
         throw new Error("Unknown layout for #{game.playerInfos.length} players")
 
   Render.window = (game, tank, win) ->
-    center = tank.pos
+    center = {x: tank.pos.x, y: tank.pos.y, angle: tank.angle + Math.PI }
     ctx = game.dom.ctx
 
     ctx.save()
@@ -62,14 +62,15 @@ define ["map", "tank"], (Map, Tank) ->
 
     ctx.save()
     ctx.translate(win.w * 0.5, win.h * 0.5)
+    ctx.rotate(center.angle) if game.rotateViewport
     ctx.scale(win.scale, win.scale)
     ctx.translate(-center.x, -center.y)
     Render.map(ctx, game, win, center)
     Render.objects(ctx, game)
+    Render.nameTags(ctx, game, win, center) if game.useNameTags
     ctx.restore()
 
     Render.stats(ctx, game, tank, win)
-    Render.nameTags(ctx, game, win, center) if game.useNameTags
     ctx.restore()
 
   Render.objects = (ctx, game) ->
@@ -89,22 +90,32 @@ define ["map", "tank"], (Map, Tank) ->
   Render.nameTags = (ctx, game, win, center) ->
     for tank in game.tanks 
       name = game.playerInfos[tank.index].name
-      {x, y} = Render.mapToWin(win, center, tank.pos)
+      {x, y} = tank.pos
 
       ctx.save()
+      ctx.translate(x, y)
+      ctx.scale(1 / win.scale, 1 / win.scale)
+      ctx.rotate(-center.angle)
       ctx.fillStyle = tank.color
       ctx.font = Render.STAT_FONT
       ctx.shadowColor = Render.STAT_SHADOW_COLOR
       ctx.shadowBlur = Render.STAT_SHADOW_BLUR
       ctx.textBaseline = "bottom"
       ctx.textAlign = "center"
-      ctx.fillText(name, x, y - tank.radius*win.scale - Render.NAME_TAG_MARGIN)
+      ctx.fillText(name, 0, -tank.radius*win.scale - Render.NAME_TAG_MARGIN)
       ctx.restore()
     undefined
 
   Render.map = (ctx, game, win, center) ->
-    { x: west, y: north } = Render.winToMap(win, center, {x: 0, y: 0})
-    { x: east, y: south } = Render.winToMap(win, center, {x: win.w, y: win.h})
+    if game.rotateViewport
+      radius = 0.5*Math.sqrt(win.w*win.w + win.h*win.h)
+      west = center.x - radius / win.scale
+      east = center.x + radius / win.scale
+      north = center.y - radius / win.scale
+      south = center.y + radius / win.scale
+    else
+      { x: west, y: north } = Render.winToMap(win, center, {x: 0, y: 0})
+      { x: east, y: south } = Render.winToMap(win, center, {x: win.w, y: win.h})
 
     renderSquare = (x, y) ->
       square = if Map.contains(game.map, x, y)

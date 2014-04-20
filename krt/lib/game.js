@@ -52,6 +52,7 @@
           mode: settings.mode,
           useHud: settings.useHud,
           useNameTags: settings.useNameTags,
+          rotateViewport: settings.rotateViewport,
           onFinish: onFinish
         };
         for (_i = 0, _len = playerInfos.length; _i < _len; _i++) {

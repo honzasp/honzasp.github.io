@@ -37,6 +37,7 @@ define \
         mode: settings.mode
         useHud: settings.useHud
         useNameTags: settings.useNameTags
+        rotateViewport: settings.rotateViewport
         onFinish: onFinish
 
       for info in playerInfos

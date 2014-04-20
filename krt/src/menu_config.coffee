@@ -115,6 +115,10 @@ define ["jquery", "menu"], ($, Menu) ->
           <label><span>name tags:</span>
           <input type='checkbox' name='name-tags'></label>
         </p>
+        <p>
+          <label><span>rotate viewport:</span>
+          <input type='checkbox' name='rotate-viewport'></label>
+        </p>
       </fieldset>
       """
 
@@ -124,6 +128,8 @@ define ["jquery", "menu"], ($, Menu) ->
       menu.state.hud = $(@).is(":checked"); Menu.save(menu)
     $gfx.find("input[name=name-tags]").attr("checked", menu.state.nameTags).change ->
       menu.state.nameTags = $(@).is(":checked"); Menu.save(menu)
+    $gfx.find("input[name=rotate-viewport]").attr("checked", menu.state.rotateViewport).change ->
+      menu.state.rotateViewport = $(@).is(":checked"); Menu.save(menu)
     $gfx
 
   Config.buildAudio = (menu) ->

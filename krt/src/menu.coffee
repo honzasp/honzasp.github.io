@@ -17,7 +17,7 @@ define ["exports", "jquery", "game", "keycodes", "menu_players", "menu_config", 
     "green": "#86990a"
   Menu.KEYS = ["forward", "backward", "left", "right", "fire", "change"]
   Menu.MAX_PLAYERS = 4
-  Menu.STATE_VERSION = 9
+  Menu.STATE_VERSION = 10
 
   Menu.DEFAULT_STATE = ->
     _version: Menu.STATE_VERSION
@@ -29,6 +29,7 @@ define ["exports", "jquery", "game", "keycodes", "menu_players", "menu_config", 
     playerCount: 2
     fps: 30
     hud: true
+    rotateViewport: false
     nameTags: true
     audioEnabled: false
     soundsVolume: 100
@@ -158,6 +159,7 @@ define ["exports", "jquery", "game", "keycodes", "menu_players", "menu_config", 
       fps: state.fps
       useHud: state.hud
       useNameTags: state.nameTags
+      rotateViewport: state.rotateViewport
       enableAudio: state.audioEnabled
       soundsGain: state.soundsVolume / 100
       playerDefs: for i in [0...state.playerCount]

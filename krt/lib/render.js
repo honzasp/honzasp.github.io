@@ -99,7 +99,11 @@
     };
     Render.window = function(game, tank, win) {
       var center, ctx;
-      center = tank.pos;
+      center = {
+        x: tank.pos.x,
+        y: tank.pos.y,
+        angle: tank.angle + Math.PI
+      };
       ctx = game.dom.ctx;
       ctx.save();
       ctx.translate(win.x, win.y);
@@ -113,15 +117,18 @@
       }
       ctx.save();
       ctx.translate(win.w * 0.5, win.h * 0.5);
+      if (game.rotateViewport) {
+        ctx.rotate(center.angle);
+      }
       ctx.scale(win.scale, win.scale);
       ctx.translate(-center.x, -center.y);
       Render.map(ctx, game, win, center);
       Render.objects(ctx, game);
-      ctx.restore();
-      Render.stats(ctx, game, tank, win);
       if (game.useNameTags) {
         Render.nameTags(ctx, game, win, center);
       }
+      ctx.restore();
+      Render.stats(ctx, game, tank, win);
       return ctx.restore();
     };
     Render.objects = function(ctx, game) {
@@ -161,29 +168,40 @@
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         tank = _ref[_i];
         name = game.playerInfos[tank.index].name;
-        _ref1 = Render.mapToWin(win, center, tank.pos), x = _ref1.x, y = _ref1.y;
+        _ref1 = tank.pos, x = _ref1.x, y = _ref1.y;
         ctx.save();
+        ctx.translate(x, y);
+        ctx.scale(1 / win.scale, 1 / win.scale);
+        ctx.rotate(-center.angle);
         ctx.fillStyle = tank.color;
         ctx.font = Render.STAT_FONT;
         ctx.shadowColor = Render.STAT_SHADOW_COLOR;
         ctx.shadowBlur = Render.STAT_SHADOW_BLUR;
         ctx.textBaseline = "bottom";
         ctx.textAlign = "center";
-        ctx.fillText(name, x, y - tank.radius * win.scale - Render.NAME_TAG_MARGIN);
+        ctx.fillText(name, 0, -tank.radius * win.scale - Render.NAME_TAG_MARGIN);
         ctx.restore();
       }
       return void 0;
     };
     Render.map = function(ctx, game, win, center) {
-      var east, north, renderSquare, south, west, x, y, _i, _j, _ref, _ref1, _ref2, _ref3, _ref4, _ref5;
-      _ref = Render.winToMap(win, center, {
-        x: 0,
-        y: 0
-      }), west = _ref.x, north = _ref.y;
-      _ref1 = Render.winToMap(win, center, {
-        x: win.w,
-        y: win.h
-      }), east = _ref1.x, south = _ref1.y;
+      var east, north, radius, renderSquare, south, west, x, y, _i, _j, _ref, _ref1, _ref2, _ref3, _ref4, _ref5;
+      if (game.rotateViewport) {
+        radius = 0.5 * Math.sqrt(win.w * win.w + win.h * win.h);
+        west = center.x - radius / win.scale;
+        east = center.x + radius / win.scale;
+        north = center.y - radius / win.scale;
+        south = center.y + radius / win.scale;
+      } else {
+        _ref = Render.winToMap(win, center, {
+          x: 0,
+          y: 0
+        }), west = _ref.x, north = _ref.y;
+        _ref1 = Render.winToMap(win, center, {
+          x: win.w,
+          y: win.h
+        }), east = _ref1.x, south = _ref1.y;
+      }
       renderSquare = function(x, y) {
         var square;
         square = Map.contains(game.map, x, y) ? Map.get(game.map, x, y) : Map.VOID;

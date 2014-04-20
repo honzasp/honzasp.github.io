@@ -65,7 +65,7 @@
     };
     Config.buildGfx = function(menu) {
       var $gfx;
-      $gfx = $("<fieldset class='gfx'>\n  <legend>gfx</legend>\n  <p>\n    <label><span>frames per second:</span> \n    <input type='number' name='fps' value=''></label>\n  </p>\n  <p>\n    <label><span>head-up display:</span>\n    <input type='checkbox' name='hud'></label>\n  </p>\n  <p>\n    <label><span>name tags:</span>\n    <input type='checkbox' name='name-tags'></label>\n  </p>\n</fieldset>");
+      $gfx = $("<fieldset class='gfx'>\n  <legend>gfx</legend>\n  <p>\n    <label><span>frames per second:</span> \n    <input type='number' name='fps' value=''></label>\n  </p>\n  <p>\n    <label><span>head-up display:</span>\n    <input type='checkbox' name='hud'></label>\n  </p>\n  <p>\n    <label><span>name tags:</span>\n    <input type='checkbox' name='name-tags'></label>\n  </p>\n  <p>\n    <label><span>rotate viewport:</span>\n    <input type='checkbox' name='rotate-viewport'></label>\n  </p>\n</fieldset>");
       $gfx.find("input[name=fps]").val(menu.state.fps).change(function() {
         menu.state.fps = Menu.valFloat(this, 1, 200);
         return Menu.save(menu);
@@ -76,6 +76,10 @@
       });
       $gfx.find("input[name=name-tags]").attr("checked", menu.state.nameTags).change(function() {
         menu.state.nameTags = $(this).is(":checked");
+        return Menu.save(menu);
+      });
+      $gfx.find("input[name=rotate-viewport]").attr("checked", menu.state.rotateViewport).change(function() {
+        menu.state.rotateViewport = $(this).is(":checked");
         return Menu.save(menu);
       });
       return $gfx;
