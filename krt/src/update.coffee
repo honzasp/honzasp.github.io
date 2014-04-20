@@ -100,10 +100,11 @@ define "exports  collisions  game  map  weapon  tank  bullet  particle  bonus  a
       fragmentCount = Math.floor(bullet.spec.mass / fragment.mass)
       for i in [0...fragmentCount]
         angle = 2*Math.PI * Math.random()
+        speed = fragment.speed * (0.7 + 0.6*Math.random())
         posX = Math.sin(angle) * Weapon.FRAGMENT_RADIUS + hit.pos.x
         posY = Math.cos(angle) * Weapon.FRAGMENT_RADIUS + hit.pos.y
-        velX = Math.sin(angle) * fragment.speed
-        velY = Math.cos(angle) * fragment.speed
+        velX = Math.sin(angle) * speed
+        velY = Math.cos(angle) * speed
         bullet = new Bullet(
           {x: hit.pos.x, y: hit.pos.y},
           {x: velX, y: velY},

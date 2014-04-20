@@ -114,15 +114,16 @@
       return void 0;
     };
     Update.bulletHit.fragments = function(game, bullet, hit) {
-      var angle, fragment, fragmentCount, i, posX, posY, velX, velY, _i;
+      var angle, fragment, fragmentCount, i, posX, posY, speed, velX, velY, _i;
       if ((fragment = bullet.spec.fragment) != null) {
         fragmentCount = Math.floor(bullet.spec.mass / fragment.mass);
         for (i = _i = 0; 0 <= fragmentCount ? _i < fragmentCount : _i > fragmentCount; i = 0 <= fragmentCount ? ++_i : --_i) {
           angle = 2 * Math.PI * Math.random();
+          speed = fragment.speed * (0.7 + 0.6 * Math.random());
           posX = Math.sin(angle) * Weapon.FRAGMENT_RADIUS + hit.pos.x;
           posY = Math.cos(angle) * Weapon.FRAGMENT_RADIUS + hit.pos.y;
-          velX = Math.sin(angle) * fragment.speed;
-          velY = Math.cos(angle) * fragment.speed;
+          velX = Math.sin(angle) * speed;
+          velY = Math.cos(angle) * speed;
           bullet = new Bullet({
             x: hit.pos.x,
             y: hit.pos.y
