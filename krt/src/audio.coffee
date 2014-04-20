@@ -9,7 +9,7 @@ define ["require"], (require) ->
     "boom_tank": ["boom_tank_1.wav"]
     "get_energy": ["get_energy_1.wav"]
     "get_mass": ["get_mass_1.wav"]
-    "hit_concrete": ["hit_concrete_1.wav", "hit_concrete_2.wav"]
+    "hit_concrete": ["hit_concrete_1.wav"]
     "hit_metal": ["hit_metal_1.wav", "hit_metal_2.wav"]
     "hit_rock": ["hit_rock_1.wav", "hit_rock_2.wav"]
     "hit_tank": ["hit_tank_1.wav"]
