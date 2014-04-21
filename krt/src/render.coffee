@@ -110,18 +110,6 @@ define ["map", "tank"], (Map, Tank) ->
     undefined
 
   Render.map = (ctx, game, win, center) ->
-    if game.rotateViewport
-      radius = 0.5*Math.sqrt(win.w*win.w + win.h*win.h)
-      west = center.x - radius / win.scale
-      east = center.x + radius / win.scale
-      north = center.y - radius / win.scale
-      south = center.y + radius / win.scale
-    else
-      west = center.x - 0.5 * win.w / win.scale
-      east = center.x + 0.5 * win.w / win.scale
-      north = center.y - 0.5 * win.h / win.scale
-      south = center.y + 0.5 * win.h / win.scale
-
     renderSquare = (x, y) ->
       square = if Map.contains(game.map, x, y)
           Map.get(game.map, x, y)
@@ -130,9 +118,33 @@ define ["map", "tank"], (Map, Tank) ->
       ctx.fillStyle = Map.squares[square].color
       ctx.fillRect(x, y, 1, 1)
 
-    for x in [Math.floor(west) .. Math.floor(east)] by 1
+    if game.rotateViewport
+      horizLen = 0.5 * win.w / win.scale + Math.sqrt(2)
+      vertLen = 0.5 * win.h / win.scale + Math.sqrt(2)
+      horizX = horizLen * Math.cos(center.angle)
+      horizY = -horizLen * Math.sin(center.angle)
+      vertX = -vertLen * Math.sin(center.angle)
+      vertY = -vertLen * Math.cos(center.angle)
+      radius = 0.5 * Math.sqrt(win.w*win.w + win.h*win.h) / win.scale
+
+      for y in [Math.floor(center.y - radius) .. Math.floor(center.y + radius)] by 1
+        for x in [Math.floor(center.x - radius) .. Math.floor(center.x + radius)] by 1
+          pX = x - center.x
+          pY = y - center.y
+          a = (vertY*pX - vertX*pY) / (vertY*horizX - vertX*horizY)
+          b = (horizY*pX - horizX*pY) / (horizY*vertX - horizX*vertY)
+          if a >= -1 and a <= 1 and b >= -1 and b <= 1
+            renderSquare(x, y)
+
+    else
+      west = center.x - 0.5 * win.w / win.scale
+      east = center.x + 0.5 * win.w / win.scale
+      north = center.y - 0.5 * win.h / win.scale
+      south = center.y + 0.5 * win.h / win.scale
+
       for y in [Math.floor(north) .. Math.floor(south)] by 1
-        renderSquare(x, y)
+        for x in [Math.floor(west) .. Math.floor(east)] by 1
+          renderSquare(x, y)
 
     undefined
 
