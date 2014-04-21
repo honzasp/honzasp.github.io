@@ -4,14 +4,14 @@
     var Collisions, lineMap, lineTank, solveQuad;
     Collisions = exports;
     Collisions.tankMap = function(game, tank) {
-      var corner, edgeE, edgeN, edgeS, edgeW, imp, isFull, map, pos, r, vel, x, y, _i, _j, _ref, _ref1, _ref2, _ref3;
+      var corner, edgeE, edgeN, edgeS, edgeW, imp, isFull, map, momentum, pos, r, x, y, _i, _j, _ref, _ref1, _ref2, _ref3;
       pos = {
         x: tank.pos.x,
         y: tank.pos.y
       };
-      vel = {
-        x: tank.vel.x,
-        y: tank.vel.y
+      momentum = {
+        x: tank.momentum.x,
+        y: tank.momentum.y
       };
       r = tank.radius;
       map = game.map;
@@ -19,29 +19,29 @@
       edgeW = function(x, y) {
         if (y < pos.y && pos.y < y + 1 && pos.x < x && pos.x + r > x) {
           pos.x = x - r - Tank.WALL_DISTANCE;
-          vel.x *= -Tank.BUMP_FACTOR;
-          return imp += Math.abs(vel.x) * (1 + Tank.BUMP_FACTOR) * tank.mass;
+          momentum.x *= -Tank.BUMP_FACTOR;
+          return imp += Math.abs(momentum.x) * (1 + Tank.BUMP_FACTOR);
         }
       };
       edgeE = function(x, y) {
         if (y < pos.y && pos.y < y + 1 && pos.x > x && pos.x - r < x) {
           pos.x = x + r + Tank.WALL_DISTANCE;
-          vel.x *= -Tank.BUMP_FACTOR;
-          return imp += Math.abs(vel.x) * (1 + Tank.BUMP_FACTOR) * tank.mass;
+          momentum.x *= -Tank.BUMP_FACTOR;
+          return imp += Math.abs(momentum.x) * (1 + Tank.BUMP_FACTOR);
         }
       };
       edgeN = function(x, y) {
         if (x < pos.x && pos.x < x + 1 && pos.y < y && pos.y + r > y) {
           pos.y = y - r - Tank.WALL_DISTANCE;
-          vel.y *= -Tank.BUMP_FACTOR;
-          return imp += Math.abs(vel.y) * (1 + Tank.BUMP_FACTOR) * tank.mass;
+          momentum.y *= -Tank.BUMP_FACTOR;
+          return imp += Math.abs(momentum.y) * (1 + Tank.BUMP_FACTOR);
         }
       };
       edgeS = function(x, y) {
         if (x < pos.x && pos.x < x + 1 && pos.y > y && pos.y - r < y) {
           pos.y = y + r + Tank.WALL_DISTANCE;
-          vel.y *= -Tank.BUMP_FACTOR;
-          return imp += Math.abs(vel.y) * (1 + Tank.BUMP_FACTOR) * tank.mass;
+          momentum.y *= -Tank.BUMP_FACTOR;
+          return imp += Math.abs(momentum.y) * (1 + Tank.BUMP_FACTOR);
         }
       };
       corner = function(x, y, isNorth, isWest) {
@@ -51,9 +51,9 @@
           y: y - pos.y
         };
         if (d.x * d.x + d.y * d.y < r * r) {
-          vel.x *= -Tank.BUMP_FACTOR;
-          vel.y *= -Tank.BUMP_FACTOR;
-          imp += (Math.abs(vel.x) + Math.abs(vel.y)) * (1 + Tank.BUMP_FACTOR) * tank.mass;
+          momentum.x *= -Tank.BUMP_FACTOR;
+          momentum.y *= -Tank.BUMP_FACTOR;
+          imp += (Math.abs(momentum.x) + Math.abs(momentum.y)) * (1 + Tank.BUMP_FACTOR);
           if (isNorth) {
             if (isWest) {
               pos.x += d.x - Math.sqrt(r * r - d.y * d.y);
@@ -91,7 +91,7 @@
         }
       }
       tank.pos = pos;
-      tank.vel = vel;
+      tank.momentum = momentum;
       if (imp !== 0) {
         return Update.tankMapHit(game, tank, imp);
       }
@@ -118,23 +118,17 @@
           x: tank2.pos.x - u.x * (r2 - l / 2),
           y: tank2.pos.y - u.y * (r2 - l / 2)
         };
-        mom1 = {
-          x: tank1.vel.x * tank1.mass,
-          y: tank1.vel.y * tank1.mass
-        };
-        mom2 = {
-          x: tank2.vel.x * tank2.mass,
-          y: tank2.vel.y * tank2.mass
-        };
+        mom1 = tank1.momentum;
+        mom2 = tank2.momentum;
         momD1 = mom1.x * u.x + mom1.y * u.y;
         momD2 = mom2.x * u.x + mom2.y * u.y;
-        tank1.vel = {
-          x: (mom1.x + u.x * (momD2 - momD1)) / tank1.mass,
-          y: (mom1.y + u.y * (momD2 - momD1)) / tank1.mass
+        tank1.momentum = {
+          x: mom1.x + u.x * (momD2 - momD1),
+          y: mom1.y + u.y * (momD2 - momD1)
         };
-        tank2.vel = {
-          x: (mom2.x + u.x * (momD1 - momD2)) / tank2.mass,
-          y: (mom2.y + u.y * (momD1 - momD2)) / tank2.mass
+        tank2.momentum = {
+          x: mom2.x + u.x * (momD1 - momD2),
+          y: mom2.y + u.y * (momD1 - momD2)
         };
         return Update.tankTankHit(game, tank1, tank2, Math.abs(momD1) + Math.abs(momD2));
       }

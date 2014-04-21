@@ -83,10 +83,11 @@
       return game.callback();
     };
     Game.createTank = function(game, playerInfo) {
-      var color, hum, idx, x, y, _ref;
+      var angle, color, hum, idx, x, y, _ref;
       idx = playerInfo.index, (_ref = playerInfo.base, x = _ref.x, y = _ref.y), color = playerInfo.color;
       hum = Audio.createHum(game, "hum_tank");
-      return new Tank(idx, x + MapGen.BASE_SIZE / 2, y + MapGen.BASE_SIZE / 2, 0, color, hum);
+      angle = Math.random() * 2 * Math.PI;
+      return new Tank(idx, x + MapGen.BASE_SIZE / 2, y + MapGen.BASE_SIZE / 2, angle, color, hum);
     };
     Game.tankDestroyed = function(game, index, guilty) {
       if (guilty == null) {

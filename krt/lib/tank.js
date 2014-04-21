@@ -9,10 +9,11 @@
         y: y
       };
       this.angle = angle;
-      this.vel = {
+      this.momentum = {
         x: 0,
         y: 0
       };
+      this.angMomentum = 0;
       this.acc = 0;
       this.rot = 0;
       this.firing = false;
@@ -30,8 +31,9 @@
     Tank.WALL_DISTANCE = 0.01;
     Tank.FORCE = 1500;
     Tank.FRICTION = 100;
-    Tank.ANGULAR_SPEED = 1.5 * Math.PI;
-    Tank.FIRING_ANGULAR_SPEED = 0.5 * Math.PI;
+    Tank.TORQUE = 700;
+    Tank.FIRING_TORQUE = 300;
+    Tank.ANGULAR_FRICTION = 150;
     Tank.BUMP_FACTOR = 0.5;
     Tank.BULLET_DIST = 1.2;
     Tank.START_ENERGY = 1000;
@@ -84,8 +86,8 @@
         x: posX,
         y: posY
       }, {
-        x: this.vel.x + relVelX,
-        y: this.vel.y + relVelY
+        x: this.momentum.x / this.mass + relVelX,
+        y: this.momentum.y / this.mass + relVelY
       }, spec.bullet, this.index));
       weapon.temperature = spec.cooldown;
       this.setMass(this.mass - spec.bullet.mass, game);
@@ -149,11 +151,11 @@
       }
     };
     Tank.prototype.impulse = function(imp) {
-      this.vel.x += imp.x / this.mass;
-      return this.vel.y += imp.y / this.mass;
+      this.momentum.x += imp.x;
+      return this.momentum.y += imp.y;
     };
     Tank.prototype.update = function(game, t) {
-      var forceX, forceY, speed, time, weapon, _i, _len, _ref;
+      var angVel, momentOfInertia, speed, time, torque, velX, velY, weapon, _i, _len, _ref;
       _ref = this.weapons;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         weapon = _ref[_i];
@@ -167,21 +169,23 @@
         this.acc = 0;
         this.rot = 0;
       }
-      this.pos.x += this.vel.x * t;
-      this.pos.y += this.vel.y * t;
-      forceX = -this.vel.x * Tank.FRICTION + this.acc * Math.sin(this.angle) * Tank.FORCE;
-      forceY = -this.vel.y * Tank.FRICTION + this.acc * Math.cos(this.angle) * Tank.FORCE;
-      this.vel.x += forceX * t / this.mass;
-      this.vel.y += forceY * t / this.mass;
+      velX = this.momentum.x / this.mass;
+      velY = this.momentum.y / this.mass;
+      this.pos.x += velX * t;
+      this.pos.y += velY * t;
+      this.momentum.x += (-velX * Tank.FRICTION + this.acc * Math.sin(this.angle) * Tank.FORCE) * t;
+      this.momentum.y += (-velY * Tank.FRICTION + this.acc * Math.cos(this.angle) * Tank.FORCE) * t;
       if (this.firing) {
-        this.angle += this.rot * Tank.FIRING_ANGULAR_SPEED * t;
         this.fire(game);
-      } else {
-        this.angle += this.rot * Tank.ANGULAR_SPEED * t;
       }
+      momentOfInertia = 0.5 * this.mass * this.radius * this.radius;
+      angVel = this.angMomentum / momentOfInertia;
+      torque = this.rot * (this.firing ? Tank.FIRING_TORQUE : Tank.TORQUE) - angVel * Tank.ANGULAR_FRICTION;
+      this.angMomentum += torque * t;
+      this.angle += angVel * t;
       if (this.hum != null) {
         time = Audio.currentTime(game);
-        speed = Math.sqrt(this.vel.x * this.vel.x + this.vel.y * this.vel.y);
+        speed = Math.sqrt(velX * velX + velY * velY);
         this.hum.gainNode.gain.value = Tank.HUM_GAIN(speed);
         this.hum.sourceNode.playbackRate.value = Tank.HUM_PLAYBACK(speed);
       }

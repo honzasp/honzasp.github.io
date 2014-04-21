@@ -4,7 +4,8 @@ define ["map", "weapon", "bullet", "game", "audio"], \
     @index = idx
     @pos = {x, y}
     @angle = angle
-    @vel = {x: 0, y: 0}
+    @momentum = {x: 0, y: 0}
+    @angMomentum = 0
     @acc = 0
     @rot = 0
     @firing = false
@@ -28,8 +29,9 @@ define ["map", "weapon", "bullet", "game", "audio"], \
   Tank.WALL_DISTANCE = 0.01
   Tank.FORCE = 1500
   Tank.FRICTION = 100
-  Tank.ANGULAR_SPEED = 1.5*Math.PI
-  Tank.FIRING_ANGULAR_SPEED = 0.5*Math.PI
+  Tank.TORQUE = 700
+  Tank.FIRING_TORQUE = 300
+  Tank.ANGULAR_FRICTION = 150
   Tank.BUMP_FACTOR = 0.5
   Tank.BULLET_DIST = 1.2
   Tank.START_ENERGY = 1000
@@ -67,7 +69,7 @@ define ["map", "weapon", "bullet", "game", "audio"], \
 
     game.bullets.push(new Bullet(
       {x: posX, y: posY},
-      {x: @vel.x + relVelX, y: @vel.y + relVelY},
+      {x: @momentum.x/@mass + relVelX, y: @momentum.y/@mass + relVelY},
       spec.bullet, @index))
 
     weapon.temperature = spec.cooldown
@@ -109,8 +111,8 @@ define ["map", "weapon", "bullet", "game", "audio"], \
       @exploding = Tank.EXPLODING_TIME
 
   Tank::impulse = (imp) ->
-    @vel.x += imp.x / @mass
-    @vel.y += imp.y / @mass
+    @momentum.x += imp.x
+    @momentum.y += imp.y
 
   Tank::update = (game, t) ->
     for weapon in @weapons
@@ -122,22 +124,25 @@ define ["map", "weapon", "bullet", "game", "audio"], \
       @acc = 0
       @rot = 0
 
-    @pos.x += @vel.x * t
-    @pos.y += @vel.y * t
-    forceX = -@vel.x * Tank.FRICTION + @acc * Math.sin(@angle) * Tank.FORCE
-    forceY = -@vel.y * Tank.FRICTION + @acc * Math.cos(@angle) * Tank.FORCE
-    @vel.x += forceX * t / @mass
-    @vel.y += forceY * t / @mass
+    velX = @momentum.x / @mass
+    velY = @momentum.y / @mass
+    @pos.x += velX * t
+    @pos.y += velY * t
+    @momentum.x += (-velX * Tank.FRICTION + @acc * Math.sin(@angle) * Tank.FORCE) * t
+    @momentum.y += (-velY * Tank.FRICTION + @acc * Math.cos(@angle) * Tank.FORCE) * t
 
     if @firing
-      @angle += @rot * Tank.FIRING_ANGULAR_SPEED * t
       @.fire(game)
-    else
-      @angle += @rot * Tank.ANGULAR_SPEED * t
+
+    momentOfInertia = 0.5 * @mass * @radius * @radius
+    angVel = @angMomentum / momentOfInertia
+    torque = @rot * (if @firing then Tank.FIRING_TORQUE else Tank.TORQUE) - angVel*Tank.ANGULAR_FRICTION
+    @angMomentum += torque * t
+    @angle += angVel * t
 
     if @hum?
       time = Audio.currentTime(game)
-      speed = Math.sqrt(@vel.x * @vel.x + @vel.y * @vel.y)
+      speed = Math.sqrt(velX*velX + velY*velY)
       @hum.gainNode.gain.value = Tank.HUM_GAIN(speed)
       @hum.sourceNode.playbackRate.value = Tank.HUM_PLAYBACK(speed)
 

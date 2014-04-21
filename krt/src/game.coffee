@@ -62,7 +62,8 @@ define \
   Game.createTank = (game, playerInfo) ->
     {index: idx, base: {x, y}, color} = playerInfo
     hum = Audio.createHum(game, "hum_tank")
-    new Tank(idx, x+MapGen.BASE_SIZE/2, y+MapGen.BASE_SIZE/2, 0, color, hum)
+    angle = Math.random() * 2*Math.PI
+    new Tank(idx, x+MapGen.BASE_SIZE/2, y+MapGen.BASE_SIZE/2, angle, color, hum)
 
   Game.tankDestroyed = (game, index, guilty = undefined) ->
     game.playerInfos[guilty].hits += 1 if guilty?

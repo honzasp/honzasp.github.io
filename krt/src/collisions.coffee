@@ -3,7 +3,7 @@ define ["exports", "map", "tank", "bullet", "particle", "weapon", "bonus", "upda
   Collisions = exports
   Collisions.tankMap = (game, tank) ->
     pos = {x: tank.pos.x, y: tank.pos.y}
-    vel = {x: tank.vel.x, y: tank.vel.y}
+    momentum = {x: tank.momentum.x, y: tank.momentum.y}
     r = tank.radius
     map = game.map
     imp = 0
@@ -11,30 +11,30 @@ define ["exports", "map", "tank", "bullet", "particle", "weapon", "bonus", "upda
     edgeW = (x, y) ->
       if y < pos.y and pos.y < y + 1 and pos.x < x and pos.x + r > x
         pos.x = x - r - Tank.WALL_DISTANCE
-        vel.x *= -Tank.BUMP_FACTOR
-        imp += Math.abs(vel.x) * (1 + Tank.BUMP_FACTOR) * tank.mass
+        momentum.x *= -Tank.BUMP_FACTOR
+        imp += Math.abs(momentum.x) * (1 + Tank.BUMP_FACTOR)
     edgeE = (x, y) ->
       if y < pos.y and pos.y < y + 1 and pos.x > x and pos.x - r < x
         pos.x = x + r + Tank.WALL_DISTANCE
-        vel.x *= -Tank.BUMP_FACTOR
-        imp += Math.abs(vel.x) * (1 + Tank.BUMP_FACTOR) * tank.mass
+        momentum.x *= -Tank.BUMP_FACTOR
+        imp += Math.abs(momentum.x) * (1 + Tank.BUMP_FACTOR)
     edgeN = (x, y) ->
       if x < pos.x and pos.x < x + 1 and pos.y < y and pos.y + r > y
         pos.y = y - r - Tank.WALL_DISTANCE
-        vel.y *= -Tank.BUMP_FACTOR
-        imp += Math.abs(vel.y) * (1 + Tank.BUMP_FACTOR) * tank.mass
+        momentum.y *= -Tank.BUMP_FACTOR
+        imp += Math.abs(momentum.y) * (1 + Tank.BUMP_FACTOR)
     edgeS = (x, y) ->
       if x < pos.x and pos.x < x + 1 and pos.y > y and pos.y - r < y
         pos.y = y + r + Tank.WALL_DISTANCE
-        vel.y *= -Tank.BUMP_FACTOR
-        imp += Math.abs(vel.y) * (1 + Tank.BUMP_FACTOR) * tank.mass
+        momentum.y *= -Tank.BUMP_FACTOR
+        imp += Math.abs(momentum.y) * (1 + Tank.BUMP_FACTOR)
 
     corner = (x, y, isNorth, isWest) ->
       d = {x: x - pos.x, y: y - pos.y}
       if d.x * d.x + d.y * d.y < r*r
-        vel.x *= -Tank.BUMP_FACTOR
-        vel.y *= -Tank.BUMP_FACTOR
-        imp += (Math.abs(vel.x) + Math.abs(vel.y)) * (1 + Tank.BUMP_FACTOR) * tank.mass
+        momentum.x *= -Tank.BUMP_FACTOR
+        momentum.y *= -Tank.BUMP_FACTOR
+        imp += (Math.abs(momentum.x) + Math.abs(momentum.y)) * (1 + Tank.BUMP_FACTOR)
 
         if isNorth 
           if isWest
@@ -67,7 +67,7 @@ define ["exports", "map", "tank", "bullet", "particle", "weapon", "bonus", "upda
           corner(x+1, y+1, false, false)
 
     tank.pos = pos
-    tank.vel = vel
+    tank.momentum = momentum
     if imp != 0
       Update.tankMapHit(game, tank, imp)
 
@@ -86,17 +86,17 @@ define ["exports", "map", "tank", "bullet", "particle", "weapon", "bonus", "upda
         x: tank2.pos.x - u.x * (r2-l/2)
         y: tank2.pos.y - u.y * (r2-l/2)
 
-      mom1 = {x: tank1.vel.x * tank1.mass, y: tank1.vel.y * tank1.mass}
-      mom2 = {x: tank2.vel.x * tank2.mass, y: tank2.vel.y * tank2.mass}
+      mom1 = tank1.momentum
+      mom2 = tank2.momentum
       momD1 = mom1.x * u.x + mom1.y * u.y
       momD2 = mom2.x * u.x + mom2.y * u.y
 
-      tank1.vel =
-        x: (mom1.x + u.x*(momD2 - momD1)) / tank1.mass
-        y: (mom1.y + u.y*(momD2 - momD1)) / tank1.mass
-      tank2.vel =
-        x: (mom2.x + u.x*(momD1 - momD2)) / tank2.mass
-        y: (mom2.y + u.y*(momD1 - momD2)) / tank2.mass
+      tank1.momentum =
+        x: mom1.x + u.x*(momD2 - momD1)
+        y: mom1.y + u.y*(momD2 - momD1)
+      tank2.momentum =
+        x: mom2.x + u.x*(momD1 - momD2)
+        y: mom2.y + u.y*(momD1 - momD2)
 
       Update.tankTankHit(game, tank1, tank2, Math.abs(momD1) + Math.abs(momD2))
 
