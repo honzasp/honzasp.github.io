@@ -186,7 +186,7 @@
       return void 0;
     };
     Render.map = function(ctx, game, win, center) {
-      var a, b, east, horizLen, horizX, horizY, north, pX, pY, radius, renderSquare, south, vertLen, vertX, vertY, west, x, y, _i, _j, _k, _l, _ref, _ref1, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7;
+      var a, b, east, horizLen, horizX, horizY, lim, north, pX, pY, radius, renderSquare, south, vertLen, vertX, vertY, west, x, y, _i, _j, _k, _l, _ref, _ref1, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7;
       renderSquare = function(x, y) {
         var square;
         square = Map.contains(game.map, x, y) ? Map.get(game.map, x, y) : Map.VOID;
@@ -200,14 +200,15 @@
         horizY = -horizLen * Math.sin(center.angle);
         vertX = -vertLen * Math.sin(center.angle);
         vertY = -vertLen * Math.cos(center.angle);
+        lim = Math.abs(vertY * horizX - vertX * horizY);
         radius = 0.5 * Math.sqrt(win.w * win.w + win.h * win.h) / win.scale;
         for (y = _i = _ref = Math.floor(center.y - radius), _ref1 = Math.floor(center.y + radius); _i <= _ref1; y = _i += 1) {
           for (x = _j = _ref2 = Math.floor(center.x - radius), _ref3 = Math.floor(center.x + radius); _j <= _ref3; x = _j += 1) {
             pX = x - center.x;
             pY = y - center.y;
-            a = (vertY * pX - vertX * pY) / (vertY * horizX - vertX * horizY);
-            b = (horizY * pX - horizX * pY) / (horizY * vertX - horizX * vertY);
-            if (a >= -1 && a <= 1 && b >= -1 && b <= 1) {
+            a = vertY * pX - vertX * pY;
+            b = horizY * pX - horizX * pY;
+            if (a >= -lim && a <= lim && b >= -lim && b <= lim) {
               renderSquare(x, y);
             }
           }

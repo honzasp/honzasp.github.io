@@ -125,15 +125,16 @@ define ["map", "tank"], (Map, Tank) ->
       horizY = -horizLen * Math.sin(center.angle)
       vertX = -vertLen * Math.sin(center.angle)
       vertY = -vertLen * Math.cos(center.angle)
+      lim = Math.abs(vertY*horizX - vertX*horizY)
       radius = 0.5 * Math.sqrt(win.w*win.w + win.h*win.h) / win.scale
 
       for y in [Math.floor(center.y - radius) .. Math.floor(center.y + radius)] by 1
         for x in [Math.floor(center.x - radius) .. Math.floor(center.x + radius)] by 1
           pX = x - center.x
           pY = y - center.y
-          a = (vertY*pX - vertX*pY) / (vertY*horizX - vertX*horizY)
-          b = (horizY*pX - horizX*pY) / (horizY*vertX - horizX*vertY)
-          if a >= -1 and a <= 1 and b >= -1 and b <= 1
+          a = vertY*pX - vertX*pY
+          b = horizY*pX - horizX*pY
+          if a >= -lim and a <= lim and b >= -lim and b <= lim
             renderSquare(x, y)
 
     else
