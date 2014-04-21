@@ -1,3 +1,4 @@
+"use strict"
 define [], () ->
   Weapon = (@spec) ->
     @temperature = 0

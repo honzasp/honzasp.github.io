@@ -1,3 +1,4 @@
+"use strict"
 define ["exports", "jquery", "game", "keycodes", "menu_players", "menu_config", "menu_credits", "menu_loading"],\
 (exports, $, Game, Keycodes, MenuPlayers, MenuConfig, MenuCredits, MenuLoading) ->
   Menu = exports

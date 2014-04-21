@@ -1,3 +1,4 @@
+"use strict"
 define ["exports", "map", "tank", "bullet", "particle", "weapon", "bonus", "update"], \
 (exports, Map, Tank, Bullet, Particle, Weapon, Bonus, Update) ->
   Collisions = exports

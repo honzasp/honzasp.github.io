@@ -1,3 +1,4 @@
+"use strict"
 define [], () ->
   Map = {}
   Map.init = (width, height) ->

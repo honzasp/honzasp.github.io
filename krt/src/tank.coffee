@@ -1,3 +1,4 @@
+"use strict"
 define ["map", "weapon", "bullet", "game", "audio"], \
         (Map,   Weapon,   Bullet,   Game,   Audio) ->
   Tank = (idx, x, y, angle, color, hum) ->

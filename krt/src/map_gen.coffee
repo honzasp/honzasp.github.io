@@ -1,3 +1,4 @@
+"use strict"
 define ["require", "map", "perlin"], (require, Map, Perlin) ->
   MapGen = {}
 

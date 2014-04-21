@@ -1,3 +1,4 @@
+"use strict"
 define ["require"], (require) ->
   Audio = {}
 

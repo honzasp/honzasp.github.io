@@ -1,3 +1,4 @@
+"use strict"
 define [], () ->
   Bullet = (@pos, @vel, @spec, @owner = undefined) ->
     @time = @spec.time

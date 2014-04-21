@@ -1,3 +1,4 @@
+"use strict"
 define ["jquery", "menu"], ($, Menu) ->
   Players = {}
 

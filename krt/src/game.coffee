@@ -1,3 +1,4 @@
+"use strict"
 define \
 ["exports", "jquery", "map", "map_gen", "render", "tank", "bullet",
  "particle", "update", "audio"], \

@@ -1,3 +1,4 @@
+"use strict"
 define "exports  collisions  game  map  weapon  tank  bullet  particle  bonus  audio".split(/\s+/),\
        (exports, Collisions, Game, Map, Weapon, Tank, Bullet, Particle, Bonus, Audio) ->
   Update = exports

@@ -1,3 +1,4 @@
+"use strict"
 self.onmessage = (evt) ->
   importScripts("../vendor/require.js")
   require.config
