@@ -1,14 +1,14 @@
-* {
-	margin: 0;
-	padding: 0;
+html.fishy-play body {
+  /*background-color: #bfddff;*/
 }
 
 #fishy {
 	position: relative;
+  margin: 0 auto;
 	cursor: default;
 	background-color: #bfddff;
-	font-family: sans-serif;
 	color: #1d4d83;
+  border: 1px solid #1d4d83;
 }
 
 #fishy canvas {

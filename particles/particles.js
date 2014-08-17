@@ -383,14 +383,14 @@ $(document).ready(function() {
 		element.append(canvas);
 
 		if(!canvas[0].getContext) {
-			element.html("Tvůj prohlížeč bohužel nepodporuje značku canvas");
+			element.html("Unfortunately, your browser does not seem to support canvas");
 			return;
 		}
 
 		var div = $(".app");
-		var width = parseInt(div.css("width")) 
-			- parseInt(div.css("marginLeft"))
-			- parseInt(div.css("marginRight"));
+		var width = parseInt(div.css("width"));
+			//- parseInt(div.css("marginLeft"))
+			//- parseInt(div.css("marginRight"));
 		var height = width * 3/5;
 
 		canvas[0].width = width;
@@ -399,7 +399,7 @@ $(document).ready(function() {
 
 		var ctx = canvas[0].getContext('2d');
 		if(!ctx) {
-			element.html("Nepovedlo se získat 2D kreslící kontext canvasu");
+			element.html("Failed to get 2D drawing context from canvas");
 			return;
 		}
 
@@ -409,31 +409,27 @@ $(document).ready(function() {
 		world.addParticle(new Particle(width / 2 + 50, height / 2, 0, -30));
 
 		/* formular pod canvasem */
-		var htmlForm = $("<form>" +
+		var htmlForm = $("<form class='controls'>" +
 			"<div>" +
-			"<label for='whatAdd'>Přidává se</label>" +
+			"<label for='whatAdd'>Add: </label>" +
 			"<select id='whatAdd'>" + 
-			"<option value='particle'>Částice</option>" +
-			"<option value='well'>Studna</option>" +
+			"<option value='particle'>Particle</option>" +
+			"<option value='well'>Well</option>" +
 			"</select>" +
 			"</div>" +
 
 			"<div>" +
-			"<button type='button' id='deleteParticle'>Smazat částici</button>" +
-			"<button type='button' id='deleteWell'>Smazat studnu</button>" +
-			"</div>" +
+			"<button type='button' id='deleteParticle'>Delete particle</button>" +
+			"<button type='button' id='deleteWell'>Delete well</button>" +
 
-			"<div>" +
-			"<button type='button' id='randomParticle'>Náhodná částice</button>" +
-			"<button type='button' id='randomWell'>Náhodná studna</button>" +
-			"</div>" +
+			"<button type='button' id='randomParticle'>Random particle</button>" +
+			"<button type='button' id='randomWell'>Random well</button>" +
 
-			"<div>" +
-			"<button type='button' id='clear'>Vyčistit</button>" +
+			"<button type='button' id='clear'>Clear</button>" +
 			"</div>" +
 
 			"<div>" + 
-			"<label for='checkBounds'>Držet částice uvnitř světa?</label>" +
+			"<label for='checkBounds'>Keep particles inside?</label>" +
 			"<input type='checkbox' id='checkBounds' checked='checked'>" +
 			"</div>" +
 

@@ -1,11 +1,25 @@
 ---
-layout: page
+id: krt-about
+layout: experiment
 title: Krt
-color: gray
-stylesheet: krt.css
+about_url: "/krt"
+play_url: "/krt/play.html"
+stylesheet: "/krt/krt.css"
 ---
 
-<script data-main="lib/main" src="vendor/require.js"></script>
+<div id="content">
+  <p><strong>Krt</strong> is one of the largest JavaScript-based games I have
+    made.  Players engage in a&nbsp;battle of circular tanks, shooting both the
+    opponents to receive points and the blocky surroundings to supply them with
+    energy and mass vital for survival.</p>
 
-<div id="krt">
+  <p>The game makes use of many cutting-edge Web APIs, notably Audio API and
+    Web Workers, to get as much as possible from modern browsers.</p>
+
+  <p>Of possible interest is also the game physics, detecting and solving the
+    collisions of the grid and the objects, and the noise algorithm used to
+    generate unlimited amount of random maps. This algorithm can be executed
+    in a&nbsp;background thread, speeding up the game initialization.</p>
+
+  <div class="enter"><a href="/krt/play.html">Play Krt</a></div>
 </div>

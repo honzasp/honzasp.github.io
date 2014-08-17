@@ -1,9 +1,3 @@
-#header {
-  width: 600px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
 #krt .menu {
   width: 600px;
   margin: 0 auto;
@@ -13,6 +7,10 @@
   * {
     margin: 0;
     padding: 0;
+  }
+
+  li {
+    list-style-type: none;
   }
 
   input, select {
@@ -85,7 +83,6 @@
     legend {
       margin-left: 8px;
       padding: 2px 5px;
-      background-color: #ccc;
       font-weight: bold;
     }
   }
@@ -165,7 +162,7 @@
 
     input[name="start-button"] {
       display: block;
-      width: 150px;
+      min-width: 150px;
       height: 35px;
       font-size: 1.3em;
       margin: 5px 0px 0px 80px;
@@ -175,7 +172,7 @@
       display: block;
       margin-top: 10px;
       margin-left: 50px;
-      width: 100px;
+      min-width: 100px;
       height: 25px;
       font-size: 0.8em;
       float: left;

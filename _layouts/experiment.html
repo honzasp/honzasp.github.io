@@ -1,28 +1,27 @@
 <!DOCTYPE html>
-<html lang="en" class="{{ page.id }}">
+<html lang="en" class="experiment {{ page.id }}">
   <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <link href='http://fonts.googleapis.com/css?family=Exo+2:400,200&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="/style/main.css">
-    <title>Jan Špaček{% if page.title %} &mdash; {{ page.title }}{% endif %}</title>
+    <link rel="stylesheet" href="{{ page.stylesheet }}">
+    <title>{{ page.title }}</title>
   </head>
 
   <body>
     <div id="main-header">
-      <h1 class="main-title">Jan Špaček</h1>
+      <h1 class="main-title">{{ page.title }}</h1>
       <div class="main-menu">
         <ul>
-          <li><a href="/">home</a></li>
+          <li><a href="{{ page.play_url }}">play {{ page.title }}</a></li>
           <li><a href="/playground.html">playground</a></li>
-          <li><a href="/about.html">about</a></li>
+          <li><a href="{{ page.about_url }}">about {{ page.title }}</a></li>
         </ul>
       </div>
     </div>
 
-    <div id="content">
 {{ content }}
-    </div>
   </body>
 </html>
 
