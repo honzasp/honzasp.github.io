@@ -15,19 +15,18 @@ body {
 a {
   text-decoration: underline;
   color: #000;
-  &:hover { color: #444; }
-  &:active { color: #777; }
+  &:hover { color: #333; }
 }
 
 h1,h2,h3,h4,h5,h6 {
   font-weight: 200;
   text-align: center;
-  margin-top: 1.0em;
+  margin-top: 1.2em;
 }
 
 @for $i from 1 through 6 {
   h#{$i} {
-    font-size: 1.5em - 0.1em * $i; 
+    font-size: 1.7em - 0.2em * $i; 
   }
 }
 
@@ -79,8 +78,9 @@ h1,h2,h3,h4,h5,h6 {
   margin: 1em auto 0;
   width: $page-width;
   text-align: justify;
+  color: #000;
 
-  h1,h2,h3,h4,h5,h6, p, ul,ol,li {
+  h1,h2,h3,h4,h5,h6, p, ul,ol,li  {
     margin-bottom: 0.35em;
   }
 
@@ -88,6 +88,12 @@ h1,h2,h3,h4,h5,h6 {
     margin-left: 1.5em;
     list-style-type: square;
     list-style-position: outside;
+  }
+
+  li {
+    h1,h2,h3,h4,h5,h6 {
+      text-align: left;
+    }
   }
 
   .enter {
@@ -123,8 +129,10 @@ h1,h2,h3,h4,h5,h6 {
       }
     }
 
-    .row {
+    .row:after {
+      content: " ";
       clear: both;
+      display: table;
     }
   }
 }
