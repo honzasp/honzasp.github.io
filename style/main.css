@@ -109,3 +109,17 @@ h6 {
     content: " ";
     clear: both;
     display: table; }
+
+#footer {
+  width: 420px;
+  margin: 30px auto 40px;
+  font-style: italic;
+  font-size: 0.8em;
+  text-align: right; }
+  #footer, #footer a {
+    color: #555555; }
+
+body.home h2 {
+  margin-top: 0;
+  font-size: 150px;
+  color: #555; }

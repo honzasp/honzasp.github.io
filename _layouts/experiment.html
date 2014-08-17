@@ -1,30 +1,13 @@
 <!DOCTYPE html>
-<html lang="en" class="experiment {{ page.id }}">
+<html lang="en">
   <head>
-    <meta charset="utf-8">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <link href='http://fonts.googleapis.com/css?family=Exo+2:300,200,300italic&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" href="/style/main.css">
-    <link rel="stylesheet" href="{{ page.stylesheet }}">
-    <title>{{ page.title }}</title>
+{% include html_header.html %}
   </head>
 
   <body>
-    <div id="main-header">
-      <h1 class="main-title">Jan Špaček</h1>
-      <ul class="main-menu">
-        <li><a href="/">home</a></li>
-        <li><a href="/playground.html">playground</a></li>
-        <li><a href="/about.html">about</a></li>
-      </ul>
-      <h1 class="sub-title">{{ page.title }}</h1>
-      <ul class="sub-menu">
-        <li><a href="{{ page.about_url }}">about {{ page.title }}</a></li>
-        <li><a href="{{ page.play_url }}">play {{ page.title }}</a></li>
-      </ul>
-    </div>
-
+{% include main_header.html %}
 {{ content }}
+{% include footer.html %}
   </body>
 </html>
 

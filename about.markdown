@@ -2,19 +2,20 @@
 id: about
 layout: page
 title: About
+menu: about
 ---
 
-Hi! I am a&nbsp;high school student from [Ostrava, Czech
+I am a&nbsp;high school student from [Ostrava, Czech
 Republic](https://www.google.com/maps/place/Ostrava,+Czech+Republic/@49.8786272,16.9643538,6z/),
 who enjoys both the theory and the practice of computer programming.
 
-## Basic information
+## Basic information {#basic-information}
 
 My name is Jan Špaček /jan ʃpatʃɛk/. You can find me on GitHub as
 [@honzasp](https://github.com/honzasp) or you can [send me an
 email](mailto:patek.mail@gmail.com).
 
-## Work
+## Work {#work}
 
 There is a list of some projects I have done that do not fit in the [playground
 section](/playground.html) of this site. Unfortunately, most of them are only
@@ -23,8 +24,9 @@ available in Czech.
 - [Website of Eva Špačková](http://homel.vsb.cz/~spa184/). I created the whole
   site using Jekyll and it is continually maintained and updated.
 
-- [A paper about functional programming](http://honzasp.github.io/funsp/), which
-  participated in a Czech competition [SOČ](http://www.soc.cz).
+- [A paper about functional programming](http://honzasp.github.io/funsp/) (also
+  [in PDF](https://github.com/honzasp/funsp/blob/master/pdfs/soc2.pdf?raw=true)),
+  which participated in a Czech competition [SOČ](http://www.soc.cz).
 
 - [A biochemistry project](/files/glucosis.pdf) about glucose -- glycolysis,
   glycogenesis and citric-acid cycle, where I described the enzymes and
@@ -34,9 +36,9 @@ available in Czech.
     in our school. I designed and created the whole painting, mostly in my free
     time, in May and June 2013.
 
-## Competitions
+## Competitions {#competitions}
 
-There are some contest where I competed with good results. This list contains
+There are some contests where I managed to get good results. This list contains
 only those places which can be considered to be successes. Some of the
 competitions were regional (Czech regions have about 1&nbsp;M people) and some
 national. Most of the contests are recognized by Czech Ministry of Education
