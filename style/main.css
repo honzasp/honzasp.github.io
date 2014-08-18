@@ -1,3 +1,4 @@
+@charset "UTF-8";
 * {
   margin: 0;
   padding: 0; }
@@ -75,10 +76,13 @@ h6 {
   color: #000; }
   #content h1, #content h2, #content h3, #content h4, #content h5, #content h6, #content p, #content ul, #content ol, #content li {
     margin-bottom: 0.35em; }
-  #content li {
-    margin-left: 1.5em;
-    list-style-type: square;
-    list-style-position: outside; }
+  #content ul > li {
+    list-style-type: none;
+    margin-left: 1.0em; }
+  #content ul > li:before {
+    content: "–";
+    position: absolute;
+    margin-left: -1.0em; }
   #content li h1, #content li h2, #content li h3, #content li h4, #content li h5, #content li h6 {
     text-align: left; }
   #content .enter {
