@@ -157,9 +157,10 @@ h1,h2,h3,h4,h5,h6 {
   &, a { color: #555 }
 }
 
-body.home {
+.home {
   h2 {
     margin-top: 0;
+    margin-bottom: 50px;
     font-size: 150px;
     color: #555;
   }

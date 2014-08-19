@@ -127,7 +127,8 @@ h6 {
   #footer, #footer a {
     color: #555555; }
 
-body.home h2 {
+.home h2 {
   margin-top: 0;
+  margin-bottom: 50px;
   font-size: 150px;
   color: #555; }
