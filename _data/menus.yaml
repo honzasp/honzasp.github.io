@@ -1,18 +1,20 @@
 krt:
-  "about Krt": "/krt"
+  "about Krt": "/krt/"
   "play Krt": "/krt/play.html"
 fishy:
-  "about Fishy": "/fishy"
+  "about Fishy": "/fishy/"
   "play Fishy": "/fishy/play.html"
 particles:
-  "about Particles": "/particles"
+  "about Particles": "/particles/"
   "play Particles": "/particles/play.html"
 battlejs:
-  "about battle.js": "/battle.js"
+  "about battle.js": "/battle.js/"
   "play battle.js": "/battle.js/play.html"
-playground:
-  "web": "#web-javascript"
-  "offline": "#offline-github-repos"
+lab:
+  "lab": "/lab/"
+  "browser lab": "/lab/browser.html"
+  "offline lab": "/lab/offline.html"
 about:
-  "work": "#work"
-  "competitions": "#competitions"
+  "about": "/about/"
+  "work": "/about/work.html"
+  "competitions": "/about/competitions.html"

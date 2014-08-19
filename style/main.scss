@@ -6,7 +6,7 @@ $page-width: 420px;
 }
 
 body {
-  font-family: "Exo 2", sans-serif;
+  font-family: "Exo 2", "Verdana", sans-serif;
   font-weight: 300;
   background-color: #fff;
   color: #000; 
@@ -31,12 +31,12 @@ h1,h2,h3,h4,h5,h6 {
 }
 
 #main-header {
-  margin: 10px auto 50px;
+  margin: 5px auto 0;
   width: $page-width;
 
   .main-title, .sub-title {
     text-align: left;
-    font-size: 24px;
+    font-size: 20px;
     margin-top: 0;
     height: 36px;
     line-height: 36px;
@@ -55,7 +55,7 @@ h1,h2,h3,h4,h5,h6 {
       text-decoration: none;
       font-weight: 200;
       margin-left: 20px;
-      margin-top: 3.5px;
+      margin-top: 2.2px;
     }
 
     &:after {
@@ -75,7 +75,7 @@ h1,h2,h3,h4,h5,h6 {
 }
 
 #content {
-  margin: 1em auto 0;
+  margin: 5px auto 0;
   width: $page-width;
   text-align: justify;
   color: #000;
@@ -107,6 +107,11 @@ h1,h2,h3,h4,h5,h6 {
     font-weight: 200;
     display: block;
     margin-top: 1em;
+  }
+
+  ul.crossroad>li {
+    margin-top: 0.8em;
+    a { font-style: italic }
   }
 
   .gallery {

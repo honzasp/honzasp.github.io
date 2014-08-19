@@ -4,7 +4,7 @@
   padding: 0; }
 
 body {
-  font-family: "Exo 2", sans-serif;
+  font-family: "Exo 2", "Verdana", sans-serif;
   font-weight: 300;
   background-color: #fff;
   color: #000; }
@@ -39,11 +39,11 @@ h6 {
   font-size: 0.5em; }
 
 #main-header {
-  margin: 10px auto 50px;
+  margin: 5px auto 0;
   width: 420px; }
   #main-header .main-title, #main-header .sub-title {
     text-align: left;
-    font-size: 24px;
+    font-size: 20px;
     margin-top: 0;
     height: 36px;
     line-height: 36px;
@@ -59,7 +59,7 @@ h6 {
       text-decoration: none;
       font-weight: 200;
       margin-left: 20px;
-      margin-top: 3.5px; }
+      margin-top: 2.2px; }
     #main-header .main-menu:after, #main-header .sub-menu:after {
       content: " ";
       clear: both;
@@ -70,7 +70,7 @@ h6 {
     color: #aaa; }
 
 #content {
-  margin: 1em auto 0;
+  margin: 5px auto 0;
   width: 420px;
   text-align: justify;
   color: #000; }
@@ -91,6 +91,10 @@ h6 {
     font-weight: 200;
     display: block;
     margin-top: 1em; }
+  #content ul.crossroad > li {
+    margin-top: 0.8em; }
+    #content ul.crossroad > li a {
+      font-style: italic; }
   #content .gallery .item {
     width: 200px;
     margin: 5px;
