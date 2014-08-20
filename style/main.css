@@ -99,20 +99,6 @@ h6 {
     width: 200px;
     margin: 5px;
     float: left; }
-    #content .gallery .item h3 {
-      display: block;
-      background-color: #fff;
-      background-color: rgba(255, 255, 255, 0.8);
-      font-size: 19px;
-      line-height: 30px;
-      height: 30px;
-      z-index: 10;
-      position: relative;
-      margin-bottom: 0; }
-    #content .gallery .item img {
-      margin-top: -30px;
-      z-index: 1;
-      position: relative; }
   #content .gallery .row:after {
     content: " ";
     clear: both;
