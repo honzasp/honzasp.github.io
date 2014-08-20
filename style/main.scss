@@ -54,19 +54,21 @@ h1,h2,h3,h4,h5,h6 {
 
   .main-menu, .sub-menu {
     list-style-type: none;
+    display: inline-block;
+
+    li {
+      display: inline-block;
+    }
 
     a {
       font-size: 16px;
       line-height: 36px;
-      float: left;
-      text-align: center;
+      display: block;
       text-decoration: none;
       font-weight: 200;
       margin-left: 20px;
       margin-top: 2.2px;
     }
-
-    @include clearfix;
   }
 
   .main-title, .main-menu a {
@@ -111,7 +113,7 @@ h1,h2,h3,h4,h5,h6 {
     font-weight: 200;
 
     &>li {
-      float: left;
+      display: inline-block;
       margin-left: 0;
     }
     &>li:before {
@@ -123,15 +125,14 @@ h1,h2,h3,h4,h5,h6 {
     &>li:first-child:before {
       display: none;
     }
-
-    @include clearfix;
   }
 
   .gallery {
     .item {
       width: 200px;
-      margin: 5px;
-      float: left;
+      margin: 4px;
+      display: inline-block;
+      vertical-align: top;
     }
 
     .row { @include clearfix; }

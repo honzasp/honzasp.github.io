@@ -9,50 +9,44 @@ There are some little web apps powered by client-side scripting in JavaScript
 like `<canvas>` or Audio API. By a strange coincidence, they are mostly games.
 
 <div class="gallery">
-  <div class="row">
-    <div class="item">
-      <a href="/krt">
-        <h3>Krt</h3>
-        <img src="/img/thumb_krt.png" width="200" height="123" alt="Krt">
-      </a>
+  <div class="item">
+    <a href="/krt"><h3>Krt</h3>
+      <img src="/img/thumb_krt.png" width="200" height="123" alt="Krt">
+    </a>
 
-      <p>This is the biggest one with the largest amount of man-hours invested.
-        Up to four players control their circular vehicles in two-dimensional
-        cave system made from thousands of blocks and try to destroy
-        opponents.</p>
-    </div>
-
-    <div class="item">
-      <a href="/fishy">
-        <h3>Fishy</h3>
-        <img src="/img/thumb_fishy.png" width="200" height="123" alt="Fishy">
-      </a>
-
-      <p>Remake of a&nbsp;famous Flash game in JavaScript. Eat the smaller fish
-        and avoid the bigger ones to dominate the food chain in the pond.</p>
-    </div>
+    <p>This is the biggest one with the largest amount of man-hours invested.
+      Up to four players control their circular vehicles in two-dimensional
+      cave system made from thousands of blocks and try to destroy
+      opponents.</p>
   </div>
 
-  <div class="row">
-    <div class="item">
-      <a href="/particles">
-        <h3>Particles</h3>
-        <img src="/img/thumb_particles.png" width="200" height="123" alt="Particles">
-      </a>
+  <div class="item">
+    <a href="/fishy">
+      <h3>Fishy</h3>
+      <img src="/img/thumb_fishy.png" width="200" height="123" alt="Fishy">
+    </a>
 
-      <p>A&nbsp;few physics rules, simple code, but quite an interesting result
-        (at least, 14-years-old me really enjoyed this).</p>
-    </div>
+    <p>Remake of a&nbsp;famous Flash game in JavaScript. Eat the smaller fish
+      and avoid the bigger ones to dominate the food chain in the pond.</p>
+  </div>
 
-    <div class="item">
-      <a href="/battle.js">
-        <h3>battle.js</h3>
-        <img src="/img/thumb_battlejs.png" width="200" height="123" alt="battle.js">
-      </a>
+  <div class="item">
+    <a href="/particles">
+      <h3>Particles</h3>
+      <img src="/img/thumb_particles.png" width="200" height="123" alt="Particles">
+    </a>
 
-      <p>Turn-based tank game inspired by several Flash ancestors for unlimited
-      number of players.</p>
-    </div>
+    <p>A&nbsp;few physics rules, simple code, but quite an interesting result
+      (at least, 14-years-old me really enjoyed this).</p>
+  </div>
+
+  <div class="item">
+    <a href="/battle.js">
+      <h3>battle.js</h3>
+      <img src="/img/thumb_battlejs.png" width="200" height="123" alt="battle.js">
+    </a>
+
+    <p>Turn-based tank game inspired by several Flash ancestors for unlimited
+    number of players.</p>
   </div>
 </div>
-
