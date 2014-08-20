@@ -61,7 +61,7 @@ program with GUI and a game, too.
 - ### [Totem destroyer](https://github.com/honzasp/totem_destroyer)
 
   A two-dimensional game written in C++ using [SDL](https://www.libsdl.org) with
-  OpenGL for rendering, and [Box2D](https://box2d.org) for physics.  The player
+  OpenGL for rendering, and [Box2D](http://box2d.org) for physics.  The player
   has to carefully destroy blocks from a totem, so that precious idols do not
   hit the ground. I made the game when I was 13 and was inspired by a similar
   Flash game.
