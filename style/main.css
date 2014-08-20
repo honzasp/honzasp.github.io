@@ -91,7 +91,7 @@ h6 {
       display: inline-block;
       margin-left: 0; }
     #content .crossroad > li:before {
-      content: "—";
+      content: "— ";
       margin-right: 0.6em;
       margin-left: 0.6em;
       position: static; }
