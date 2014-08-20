@@ -1,5 +1,5 @@
 safe: true
 lsi: false
 include: [".nojekyll"]
-exclude: ["*.coffee", "*.scss"]
+exclude: ["Gemfile*", "README*"]
 markdown: kramdown

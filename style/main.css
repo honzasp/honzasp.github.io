@@ -110,10 +110,12 @@ h6 {
   font-size: 0.8em;
   text-align: right; }
   #footer, #footer a {
-    color: #555555; }
+    color: #555; }
 
 .home h2 {
   margin-top: 0;
   margin-bottom: 50px;
   font-size: 150px;
   color: #555; }
+
+/*# sourceMappingURL=main.css.map */
