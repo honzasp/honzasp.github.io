@@ -11,8 +11,6 @@ who enjoys both the theory and the practice of computer programming. You can
 find me on GitHub as [@honzasp](https://github.com/honzasp) or you can [send me
 an email](mailto:patek.mail@gmail.com).
 
-You may also want to find out more about:
-
 {: .crossroad}
-- [Work](/about/work.html) I have already done.
-- [Competitions](/about/competitions.html) where I had some successes.
+- [Work](/about/work.html)
+- [Competitions](/about/competitions.html)

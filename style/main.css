@@ -62,8 +62,8 @@ h6 {
       margin-top: 2.2px; }
     #main-header .main-menu:after, #main-header .sub-menu:after {
       content: " ";
-      clear: both;
-      display: table; }
+      display: table;
+      clear: both; }
   #main-header .main-title, #main-header .main-menu a {
     color: #777; }
   #main-header .main-menu a:hover {
@@ -85,24 +85,32 @@ h6 {
     margin-left: -1.0em; }
   #content li h1, #content li h2, #content li h3, #content li h4, #content li h5, #content li h6 {
     text-align: left; }
-  #content .enter {
-    text-align: center;
+  #content .crossroad {
+    margin-top: 1em;
     font-size: 1.5em;
-    font-weight: 200;
-    display: block;
-    margin-top: 1em; }
-  #content ul.crossroad > li {
-    margin-top: 0.8em; }
-    #content ul.crossroad > li a {
-      font-style: italic; }
+    font-weight: 200; }
+    #content .crossroad > li {
+      float: left;
+      margin-left: 0; }
+    #content .crossroad > li:before {
+      content: "|";
+      margin-right: 1em;
+      margin-left: 1em;
+      position: static; }
+    #content .crossroad > li:first-child:before {
+      display: none; }
+    #content .crossroad:after {
+      content: " ";
+      display: table;
+      clear: both; }
   #content .gallery .item {
     width: 200px;
     margin: 5px;
     float: left; }
   #content .gallery .row:after {
     content: " ";
-    clear: both;
-    display: table; }
+    display: table;
+    clear: both; }
 
 #footer {
   width: 420px;
