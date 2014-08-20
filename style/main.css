@@ -38,23 +38,23 @@ h5 {
 h6 {
   font-size: 0.5em; }
 
-#main-header {
+#header {
   margin: 5px auto 0;
   width: 420px; }
-  #main-header .main-title, #main-header .sub-title {
+  #header h1 {
     text-align: left;
     font-size: 20px;
     margin-top: 0;
     height: 36px;
     line-height: 36px;
-    float: left;
+    display: inline-block;
     min-width: 120px; }
-  #main-header .main-menu, #main-header .sub-menu {
+  #header ul {
     list-style-type: none;
     display: inline-block; }
-    #main-header .main-menu li, #main-header .sub-menu li {
+    #header ul li {
       display: inline-block; }
-    #main-header .main-menu a, #main-header .sub-menu a {
+    #header ul a {
       font-size: 16px;
       line-height: 36px;
       display: block;
@@ -62,9 +62,9 @@ h6 {
       font-weight: 200;
       margin-left: 20px;
       margin-top: 2.2px; }
-  #main-header .main-title, #main-header .main-menu a {
+  #header a {
     color: #777; }
-  #main-header .main-menu a:hover {
+  #header a:hover {
     color: #aaa; }
 
 #content {
@@ -102,10 +102,6 @@ h6 {
     margin: 4px;
     display: inline-block;
     vertical-align: top; }
-  #content .gallery .row:after {
-    content: " ";
-    display: table;
-    clear: both; }
 
 #footer {
   width: 420px;

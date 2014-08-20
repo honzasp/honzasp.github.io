@@ -1,0 +1,18 @@
+    <div id="header">
+      <div class="main-menu">
+        <h1>Jan Špaček</h1>
+        <ul>
+          <li><a href="/">home</a></li>
+          <li><a href="/lab/">lab</a></li>
+          <li><a href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="sub-menu">
+        <h1>{{ page.title }}</h1>
+        <ul>
+          {% for item in site.data.menus[page.menu] %}
+          <li><a href="{{ item[1] }}">{{ item[0] }}</a></li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
