@@ -4,10 +4,9 @@ title: Browser lab
 menu: lab
 ---
 
-<p>There are some little web apps powered by client-side scripting in JavaScript
-  (and CoffeeScript). Most of them were made to try the (then) new browser APIs,
-  like <code>&lt;canvas&gt;</code> or Audio API. By a&nbsp;strange coincidence,
-  they are mostly games.</p>
+There are some little web apps powered by client-side scripting in JavaScript
+(and CoffeeScript). Most of them were made to try the (then) new browser APIs,
+like `<canvas>` or Audio API. By a strange coincidence, they are mostly games.
 
 <div class="gallery">
   <div class="row">
