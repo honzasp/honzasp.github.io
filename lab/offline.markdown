@@ -8,7 +8,6 @@ The offline lab contains experiments that do not run in the browser environment.
 These are usually less visual and more algorithmic and theoretic, but there is a
 program with GUI and a game, too.
 
-{: .repos }
 - ### [Krunimír](https://github.com/honzasp/krunimir)
 
   This is an implementation of the task from the Czech Programming Competition

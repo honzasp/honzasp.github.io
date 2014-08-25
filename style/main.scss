@@ -12,6 +12,11 @@ body {
   color: #000; 
 }
 
+code,pre {
+  font-family: "Source Code Pro", monospace;
+  font-weight: 300;
+}
+
 a {
   text-decoration: underline;
   color: #000;
@@ -135,10 +140,27 @@ h1,h2,h3,h4,h5,h6 {
 }
 
 .home {
+  #content {
+    position: relative;
+  }
+
+  #footer {
+    display: none;
+  }
+
   h2 {
     margin-top: 0;
     margin-bottom: 50px;
     font-size: 150px;
     color: #555;
+    position: absolute;
+  }
+
+  .bf code {
+    display: block;
+    text-align: center;
+    font-size: 11px;
+    color: #888;
+    margin-top: 20px;
   }
 }
