@@ -8,6 +8,15 @@ There is a list of some projects I have done that do not fit in the [lab
 section](/lab) of this site. Unfortunately, most of them are only available in
 Czech.
 
+- [Adash ADS](http://www.adash.com/) is an application for visualization of
+  machine vibration (the method of animated deflection shapes). The user defines
+  a simplified model of the machine and exports the definition into a measuring
+  device. Then they download the results back to the PC and can analyze the
+  vibrations in detail. This program was developed in C++ using wxWidgets.
+
+- [Website of Špačekprojekt, s. r. o.](http://wp.spacekprojekt.cz). This website
+  uses Wordpress, various plugins and a custom theme.
+
 - [Website of Eva Špačková](http://homel.vsb.cz/~spa184/). I created the whole
   site using Jekyll and it is continually maintained and updated.
 
