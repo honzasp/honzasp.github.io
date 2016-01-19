@@ -23,7 +23,7 @@ I worked for some companies as a&nbsp;programmer:
 I have also worked on some projects that are not connected with programming.
 Unfortunately, most of them are only available in Czech.
 
-- [Website of Špačekprojekt, s. r. o.](http://wp.spacekprojekt.cz). This website
+- [Website of Špačekprojekt, s. r. o.](http://www.spacekprojekt.cz). This website
   uses Wordpress, various plugins and a custom theme.
 
 - [Website of Eva Špačková](http://homel.vsb.cz/~spa184/). I created the whole
