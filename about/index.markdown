@@ -13,3 +13,4 @@ email](mailto:patek.mail@gmail.com).
 {: .crossroad}
 - [Work](/about/work.html)
 - [Competitions](/about/competitions.html)
+- [Lab](/lab)

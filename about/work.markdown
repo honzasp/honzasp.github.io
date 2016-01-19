@@ -4,7 +4,7 @@ title: Work
 menu: about
 ---
 
-I worked for some companies as a&nbps;programmer:
+I worked for some companies as a&nbsp;programmer:
 
 - I participated on the development of a public transport routing engine for
   [Bileto](http://bileto.com), which must be able to route on country-sized
@@ -18,8 +18,10 @@ I worked for some companies as a&nbps;programmer:
   device. Then they download the results back to the PC and can analyze the
   vibrations in detail. This program was developed in C++ using wxWidgets.
 
-I have also worked on some projects that do not fit in the [lab section](/lab)
-of this site. Unfortunately, most of them are only available in Czech.
+(Please see [the lab](/lab) for my personal (and open-source) programming projects.)
+
+I have also worked on some projects that are not connected with programming.
+Unfortunately, most of them are only available in Czech.
 
 - [Website of Špačekprojekt, s. r. o.](http://wp.spacekprojekt.cz). This website
   uses Wordpress, various plugins and a custom theme.
