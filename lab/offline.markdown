@@ -8,6 +8,26 @@ The offline lab contains experiments that do not run in the browser environment.
 These are usually less visual and more algorithmic and theoretic, but there is a
 program with GUI and a game, too.
 
+- ### [libext2](https://github.com/honzasp/libext2)
+
+  libext2 is a Rust library for manipulating ext2 filesystems. It supports all
+  common filesystem operations (both reading and writing) and works seamlessly
+  with [FUSE](https://github.com/libfuse/libfuse). I also wrote an (informal)
+  report, [An ext2 library](/files/libext2.pdf), as this was my first semestral
+  program at university.
+
+- ### [Spiral](https://github.com/honzasp/spiral)
+
+  Spiral is a simple functional language inspired by Scheme. It has first-class
+  functions, tail-calls, module system, both mutable and immutable data
+  structures and a mark-and-sweep garbage collector. The accompanying paper is
+  named [Compiler for a simple functional language](/files/spiral_cs.pdf) and is
+  also available [in Czech](/files/spiral_cs.pdf). I implemented the compiler
+  and wrote the paper as my maturita (high-school leaving exam) task.
+
+  The compiler is written in Rust and the runtime in C++. Compilation is
+  separated into multiple stages using two intermediate languages.
+
 - ### [Krunimír](https://github.com/honzasp/krunimir)
 
   This is an implementation of the task from the Czech Programming Competition
@@ -20,6 +40,10 @@ program with GUI and a game, too.
   [Treetop](https://github.com/nathansobo/treetop), a parser-generator library
   for Ruby. The resulting AST is then compiled into "bytecode", which is then
   interpreted by a&nbsp;stack-based virtual machine.
+
+  I also implemented [the same program in
+  Clojure](https://github.com/honzasp/cjunimir) as an exercise when learning the
+  language.
 
 - ### [Inkvizitor](https://github.com/honzasp/inkvizitor)
 
