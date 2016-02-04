@@ -116,21 +116,4 @@ h6 {
   #footer, #footer a {
     color: #555; }
 
-.home #content {
-  position: relative; }
-.home #footer {
-  display: none; }
-.home h2 {
-  margin-top: 0;
-  margin-bottom: 50px;
-  font-size: 150px;
-  color: #555;
-  position: absolute; }
-.home .bf code {
-  display: block;
-  text-align: center;
-  font-size: 11px;
-  color: #888;
-  margin-top: 20px; }
-
 /*# sourceMappingURL=main.css.map */

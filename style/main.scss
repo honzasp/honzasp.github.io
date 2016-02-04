@@ -138,29 +138,3 @@ h1,h2,h3,h4,h5,h6 {
 
   &, a { color: #555 }
 }
-
-.home {
-  #content {
-    position: relative;
-  }
-
-  #footer {
-    display: none;
-  }
-
-  h2 {
-    margin-top: 0;
-    margin-bottom: 50px;
-    font-size: 150px;
-    color: #555;
-    position: absolute;
-  }
-
-  .bf code {
-    display: block;
-    text-align: center;
-    font-size: 11px;
-    color: #888;
-    margin-top: 20px;
-  }
-}
