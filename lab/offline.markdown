@@ -21,7 +21,7 @@ program with GUI and a game, too.
   Spiral is a simple functional language inspired by Scheme. It has first-class
   functions, tail-calls, module system, both mutable and immutable data
   structures and a mark-and-sweep garbage collector. The accompanying paper is
-  named [Compiler for a simple functional language](/files/spiral_cs.pdf) and is
+  named [Compiler for a simple functional language](/files/spiral_en.pdf) and is
   also available [in Czech](/files/spiral_cs.pdf). I implemented the compiler
   and wrote the paper as my maturita (high-school leaving exam) task.
 
