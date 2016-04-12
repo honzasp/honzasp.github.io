@@ -8,14 +8,6 @@ The offline lab contains experiments that do not run in the browser environment.
 These are usually less visual and more algorithmic and theoretic, but there is a
 program with GUI and a game, too.
 
-- ### [libext2](https://github.com/honzasp/libext2)
-
-  libext2 is a Rust library for manipulating ext2 filesystems. It supports all
-  common filesystem operations (both reading and writing) and works seamlessly
-  with [FUSE](https://github.com/libfuse/libfuse). I also wrote an (informal)
-  report, [An ext2 library](/files/libext2.pdf), as this was my first semestral
-  program at university.
-
 - ### [Spiral](https://github.com/honzasp/spiral)
 
   Spiral is a simple functional language inspired by Scheme. It has first-class
@@ -26,7 +18,19 @@ program with GUI and a game, too.
   and wrote the paper as my maturita (high-school leaving exam) task.
 
   The compiler is written in Rust and the runtime in C++. Compilation is
-  separated into multiple stages using two intermediate languages.
+  separated into multiple stages using two intermediate languages. The standard
+  library includes a number of efficient data structures, including persistent
+  maps, hash tables and heaps. You can see [the
+  wiki](https://github.com/honzasp/spiral/wiki) for further information,
+  including documentation.
+
+- ### [libext2](https://github.com/honzasp/libext2)
+
+  libext2 is a Rust library for manipulating ext2 filesystems. It supports all
+  common filesystem operations (both reading and writing) and works seamlessly
+  with [FUSE](https://github.com/libfuse/libfuse). I also wrote an (informal)
+  report, [An ext2 library](/files/libext2.pdf), as this was my first semestral
+  program at university.
 
 - ### [Krunimír](https://github.com/honzasp/krunimir)
 
