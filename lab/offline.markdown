@@ -22,7 +22,8 @@ program with GUI and a game, too.
   library includes a number of efficient data structures, including persistent
   maps, hash tables and heaps. You can see [the
   wiki](https://github.com/honzasp/spiral/wiki) for further information,
-  including documentation.
+  including documentation. There is also another mini-paper, [Standard library
+  data structures for Spiral](/files/spiral_data.pdf)
 
 - ### [libext2](https://github.com/honzasp/libext2)
 
