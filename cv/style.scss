@@ -30,23 +30,24 @@ a {
     }
   }
 
-  main {
-    display: -webkit-flex;
-    display: flex;
-  }
-
   .left-column, .right-column {
-    -webkit-flex-grow: 1;
-    flex-grow: 1;
-    width: 50%;
+    width: 45%;
+    float: left;
+    box-sizing: border-box;
   }
 
   .left-column {
-    margin-right: 5mm;
+    margin-right: 5%;
   }
 
   .right-column {
-    margin-left: 5mm;
+    margin-left: 5%;
+  }
+
+  .clear-fix:after {
+    content: ".";
+    display: table;
+    clear: both;
   }
 
   h1,h2,h3 {
@@ -75,5 +76,14 @@ a {
       position: absolute;
       margin-left: -1em;
     }
+  }
+
+  p {
+    margin-bottom: 0.2em;
+  }
+
+  .projects {
+    margin: 0 10%;
+    text-align: justify;
   }
 }

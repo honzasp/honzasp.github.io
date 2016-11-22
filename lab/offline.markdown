@@ -8,6 +8,28 @@ The offline lab contains experiments that do not run in the browser environment.
 These are usually less visual and more algorithmic and theoretic, but there is a
 program with GUI and a game, too.
 
+- ### [dort](https://github.com/honzasp/dort)
+
+  dort is a physically-based renderer heavily influenced by pbrt, the renderer
+  described in Pharr and Humphreys: Physically based rendering. It features
+  advanced geometry representations (able to render scenes containing tens of
+  millions of triangles), various shading models (BSDFs), simple procedural
+  texturing and multiple rendering algorithms (direct lighting, path tracing,
+  IGI and SPPM). The renderer core is written in C++ but embeds a Lua
+  interpreter, so that scenes can be scripted in Lua. As a special feature, dort
+  supports rendering of Minecraft worlds, utilizing a special geometric
+  structure for efficient ray-tracing of cubic voxels.
+
+  For some examples of dort output see the [images/][dort-images] directory in
+  the repo. There is also [a gallery][gallery] that features some nice pictures
+  computed by dort. I have also written a small paper, [Physically-based
+  rendering: A piece of cake][piece-of-cake], describing the basic architecture
+  of the renderer.
+
+  [dort-images]: https://github.com/honzasp/dort/tree/master/images
+  [gallery]: https://www.dropbox.com/sh/t9knyfgobax6ii8/AAAaDt7kQfHUWwIgof8SAdsca?dl=0
+  [piece-of-cake]: /files/piece_of_cake.pdf
+
 - ### [Spiral](https://github.com/honzasp/spiral)
 
   Spiral is a simple functional language inspired by Scheme. It has first-class

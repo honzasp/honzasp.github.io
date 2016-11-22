@@ -16,6 +16,7 @@
       </header>
 
       <main>
+        <div class="clear-fix">
         <div class="left-column">
           <h2>Contacts</h2>
 
@@ -47,24 +48,27 @@
               programming</strong> with emphasis on the clarity and beauty of
               code</li>
             <li>Algorithms</li>
+            <li>Theory of programming languages and typing</li>
+            <li>Elements of computer graphics (physically-based rendering)</li>
             <li>Programming languages: <ul>
               <li>advanced: <strong>C, C++11, Rust, Python</strong>, JavaScript
               (CoffeeScript), Ruby</li>
-              <li>intermediate: assembler x86, bash, Clojure, Haskell, Java,
+              <li>intermediate: assembler x86, bash, C#, Clojure, Haskell, Java,
               Lua, Scheme</li>
               <li>a bit of PHP, Racket, ML, Erlang, ...</li>
             </ul></li>
-            <li><strong>Web technologies</strong>: both client- and server-side<li>
-            <li>Theory of programming languages and typing</li>
+            <li>Web technologies: both client- and server-side<li>
             <li><strong>Linux</strong>, vim, tmux, git</li>
+            <li>Intrinsically motivated</li>
           </ul>
 
           <h3>Misc</h3>
-          <p>Aside from computer science, I am a Latin dancer (currently in the
-          class B) and I was a water scout.</p>
+          <p>Aside from computer science, I am a <a
+            href="http://dancerank.cz/athlete/10674635">Latin dancer</a>
+          (currently in the class B) and I was a water scout.</p>
         </div>
 
-        <div class="right-column">
+        <div class="right-column clear-fix">
           <h2>Work experience</h2>
           <dl>
             <dt>Kiwi.com (summer 2016)</dt>
@@ -89,10 +93,35 @@
             company products. This program was developed in C++ using wxWidgets
             and primarily targets Windows, but it also works on Linux..</dd>
           </dl>
+        </div>
+      </div>
 
-          <h2>Open-source projects</h2>
+        <div class="projects">
+          <h2>Personal projects</h2>
+          <p>For further information about my projects, including links to
+          repositories and papers, please see <a
+            href="http://honzasp.github.io/lab/offline.html">my web</a>.</p>
+
           <dl>
-            <dt>Spiral (a programming language) (2015)</dt>
+            <dt>dancerank.cz (web) (2016)</dt>
+            <dd><a href="http://dancerank.cz">dancerank.cz</a> is a web that
+            aggregates results from dancesport competitions in the Czech
+            Republic. It is written in asynchronous Python and relies on MongoDB
+            for storage and Redis for caching.</dd>
+
+            <dt>dort (renderer) (2016)</dt>
+            <dd>dort is a physically-based renderer heavily influenced by pbrt
+            described in Pharr and Humphreys: Physically-based rendering. The
+            major features are advanced geometry representations (dort can
+            easily handle tens of millions of triangles in little memory),
+            multiple shading models (BSDFs) and various rendering algorithms
+            (direct lighting, path tracing, IGI and SPPM). As a special feature,
+            dort can import Minecraft worlds into scenes, utilizing a special
+            geometric structure that allows efficient ray-tracing of cubic
+            voxels. The rendering engine is written in modern C++ and embeds a
+            Lua interpreter so that scenes are scripted in Lua.</dd>
+
+            <dt>Spiral (programming language) (2015)</dt>
             <dd>Spiral is a simple functional language inspired by Scheme. It
             has first-class functions, tail-calls, module system, both mutable
             and immutable data structures and a mark-and-sweep garbage
@@ -101,26 +130,23 @@
             a&nbsp;paper about it as my maturita (high-school leaving exam)
             task.  The compiler is written in Rust and the runtime in C++.</dd>
 
-            <dt>libext2 (2016)</dt>
+            <dt>libext2 (filesystem driver) (2016)</dt>
             <dd>libext2 is a Rust library for manipulating ext2 filesystems. It
             supports all common filesystem operations (both reading and writing)
             and integrates a FUSE interface.  This was my first semestral
             program at the university.</dd>
 
-            <dt>Krt (2014)</dt>
+            <dt>Krt (browser game) (2014)</dt>
             <dd>A game running in browser written in CoffeeScript, using modern
             Web APIs. Up to four players control circular vehicles and shoot
             each other in a procedurally generated system of caves.</dd>
 
-            <dt>Totem Destroyer (2009)</dt>
+            <dt>Totem Destroyer (game) (2009)</dt>
             <dd>A game inspired by a well-known Flash game, written in C++ using
             SDL with OpenGL for 2D graphics and Box2D for realistic
             physics. The player has to carefully destroy all blocks of a
             "totem" and prevent precious idols from hitting the ground.</dd>
           </dl>
-
-          <p>Please see <a href="http://honzasp.github.io/lab">my web</a> for
-          more projects.</p>
         </div>
       </main>
     </div>

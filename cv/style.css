@@ -20,17 +20,18 @@ a {
     margin-right: 5mm;
     float: left;
     min-width: 4em; }
-  #page main {
-    display: -webkit-flex;
-    display: flex; }
   #page .left-column, #page .right-column {
-    -webkit-flex-grow: 1;
-    flex-grow: 1;
-    width: 50%; }
+    width: 45%;
+    float: left;
+    box-sizing: border-box; }
   #page .left-column {
-    margin-right: 5mm; }
+    margin-right: 5%; }
   #page .right-column {
-    margin-left: 5mm; }
+    margin-left: 5%; }
+  #page .clear-fix:after {
+    content: ".";
+    display: table;
+    clear: both; }
   #page h1, #page h2, #page h3 {
     margin-top: 0.5em;
     margin-bottom: 0.2em;
@@ -48,5 +49,10 @@ a {
       content: "—";
       position: absolute;
       margin-left: -1em; }
+  #page p {
+    margin-bottom: 0.2em; }
+  #page .projects {
+    margin: 0 10%;
+    text-align: justify; }
 
 /*# sourceMappingURL=style.css.map */
