@@ -1,5 +1,0 @@
-safe: true
-lsi: false
-include: [".nojekyll"]
-exclude: ["Gemfile*", "README*"]
-markdown: kramdown

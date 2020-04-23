@@ -1,104 +1,175 @@
 <!DOCTYPE html>
+<!-- welcome under the hood! -->
 <html>
   <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>Jan Špaček</title>
+
+<style>
+body {
+  color: #000;
+  background: #fff;
+  font-family: sans-serif;
+}
+
+h1 { font-size: 1.4em; }
+h2 { font-size: 1.2em; }
+
+#page {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+a:link, a:visited { color: #235c7d; }
+a:hover, a:focus { color: #368fc2; }
+</style>
+
   </head>
-  <body>
+  <body><div id="page">
+
 
 <h1>Jan Špaček</h1>
 
-<p>Jan Špaček is a student of computer science at <a
-  href="https://www.mff.cuni.cz">Charles University, Faculty of Mathematics and
-  Physics</a>.</p>
+<p>I am Jan Špaček. My experience includes:</p>
+
+<ul>
+  <li>High-performance distributed systems</li>
+  <li>Deep learning</li>
+  <li>Web applications</li>
+  <li>Desktop applications</li>
+  <li>Physically-based rendering</li>
+  <li>Programming language implementations</li>
+</ul>
+
 
 <h2>Work experience</h2>
 
 <ul>
-  <li><strong><a href="https://www.corona-renderer.com">Render
-    Legion</a></strong> (Prague, since November 2017).
+  <li><strong><a href="https://www.corona-renderer.com">Corona
+        Renderer</a></strong> (Prague, 2017&ndash;2019)
     <ul>
-      <li>Integration of Corona Renderer into ArchiCAD.</li>
+      <li>Integration of Corona Renderer into ARCHICAD.</li>
       <li>Bachelor thesis supervised by <a
         href="http://cgg.mff.cuni.cz/~jaroslav/">Jaroslav Křivánek</a>, defended
       in 2018.</li>
-      <li>Written in C++ for Windows</li>
+      <li>Written in C++ for Windows, using ARCHICAD APIs and Corona API.</li>
     </ul>
   </li>
 
-  <li><strong><a href="https://www.kiwi.com">Kiwi.com</a></strong> (Brno, June 2017 to
-    September 2017).
+  <li><strong><a href="https://www.kiwi.com">Kiwi.com</a></strong> (Brno, 2016,
+    2017)
     <ul>
-      <li>Design and development of Distributed intermediate storage for flights
-      and development of distributed routing of flights.</li>
+      <li>Design and development of a distributed intermediate storage for flights
+        and development of distributed routing of flights (billions of flighs, a
+        few terabytes of in-memory storage across many servers, millisecond
+        latencies).</li>
       <li>Design and development of a distributed system for high-performance
-      and reliable loading of flights from the internal storage of
-      Cassandra.</li>
+        and reliable loading of flights from the internal storage of
+        Cassandra.</li>
       <li>Written in C++ and Python with asyncio, using Cassandra, Redis and
-      docker.</li>
+        docker.</li>
     </ul>
   </li>
 
-  <li><strong><a href="https://www.kiwi.com">Kiwi.com</a></strong> (Brno, May 2016 to
-  September 2016).
+  <li><strong><a href="https://www.bileto.com">Bileto</a></strong> (Prague, 2015)
     <ul>
-      <li>Development of distributed engine for computing best combinations of
-      flights.</li>
-      <li>Design and development of a custom terabyte-scale in-memory
-      distributed database capable of handling thousands of requests per second
-      with minimal latency.</li>
-      <li>Written in C++ and Python with asyncio, using PostgreSQL and
-      docker.</li>
+      <li>Development of an engine for routing in public transport networks fast
+        enough to handle country-sized networks in real time using
+        state-of-the-art algorithms.</li>
+      <li>Written in C++, using Redis and PostgreSQL.</li>
     </ul>
   </li>
 
-  <li><strong><a href="https://www.bileto.com">Bileto</a></strong> (Prague, May 2016 to
-    September 2015).
-    <ul>
-      <li>Development of engine for routing in public transport networks fast
-      enough to handle country-sized networks in real time using
-      state-of-the-art algorithms.</li>
-      <li>Written in C++ using Redis and PostgreSQL.</li>
-    </ul>
-  </li>
-
-  <li><strong><a href="http://www.adash.cz">Adash</a></strong> (Ostrava, September 2014
-  to April 2015).
+  <li><strong><a href="http://www.adash.cz">Adash</a></strong> (Ostrava,
+    2014&ndash;2015)
     <ul>
       <li>Development of ADS, an application to visualize measured vibration
       data.</li>
       <li>Design of efficient digital filters using advanced features of ARM
       processors.</li>
-      <li>Written in C++ using wxWidgets.</li>
+      <li>Written in C++ with wxWidgets.</li>
     </ul>
   </li>
 </ul>
 
+
 <h2>Selected projects</h2>
 
 <ul>
-  <li><strong><a href="http://dancerank.cz">Dancerank.cz</a></strong> (since
-  October 2016) &mdash; a database of results of dance sport competitions from
-  several countries (including Czech, Slovak, Hungarian, Polish and
-  international events) with advanced search capabilities, detailed analysis of
-  competition results, ranking of couples and predictions of future
-  competitions.</li>
+  <li><strong>SkyGAN</strong> (2019&ndash;2020)
+    <ul>
+      <li>Generating high-resolution skydome images with deep learning
+        (generative adversarial networks).</li>
+      <li>Master thesis supervised by David Futschik and <a
+        href="https://cgg.mff.cuni.cz/~wilkie/">Alexander Wilkie</a>.</li>
+    </ul>
+  </li>
 
-  <li><strong><a href="https://github.com/honzasp/dort">dort</a></strong>
-  (since Feburary 2016) &mdash; a physically based renderer heavily influenced by <a
-    href="http://www.pbrt.org">pbrt</a>.</li>
+  <li><strong><a href="http://dancerank.cz">Dancerank.cz</a></strong>
+    (2016&ndash;present)
+    <ul>
+      <li>A database of results of dance sport competitions from several countries
+        (including Czech, Slovak, Hungarian, Polish and international events).</li>
+      <li>Detailed analysis of competition results,
+        ranking of couples, <a href="https://api.dancerank.cz/">public API</a>.</li>
+      <li>Predictions of future competition results with a novel machine
+        learning model.</li>
+      <li>Advanced search with a custom text-search service.</li>
+      <li>Written in Python with asyncio, using MongoDB and Redis.</li>
+    </ul>
+  </li>
 
-  <li><strong><a href="https://github.com/honzasp/spiral">spiral</a></strong>
-  (January 2015 to May 2015) &mdash; full implementation of a dynamic compiled
-  programming language: a compiler (in Rust), runtime support library with
-  garbage collection (in C++) and a standard library of basic algorithms and
-  data structures (directly in Spiral). Conducted as high-school final project;
-  the standard library was later extended as part of a course at
-  university.</li>
+  <li><strong><a href="https://github.com/honzasp/dort">dort</a></strong> (2016&ndash;2017) 
+    <ul>
+      <li>A physically based renderer heavily influenced by <a
+          href="http://www.pbrt.org">pbrt</a>.</li>
+    </ul>
+  </li>
 
-  <li><a href="https://github.com/honzasp">More stuff on GitHub</a></li>
+  <li><strong><a href="https://github.com/honzasp/spiral">spiral</a></strong> (2015)
+    <ul>
+      <li>Full implementation of a dynamic compiled programming language: a
+        compiler (in Rust), runtime support library with garbage collection (in
+        C++) and a standard library of basic algorithms and data structures
+        (directly in Spiral).</li>
+      <li>Conducted as high-school final project; the standard library was later
+        extended as part of a course at university.</li>
+    </ul>
+  </li>
+
+  <li>A large amount of smaller projects, <a
+      href="https://github.com/honzasp">a few of them on GitHub</a>.</li>
 </ul>
+
+
+<h2>Skills</h2>
+
+<p>I am not limited to any particular language, platform or environment.
+  I am most experienced in C++ and Python, but I also wrote Rust,
+  <span style="font-size: 90%">Haskell, Lua,</span>
+  <span style="font-size: 80%">JavaScript,</span>
+  <span style="font-size: 70%">Clojure, Ocaml, Go,</span>
+  <span style="font-size: 60%"><a href="https://github.com/honzasp/spiral">my own
+      language Spiral</a>, ...</span><p>
+
+<p>I happened to develop software mostly for Linux servers and Windows desktops.
+I (ab)used many databases (MongoDB, Redis, Cassandra, ...), countless
+libraries, frameworks, and APIs. I also enjoy low-level programming, such as
+bare metal Beaglebone and Arduino, CUDA, or SIMD programming with SSE/AVX. My
+editor is Vim.</p>
+
+<p>I have solid background in computer science from <a
+  href="https://www.mff.cuni.cz/">Matfyz</a>:</p>
+<ul>
+  <li>Bachelor (Bc.) (2015&ndash;2018, with honors): general computer science</li>
+  <li>Master (Mgr.) (2018&ndash;2020, <b>not yet finished</b>): artificial intelligence</li>
+</ul>
+
+<p>Beside computer science, I dance Latin on a
+competition level (with my partner we have the highest national class "A"). I am
+also an avid reader in English and Czech.</p>
+
 
 <h2>Contacts</h2>
 
@@ -111,5 +182,5 @@
   Špaček</a></li>
 </ul>
 
-  </body>
+    </div></body>
 </html>
