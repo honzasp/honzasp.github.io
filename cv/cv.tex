@@ -1,0 +1,127 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{biolinum}
+\usepackage{url}
+\usepackage{hyperref}
+\usepackage[top=10mm, bottom=15mm, left=15mm, right=15mm]{geometry}
+\usepackage{parskip}
+\usepackage{paralist}
+\usepackage{microtype}
+\usepackage{sectsty}
+\usepackage{multicol}
+
+\setlength{\columnsep}{8mm}
+\setdefaultleftmargin{1.5em}{0em}{}{}{}{}
+\allsectionsfont{\sffamily}
+\hypersetup{hidelinks=true,colorlinks=true}
+
+\begin{document}
+\thispagestyle{empty}
+\sffamily
+
+{\bfseries\huge Jan Špaček}
+
+\begin{multicols}{2}
+
+I am Jan Špaček. My experience includes:
+\begin{compactitem}
+  \item High-performance distributed systems
+  \item Deep learning
+  \item Web applications
+  \item Desktop applications
+  \item Physically-based rendering
+  \item Programming language implementations
+\end{compactitem}
+
+\section*{Work experience}
+
+\textbf{Corona Renderer} (Prague, 2017–2019)
+  \newline Integration of Corona Renderer into ARCHICAD.
+  \newline Bachelor thesis supervised by Jaroslav Křivánek, defended in 2018.
+  \newline Written in C++ for Windows, using ARCHICAD APIs and Corona API.
+
+\textbf{Kiwi.com} (Brno, 2016, 2017)
+  \newline Design and development of a distributed intermediate storage for
+  flights and development of distributed routing of flights (billions of
+  flighs, a few terabytes of in-memory storage across many servers,
+  millisecond latencies).
+  \newline Design and development of a distributed system for high-performance
+  and reliable loading of flights from the internal storage of Cassandra.
+  \newline Written in C++ and Python with asyncio, using Cassandra, Redis and docker.
+
+\textbf{Bileto} (Prague, 2015)
+  \newline Development of an engine for routing in public transport networks
+  fast enough to handle country-sized networks in real time using
+  state-of-the-art algorithms.
+  \newline Written in C++, using Redis and PostgreSQL.
+
+\textbf{Adash} (Ostrava, 2014–2015)
+  \newline Development of ADS, an application to visualize measured vibration data.
+  \newline Design of efficient digital filters using advanced features of ARM
+  processors.
+  \newline Written in C++ with wxWidgets.
+
+
+\section*{Selected projects}
+
+\textbf{SkyGAN} (2019–2020)
+  \newline Generating high-resolution skydome images with deep learning
+  (generative adversarial networks).
+  \newline Master thesis supervised by David Futschik and Alexander Wilkie.
+
+\textbf{Dancerank.cz} (2016–)
+  \newline A database of results of dance sport competitions from several
+  countries (including Czech, Slovak, Hungarian, Polish and international
+  events).
+  \newline Detailed analysis of competition results, ranking of couples, public API.
+  \newline Predictions of future competition results with a novel machine learning model.
+  \newline Advanced search with a custom text-search service.
+  \newline Written in Python with asyncio, using MongoDB and Redis.
+
+\textbf{dort} (2016–2017)
+  \newline A physically based renderer heavily influenced by pbrt.
+
+\textbf{spiral} (2015)
+  \newline Full implementation of a dynamic compiled programming language: a
+  compiler (in Rust), a runtime support library with garbage collection (in
+  C++) and a standard library of basic algorithms and data structures
+  (directly in Spiral).
+  \newline Conducted as high-school final project; the standard library was
+  later extended as part of a course at university.
+
+\ldots{}and a large amount of smaller projects, a few of them are on my GitHub 
+\href{https://github.com/honzasp}{@honzasp}.
+
+\section*{Skills}
+
+I am not limited to any particular language, platform or environment. I am most
+experienced in C++ and Python, but I also wrote Rust,
+{\small Haskell, Lua,}
+{\footnotesize JavaScript,}
+{\scriptsize Clojure, Ocaml, Go, my own language Spiral, ...}
+
+I happened to develop software mostly for Linux servers and Windows desktops. I
+(ab)used many databases (MongoDB, Redis, Cassandra, ...), countless libraries,
+frameworks, and APIs. I also enjoy low-level programming, such as bare metal
+Beaglebone and Arduino, CUDA, or SIMD programming with SSE/AVX. My editor is
+Vim.
+
+I have solid background in computer science from Matfyz:
+\begin{compactitem}
+\item Bachelor (Bc.) (2015–2018, with honors): general computer science
+\item Master (Mgr.) (2018–2020, \textit{not yet finished}): artificial intelligence
+\end{compactitem}
+
+Beside computer science, I dance Latin on a competition level (with my partner
+we have the highest national class ``A''). I am also an avid reader in English and
+Czech.
+
+\section*{Contacts}
+
+Web: \url{https://honzasp.github.io}\newline
+GitHub: \href{https://github.com/honzasp}{@honzasp}\newline
+LinkedIn: \href{https://www.linkedin.com/in/jan-%C5%A1pa%C4%8Dek-3155b4136/}{Jan
+Špaček}\newline
+
+\end{multicols}
+\end{document}
